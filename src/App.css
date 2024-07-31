@@ -1,0 +1,8 @@
+#NagishLiTrigger {
+    width: 36px;
+    display: inline-block;
+    position: fixed;
+    bottom: 40px !important;
+    left: 10px !important;
+    right: calc(10px +(100vw - 100%));
+}
