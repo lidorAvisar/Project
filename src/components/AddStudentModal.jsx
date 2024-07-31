@@ -6,12 +6,12 @@ import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from './Loading';
 import { useMutation } from 'react-query';
 
-const departments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
     const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm();
     const { createUser } = useCreateUser();
 
+    const [currentUser] = useCurrentUser();
     const [showPassword, setShowPassword] = useState(false);
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
 
@@ -138,11 +138,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                                 <div className="mt-2">
                                     <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                         name="" id="department" {...register("departments", { required: true })}>
-                                        {departments.map((item, i) => {
-                                            return (
-                                                <option key={i} className='font-bold'>{item}</option>
-                                            )
-                                        })}
+                                        <option key={i} className='font-bold'>{currentUser.department}</option>
                                     </select>
                                 </div>
                                 {errors.department && <p className="text-red-500">בחר מחלקה</p>}
