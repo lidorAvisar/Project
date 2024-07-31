@@ -54,7 +54,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
             <div className='w-[90%] sm:w-96 bg-slate-100 p-4 py-8 rounded-lg'>
                 <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
                     <p className='text-center font-bold text-xl underline py-2'>יצירת תלמיד / מורה</p>
-                    <form dir='rtl' className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                    <form dir='rtl' className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
                         <div>
                             <label htmlFor="displayName" className="block text-lg font-medium leading-6 text-gray-900">
                                 שם מלא:

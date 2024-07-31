@@ -122,7 +122,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                     <div className='space-y-3'>
                         <div className="flex items-center justify-between">
                             <label htmlFor="password" className="block text-lg font-medium leading-6 text-gray-900">
-                                מ"פ\מ"מ\מורי נהיגה:
+                                תלמיד\מ"פ\מ"מ\מורי נהיגה:
                             </label>
                         </div>
                         <div className="mt-2">

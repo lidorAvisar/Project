@@ -33,7 +33,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         data.teacherUid = teacherUid;
         data.student = studentDetails.displayName;
         data.drivingMinutes = null;
-        console.log(data);
         try {
             const lessonId = crypto.randomUUID();
             const lessonData = { lessonId, data }
@@ -47,7 +46,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
     const handleTeacherChange = (event) => {
         const selectedTeacher = filteredTeachers.find(account => account.displayName === event.target.value);
-        setTeacherUid(selectedTeacher ? selectedTeacher.uid : '');
+        setTeacherUid(selectedTeacher.uid);
     };
 
 

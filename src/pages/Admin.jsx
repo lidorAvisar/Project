@@ -35,7 +35,7 @@ const Admin = () => {
     const filteredStudents = data?.filter(account =>
         account.user === "תלמידים" &&
         account.displayName.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        account.departments === currentUser.departments[0]
+        account.departments === currentUser.departments
     ).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
 
