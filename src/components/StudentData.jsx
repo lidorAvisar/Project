@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
 import TableDriving from './TableDriving';
-import { deleteAccount, deleteLessons, updateAccount } from '../firebase/firebase_config';
+import { deleteAccount, deleteLessons, storage, updateAccount } from '../firebase/firebase_config';
 import Theories from './Theories';
 import Tests from './Tests';
 import { useMutation } from 'react-query';
@@ -11,6 +11,7 @@ import { BiEditAlt } from 'react-icons/bi';
 import { EditUserModal } from './EditUserModal';
 import AddFileStudent from './AddFileStudent';
 import { Loading } from './Loading';
+import { deleteObject, listAll, ref } from 'firebase/storage';
 
 
 const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filteredTeachers }) => {
@@ -18,10 +19,28 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
 
     const [openEditModal, setOpenEditModal] = useState(false);
 
+    const deleteFiles = async (uid) => {
+        const listRef = ref(storage, `students/${uid}`);
+        try {
+            const res = await listAll(listRef);
+            const deletePromises = res.items.map(item => deleteObject(item));
+            await Promise.all(deletePromises);
+        }
+        catch (error) {
+            alert("הקבצים של אותו תלמיד לא נמחקו")
+        }
+    };
+
     const { mutate: deleteMutation, isLoading } = useMutation({
         mutationKey: ['users'],
         mutationFn: async (id) => {
-            await deleteLessons(studentDetails.lessons)
+            if (studentDetails.lessons) {
+                await deleteLessons(studentDetails.lessons)
+            }
+            if (studentDetails.uid) {
+                await deleteFiles(studentDetails.uid);
+            }
+
             await deleteAccount(id)
         },
         onSuccess: () => {
@@ -39,7 +58,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
             setOpenModalStudentData(false);
         }
         catch (error) {
-            console.error("Error updating student data: ", error);
+            alert("שגיאה");
         }
     };
 
@@ -95,6 +114,18 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                     placeholder="הכנס ת.ז"
                                 />
                                 {errors.idNumber && <span className="text-red-500 text-sm">{errors.idNumber.message}</span>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="cycle" className="block text-right text-sm font-medium text-gray-700">מחזור:</label>
+                                <input
+                                    type="text"
+                                    id="cycle"
+                                    defaultValue={studentDetails?.cycle || ""}
+                                    {...register('cycle', { required: "זהו שדה חובה" })}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס מחזור"
+                                />
+                                {errors.cycle && <span className="text-red-500 text-sm">{errors.cycle.message}</span>}
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="language" className="block text-right text-sm font-medium text-gray-700">שפה:</label>
@@ -290,30 +321,30 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                 {errors.cargoSecuringScore && <span className="text-red-500 text-sm">{errors.cargoSecuringScore.message}</span>}
                             </div>
                             <div className="mb-4">
-                                <label className="block text-right text-sm font-medium text-gray-700">כיבוי אש ברכב:</label>
+                                <label className="block text-right text-sm font-medium text-gray-700">חומרים מסוכנים:</label>
                                 <div className='flex gap-4'>
                                     <div>
-                                        <label htmlFor="vehicleFirefightingYes">כן</label>
+                                        <label htmlFor="HazardousMaterialsYes">כן</label>
                                         <input
                                             type="radio"
-                                            id="vehicleFirefightingYes"
+                                            id="HazardousMaterialsYes"
                                             value="yes"
-                                            defaultChecked={studentDetails?.vehicleFirefighting === "yes"}
-                                            {...register('vehicleFirefighting', { required: "זהו שדה חובה" })}
+                                            defaultChecked={studentDetails?.HazardousMaterials === "yes"}
+                                            {...register('HazardousMaterials', { required: "זהו שדה חובה" })}
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="vehicleFirefightingNo">לא</label>
+                                        <label htmlFor="HazardousMaterialsNo">לא</label>
                                         <input
                                             type="radio"
-                                            id="vehicleFirefightingNo"
+                                            id="HazardousMaterialsNo"
                                             value="no"
-                                            defaultChecked={studentDetails?.vehicleFirefighting === "no"}
-                                            {...register('vehicleFirefighting', { required: "זהו שדה חובה" })}
+                                            defaultChecked={studentDetails?.HazardousMaterials === "no"}
+                                            {...register('HazardousMaterials', { required: "זהו שדה חובה" })}
                                         />
                                     </div>
                                 </div>
-                                {errors.vehicleFirefighting && <span className="text-red-500 text-sm">{errors.vehicleFirefighting.message}</span>}
+                                {errors.HazardousMaterials && <span className="text-red-500 text-sm">{errors.HazardousMaterials.message}</span>}
                             </div>
                             <div className="mb-4">
                                 <label className="block text-right text-sm font-medium text-gray-700">מסמכי הרכב:</label>

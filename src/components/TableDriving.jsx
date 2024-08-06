@@ -19,6 +19,10 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
     const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
     const [filteredData, setFilteredData] = useState([]);
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
+    const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
+    const [isExpanded, setIsExpanded] = useState(false);
+
+
 
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['practical_driving'],
@@ -39,6 +43,36 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
 
     const filteredTeachers = studentData?.filter(account =>
         account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+
+    useEffect(() => {
+        const checkShiftAvailability = () => {
+            const israelTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" });
+            const currentHour = new Date(israelTime).getHours();
+
+            if (currentHour >= 0 && currentHour < 12) {
+                setShiftAvailability({ morning: true, noon: true, evening: true });
+            } else if (currentHour >= 12 && currentHour < 18) {
+                setShiftAvailability({ morning: false, noon: true, evening: true });
+            } else if (currentHour >= 18 && currentHour < 21) {
+                setShiftAvailability({ morning: false, noon: false, evening: true });
+            } else {
+                setShiftAvailability({ morning: false, noon: false, evening: false });
+            }
+        };
+        checkShiftAvailability();
+
+        const intervalId = setInterval(checkShiftAvailability, 60000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+    const handleExpand = (index) => {
+        setIsExpanded(index);
+    };
+
+    const handleClose = () => {
+        setIsExpanded(false);
+    };
 
 
     useEffect(() => {
@@ -86,7 +120,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
         };
 
         const shiftTotals = { ...savedShiftMinutes };
-        console.log("before:", shiftTotals);
 
 
         // Calculate totals for each shift from form data
@@ -100,7 +133,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
             shiftTotals[shift] += minutes;
         });
 
-        console.log(shiftTotals);
 
         // Check if any shift exceeds the limit
         const errors = {};
@@ -120,8 +152,12 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
 
     const onSubmit = async (formData) => {
         if (currentUser.user === "מורה נהיגה") {
-            const errors = validateShiftLimits(formData);
+            const confirmation = window.confirm('האם אתה בטוח במספר הדקות?');
+            if (!confirmation) {
+                return;
+            }
 
+            const errors = validateShiftLimits(formData);
             if (Object.keys(errors).length > 0) {
                 alert(JSON.stringify(errors, null, 2));
                 return;
@@ -173,6 +209,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
         return <div>{error.message}</div>;
     }
 
+
     return (
         <div className='bg-white w-full p-2 rounded-md shadow-lg'>
             <div className='flex justify-around items-center'>
@@ -197,7 +234,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                 <div className="mb-2">
                                     <label className="block text-gray-700 text-sm font-bold mb-1">תאריך</label>
                                     <input
-                                        min={today}
                                         type="date"
                                         value={item.date}
                                         {...register(`data[${index}].date`, { required: true })}
@@ -216,11 +252,12 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                         className={`w-full border p-2 rounded ${errors.data?.[index]?.shift ? 'border-red-500' : 'border-gray-300'}`}
                                         disabled={isTeacher}
                                     >
-                                        <option value="משמרת בוקר">משמרת בוקר</option>
-                                        <option value="משמרת צהריים">משמרת צהריים</option>
-                                        <option value="משמרת ערב">משמרת ערב</option>
+                                        <option value="">בחר משמרת . . .</option>
+                                        <option value="משמרת בוקר" disabled={!shiftAvailability.morning}>משמרת בוקר</option>
+                                        <option value="משמרת צהריים" disabled={!shiftAvailability.noon}>משמרת צהריים</option>
+                                        <option value="משמרת ערב" disabled={!shiftAvailability.evening}>משמרת ערב</option>
                                     </select>
-                                    {errors.data?.[index]?.shift && <span className="text-red-500 text-xs">Required</span>}
+                                    {errors.data?.[index]?.shift && <span className="text-red-500 text-xs">חובה*</span>}
                                 </div>
                                 <div className="mb-2">
                                     <label className="block text-gray-700 text-sm font-bold mb-1">ד'ק נהיגה</label>
@@ -255,12 +292,13 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                 </div>
                                 <div className="mb-2">
                                     <label className="block text-gray-700 text-sm font-bold mb-1">אחר</label>
-                                    <input
+                                    <textarea
+                                        maxLength={500}
                                         type="text"
                                         value={item.other}
                                         {...register(`data[${index}].other`)}
                                         onChange={(e) => handleSetData(index, 'other', e.target.value)}
-                                        className={`w-full border p-2 rounded ${errors.data?.[index]?.other ? 'border-red-500' : 'border-gray-300'}`}
+                                        className={`w-full h-20 border p-2 rounded ${errors.data?.[index]?.other ? 'border-red-500' : 'border-gray-300'}`}
                                         readOnly={isTeacher}
                                     />
                                     {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
@@ -289,7 +327,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-2">משמרת</th>
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-2">ד'ק נהיגה</th>
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 px-8">שם מורה</th>
-                                    <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 max-w-[100px]">אחר</th>
+                                    <th className={`text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 ${isExpanded !== false ? 'w-60' : 'max-w-[100px]'}`}>אחר</th>
                                     {isAssistant && <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-1">מחיקה</th>}
                                 </tr>
                             </thead>
@@ -299,7 +337,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                         <td className='p-5 border'>{index + 1}</td>
                                         <td className="text-center py-2 whitespace-nowrap border border-gray-200 p-2 overflow-hidden">
                                             <input
-                                                min={today}
                                                 type="date"
                                                 value={item.date}
                                                 {...register(`data[${index}].date`, { required: true })}
@@ -317,9 +354,10 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                                 className={`w-full border p-2 rounded ${errors.data?.[index]?.shift ? 'border-red-500' : 'border-gray-300'}`}
                                                 disabled={isTeacher}
                                             >
-                                                <option value="משמרת בוקר">משמרת בוקר</option>
-                                                <option value="משמרת צהריים">משמרת צהריים</option>
-                                                <option value="משמרת ערב">משמרת ערב</option>
+                                                <option value="">בחר משמרת . . .</option>
+                                                <option value="משמרת בוקר" disabled={!shiftAvailability.morning}>משמרת בוקר</option>
+                                                <option value="משמרת צהריים" disabled={!shiftAvailability.noon}>משמרת צהריים</option>
+                                                <option value="משמרת ערב" disabled={!shiftAvailability.evening}>משמרת ערב</option>
                                             </select>
                                             <br />
                                             {errors.data?.[index]?.shift && <span className="text-red-500 text-xs">חובה*</span>}
@@ -355,15 +393,37 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                             {errors.data?.[index]?.teacher && <span className="text-red-500 text-xs">חובה*</span>}
                                         </td>
                                         <td className="text-center py-2 whitespace-nowrap border border-gray-200 p-2 overflow-hidden max-w-[100px]">
-                                            <input
-                                                type="text"
-                                                value={item.other}
-                                                {...register(`data[${index}].other`)}
-                                                onChange={(e) => handleSetData(index, 'other', e.target.value)}
-                                                className={`w-full border p-2 rounded ${errors.data?.[index]?.other ? 'border-red-500' : 'border-gray-300'}`}
-                                                readOnly={isTeacher}
-                                            /> <br />
-                                            {errors.data?.[index]?.other && <span className="text-red-500 text-xs">חובה*</span>}
+                                            {isExpanded === index ? (
+                                                <div className='flex flex-col'>
+                                                    <textarea
+                                                        type="text"
+                                                        value={item.other}
+                                                        {...register(`data[${index}].other`)}
+                                                        onChange={(e) => handleSetData(index, 'other', e.target.value)}
+                                                        className={`w-full h-28 border p-2 rounded ${errors.data?.[index]?.other ? 'border-red-500' : 'border-gray-300'}`}
+                                                    />
+                                                    <button
+                                                        onClick={handleClose}
+                                                        className="mt-2 bg-red-500 text-white px-4 py-2 rounded"
+                                                    >
+                                                        סגור
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleExpand(index)}
+                                                    className={`w-full text-white font-bold py-1 px-3 rounded bg-blue-500  flex items-center gap-1 justify-between`}
+                                                >
+                                                    הערות
+                                                    {item.other &&
+                                                        <>
+                                                            <span className='bg-red-500 text-white rounded-full px-2 p-1'>
+                                                                !
+                                                            </span>
+                                                        </>}
+                                                </button>
+                                            )}
+                                            {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
                                         </td>
                                         {isAssistant && <td>
                                             <BsTrash

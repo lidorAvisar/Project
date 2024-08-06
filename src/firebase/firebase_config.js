@@ -86,7 +86,7 @@ export const addUser = async (email, password) => {
     return data;
   }
   catch (error) {
-    throw error;
+    alert("שגיאה")
   }
 };
 
@@ -119,7 +119,7 @@ export const getUserDoc = async (uid) => {
 
   }
   catch (error) {
-    throw new Error("No user document!");
+    alert("לא נמצא")
   }
 }
 
@@ -183,7 +183,7 @@ export const updateAccount = async (id, data) => {
     return userDocRef;
   }
   catch (error) {
-    throw new Error('Failed to update student');
+    alert("שגיאה")
   }
 }
 
@@ -212,7 +212,7 @@ export const updateLesson = async (lessonId, data) => {
     return lessonDocRef
   }
   catch (error) {
-    throw new Error('Failed to update lesson');
+    alert("שגיאה")
   }
 }
 
@@ -251,10 +251,7 @@ export async function changePassword(uid, newPassword) {
   }
   try {
     const response = await changeUserPassword({ uid, newPassword });
-    console.log(response);
-    console.log("Password updated successfully");
   } catch (error) {
-    console.error("Error updating password: ", error);
-    throw error;
+    alert("שגיאה")
   }
 }

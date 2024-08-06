@@ -26,13 +26,13 @@ export default function useCreateUser() {
             }
 
             const { localId: uid } = data;
-            console.log("user:", userData);
             // Create Firestore document with the same UID
             return await createUserDoc({
                 email: userData.email,
                 displayName: userData.displayName,
                 userId: userData.userId,
                 departments: userData.departments,
+                cycle: userData.cycle,
                 user: userData.user,
                 uid: uid,  // Ensure the UID is passed to createUserDoc,
                 lessons: [],
@@ -59,12 +59,12 @@ export default function useCreateUser() {
             const { localId: uid } = data;
 
             // Create Firestore document with the same UID
-            console.log("admin:", userData);
             return await createUserDoc({
                 email: userData.email,
                 displayName: userData.displayName,
                 departments: userData.departments,
                 userId: userData.userId,
+                cycle: userData.cycle,
                 user: userData.user,
                 uid: uid,
             });

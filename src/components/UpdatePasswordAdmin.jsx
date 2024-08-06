@@ -9,14 +9,13 @@ const ChangePasswordModal = ({ setOpenModalPassword, user }) => {
     const [success, setSuccess] = useState(null);
     const [err, setErr] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
-    console.log(user);
     const onSubmit = async (data) => {
         try {
-            console.log(data)
+
             await changePassword(user.uid, data.newPassword);
             reset(); // Clear form inputs after successful password change
         } catch (error) {
-            console.error('Failed to update password', error);
+            alert("שינוי סיסמא נכשל")
         }
     };
 

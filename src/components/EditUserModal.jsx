@@ -37,7 +37,7 @@ export function EditUserModal({ setOpenEditModal, user }) {
             updateAccountMutation(data)
         }
         catch (error) {
-            console.log(error);
+            alert("שגיאה")
         }
         reset();
     };

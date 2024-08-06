@@ -38,6 +38,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
         if (value === "מורה נהיגה") {
             setDepartmentsToogle(false);
             setValue('departments', null);
+            setValue('cycle', null);
         }
         else {
             setDepartmentsToogle(true);
@@ -46,12 +47,14 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
 
 
     if (isLoading) {
-        return <Loading />
+        return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
+            <Loading />
+        </div>
     }
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='w-[90%] sm:w-96 bg-slate-100 p-4 py-8 rounded-lg'>
+            <div className='w-[90%] sm:w-96 bg-slate-100 p-4 py-5 mb-3 rounded-lg h-[650px] overflow-y-auto'>
                 <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
                     <p className='text-center font-bold text-xl underline py-2'>יצירת תלמיד / מורה</p>
                     <form dir='rtl' className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
@@ -123,6 +126,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                             <div className="mt-2">
                                 <select onClick={(e) => { handleSelectChange(e.target.value) }} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                     name="user" id="user" {...register("user", { required: true })}>
+                                    <option value="">בחר משתמש . . .</option>
                                     <option className='font-bold' value='תלמידים'>תלמיד</option>
                                     <option className='font-bold' value='מורה נהיגה'>מורה נהיגה</option>
                                 </select>
@@ -138,33 +142,46 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                                 <div className="mt-2">
                                     <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                         name="" id="department" {...register("departments", { required: true })}>
-                                        <option  className='font-bold'>{currentUser.departments}</option>
+                                        <option className='font-bold'>{currentUser.departments}</option>
                                     </select>
                                 </div>
                                 {errors.department && <p className="text-red-500">בחר מחלקה</p>}
                             </div>
                         }
-                        <div>
-                            <div className="flex items-center justify-between">
-                                <label htmlFor="userId" className="block text-lg font-medium leading-6 text-gray-900">
-                                    ת.ז:
-                                </label>
-                            </div>
+                        <div className="flex items-center justify-between">
+                            <label htmlFor="userId" className="block text-lg font-medium leading-6 text-gray-900">
+                                ת.ז:
+                            </label>
+                        </div>
+                        <div className="mt-2">
+                            <input
+                                maxLength={9}
+                                minLength={8}
+                                id="userId"
+                                name="userId"
+                                type="text"
+                                placeholder='הכנס ת.ז'
+                                required
+                                {...register('userId', { required: true, minLength: 8, pattern: { value: /^[0-9]+$/, message: "ת.ז חייב להיות מספרים בלבד" } })}
+                                className="ps-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                            {errors.id && <span className="text-red-600">הכנס ת.ז </span>}
+                        </div>
+                        {departmentsToogle && <div>
+                            <label htmlFor="cycle" className="text-lg block font-medium leading-6 text-gray-900">
+                                מספר מחזור:
+                            </label>
                             <div className="mt-2">
                                 <input
-                                    maxLength={9}
-                                    minLength={8}
-                                    id="userId"
-                                    name="userId"
-                                    type="text"
-                                    placeholder='הכנס ת.ז'
-                                    required
-                                    {...register('userId', { required: true, minLength: 8, pattern: { value: /^[0-9]+$/, message: "ת.ז חייב להיות מספרים בלבד" } })}
-                                    className="ps-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    id="cycle"
+                                    placeholder="הכנס מספר"
+                                    autoComplete="cycle"
+                                    {...register("cycle", { required: true })}
+                                    className="block w-full ps-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
-                                {errors.id && <span className="text-red-600">הכנס ת.ז </span>}
                             </div>
-                        </div>
+                            {errors.cycle && <p className="text-red-500">הכנס מספר</p>}
+                        </div>}
                         <div className='space-y-5'>
                             <button
                                 type="submit"

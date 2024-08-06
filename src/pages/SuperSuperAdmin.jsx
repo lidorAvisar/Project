@@ -69,7 +69,7 @@ const SuperSuperAdmin = () => {
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} filteredTeachers={filteredTeachers} />}
-            {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} filteredStudents={filteredStudents} />}
+            {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
                     <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {user?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
@@ -81,7 +81,7 @@ const SuperSuperAdmin = () => {
                                     window.location.replace('/')
                                 }
                                 catch (error) {
-                                    console.log(error);
+                                    alert("שגיאה")
                                 }
                             }
                         }} className='flex items-center gap-2 sm:text-lg  text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>

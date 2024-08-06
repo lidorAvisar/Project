@@ -5,7 +5,6 @@ import { BsTrash } from 'react-icons/bs';
 
 
 const AddFileStudent = ({ studentDetails }) => {
-    let url;
     const [files, setFiles] = useState([]);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -22,7 +21,7 @@ const AddFileStudent = ({ studentDetails }) => {
             const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
             setUploadedFiles(urls);
         } catch (error) {
-            console.error("Error fetching files:", error);
+            alert("שגיאה")
         }
     };
 
@@ -44,7 +43,7 @@ const AddFileStudent = ({ studentDetails }) => {
             await deleteObject(fileRef);
             setUploadedFiles(uploadedFiles.filter(url => url !== fileUrl));
         } catch (error) {
-            console.error("Error deleting file:", error);
+            alert("שגיאה")
         }
     };
     const uploadFiles = async () => {
@@ -55,7 +54,7 @@ const AddFileStudent = ({ studentDetails }) => {
                 const snapshot = await uploadBytes(fileRef, file);
                 return await getDownloadURL(snapshot.ref);
             } catch (error) {
-                return console.error("Error uploading file:", error);
+                alert("שגיאה")
             }
         });
         try {
@@ -63,7 +62,7 @@ const AddFileStudent = ({ studentDetails }) => {
             setUploadedFiles([...uploadedFiles, ...urls]);
             setFiles([]);
         } catch (error) {
-            console.error("Error uploading files:", error);
+            alert("שגיאה")
         }
         setLoading(false);
     };
@@ -73,7 +72,7 @@ const AddFileStudent = ({ studentDetails }) => {
         if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png')) {
             return <img src={fileUrl} alt="file" className="w-10 h-10 sm:w-20 sm:h-20 object-cover rounded" />;
         }
-        else if (url.endsWith('.pdf') || url.endsWith('.xls')||url.endsWith('.docx')) {
+        else if (url.endsWith('.pdf') || url.endsWith('.xls') || url.endsWith('.docx')) {
             return (
                 <object className="w-10 h-10 sm:w-20 sm:h-20 overflow-y-hidden" data={fileUrl}></object>
             );
@@ -92,7 +91,7 @@ const AddFileStudent = ({ studentDetails }) => {
         if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png')) {
             return <img src={fileUrl} alt="file" className="w-full h-auto max-h-96" />;
         }
-        else if (url.endsWith('.pdf') || url.endsWith(".xls")||url.endsWith('.docx')) {
+        else if (url.endsWith('.pdf') || url.endsWith(".xls") || url.endsWith('.docx')) {
             return (
                 <object className="w-full h-[50vh] max-h-96" data={fileUrl}></object>
             );
@@ -139,7 +138,7 @@ const AddFileStudent = ({ studentDetails }) => {
                                         }}
                                         className=" text-red-500 text-xl font-bold hover:text-red-700"
                                     >
-                                       <BsTrash />
+                                        <BsTrash />
                                     </button>
                                 </li>
                             ))

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { LuEye } from "react-icons/lu";
 import useCreateUser from '../firebase/useCreateUser';
 import { useCurrentUser } from '../firebase/useCurerntUser';
+import { Loading } from './Loading';
 
 export const departments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -13,46 +14,67 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
     const [departmentToogle, setDepartmentToogle] = useState(false);
+    const [cycle, setCycle] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { createUser, createAdmin } = useCreateUser()
 
 
     const onSubmit = (data) => {
-        console.log(data);
+        setLoading(true);
         try {
             if (departmentsToogle) {
-                createAdmin(data)
-            }
-            else {
+                createAdmin(data);
+            } else {
                 createUser(data);
             }
-            setOpenRegisterModal(false)
+            setTimeout(() => {
+                setLoading(false);
+                setOpenRegisterModal(false);
+            }, 3000);
         }
         catch (err) {
-            throw err;
+            setLoading(false);
+            alert("שגיאה המשתמש לא נוצר")
         }
         reset();
     };
 
+
     const handleSelectChange = (value) => {
         if (value === "מורה נהיגה") {
+            setCycle(false)
             setDepartmentsToogle(false);
             setDepartmentToogle(false);
             setValue('departments', null);
+            setValue('cycle', null);
         }
 
         else if (value === 'מ"פ') {
+            setCycle(false)
             setDepartmentsToogle(true);
             setDepartmentToogle(false)
             setValue('departments', []);
+            setValue('cycle', null);
         }
-        else {
+        else if (value === 'מ"מ') {
             setDepartmentsToogle(false);
             setDepartmentToogle(true);
-
+            setValue('cycle', null);
+        }
+        else {
+            setCycle(true);
+            setDepartmentsToogle(false);
+            setDepartmentToogle(true);
         }
     };
+
+    if (loading) {
+        return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
+            <Loading />
+        </div>
+    }
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
@@ -122,12 +144,13 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                     <div className='space-y-3'>
                         <div className="flex items-center justify-between">
                             <label htmlFor="password" className="block text-lg font-medium leading-6 text-gray-900">
-                                תלמיד\מ"פ\מ"מ\מורי נהיגה:
+                                מ"פ\מ"מ\מורי נהיגה\תלמיד:
                             </label>
                         </div>
                         <div className="mt-2">
                             <select onClick={(e) => { handleSelectChange(e.target.value) }} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                 name="user" id="user" {...register("user", { required: true })}>
+                                <option value="">בחר משתמש . . .</option>
                                 {currentUser.user === "מנהל" && <option className='font-bold' value='מ"פ'>מ"פ</option>}
                                 <option className='font-bold' value='מ"מ'>מ"מ</option>
                                 <option className='font-bold' value='מורה נהיגה'>מורה נהיגה</option>
@@ -147,7 +170,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                                         id="departments"
                                         {...register("departments", { required: true })}
                                         multiple
-                                        maxLength={3}
+
                                     >
                                         {departments.map((item, i) => (
                                             <option key={i} className='font-bold' value={item}>{item}</option>
@@ -191,6 +214,21 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                             </div>
                             {errors.userId && <p className="text-red-500">ת"ז זה אינו חוקי</p>}
                         </div>
+                        {cycle && <div>
+                            <label htmlFor="cycle" className="text-lg block font-medium leading-6 text-gray-900">
+                                מספר מחזור:
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    id="cycle"
+                                    placeholder="הכנס מספר"
+                                    autoComplete="cycle"
+                                    {...register("cycle", { required: true })}
+                                    className="block w-full ps-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                />
+                            </div>
+                            {errors.cycle && <p className="text-red-500">ת"ז זה אינו חוקי</p>}
+                        </div>}
                     </div>
                     <div className='space-y-6'>
                         <button

@@ -16,6 +16,7 @@ const DrivingTeacher = () => {
     const [studentUid, setStudentUid] = useState();
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentShift, setStudentShift] = useState(null);
+    const [loadingRefresh, setLoadingRefresh] = useState(false);
 
     useEffect(() => {
         const savedDate = localStorage.getItem('lastDate');
@@ -88,6 +89,10 @@ const DrivingTeacher = () => {
         }
     }, [studentData, studentUid]);
 
+    setTimeout(() => {
+        loadingRefresh && setLoadingRefresh(false);
+    }, 1000);
+
     if (loading || isLoading || studentLoading) {
         return <Loading />;
     }
@@ -98,8 +103,8 @@ const DrivingTeacher = () => {
                 <div className='flex items-center justify-between px-5'>
                     <div className='flex items-center gap-5'>
                         <h2 className="text-lg sm:text-xl font-bold mb-2 pt-1 text-center sm:flex"><Greeting /> {currentUser?.displayName}</h2>
-                        <button onClick={refetch} className='text-lg flex items-center  gap-2 text-blue-600'>
-                            <FaSyncAlt /><span className='text-lg'>רענן</span>
+                        <button onClick={() => { setLoadingRefresh(true), refetch }} className='text-lg flex items-center  gap-2 text-blue-600'>
+                            <FaSyncAlt className={`${loadingRefresh && 'animate-spin'}`} /><span className='text-lg'>רענן</span>
                         </button>
                     </div>
                     <button onClick={() => {
@@ -108,7 +113,7 @@ const DrivingTeacher = () => {
                                 signOut(auth);
                                 window.location.replace('/');
                             } catch (error) {
-                                console.log(error);
+                                alert("שגיאה")
                             }
                         }
                     }} className='text-xl flex items-center gap-2 text-red-600'>

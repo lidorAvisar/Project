@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { addLesson, getPracticalDriving, updateAccount } from '../firebase/firebase_config';
@@ -8,6 +8,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
     const queryClient = useQueryClient();
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [teacherUid, setTeacherUid] = useState();
+    const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
 
     const { data: lessons, isLoading, error } = useQuery({
         queryKey: ['practical_driving'],
@@ -25,7 +26,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             setOpenModalAddLesson(false);
         }
     });
-
 
     const onSubmit = async (data) => {
         data.other = data.other || "";
@@ -49,9 +49,30 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         setTeacherUid(selectedTeacher.uid);
     };
 
+    useEffect(() => {
+        const checkShiftAvailability = () => {
+            const israelTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" });
+            const currentHour = new Date(israelTime).getHours();
+
+            if (currentHour >= 0 && currentHour < 12) {
+                setShiftAvailability({ morning: true, noon: true, evening: true });
+            } else if (currentHour >= 12 && currentHour < 18) {
+                setShiftAvailability({ morning: false, noon: true, evening: true });
+            } else if (currentHour >= 18 && currentHour < 21) {
+                setShiftAvailability({ morning: false, noon: false, evening: true });
+            } else {
+                setShiftAvailability({ morning: false, noon: false, evening: false });
+            }
+        };
+        checkShiftAvailability(); // Initial check when component mounts
+
+        const intervalId = setInterval(checkShiftAvailability, 60000); // Check every minute
+
+        return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    }, []);
 
     if (isLoading || loading) {
-        return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
+        return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
             <Loading />
         </div>
     }
@@ -61,7 +82,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
     }
 
     const today = new Date().toISOString().split('T')[0];
-
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
@@ -112,18 +132,17 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                             </label>
                             <div className="mt-2">
                                 <select
-                                    onClick={''}
                                     className='ps-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                     name="shift"
                                     id="shift"
                                     {...register('shift', { required: 'This field is required' })}
                                 >
-                                    <option className value="">בחר משמרת . . .</option>
-                                    <option value="משמרת בוקר">משמרת בוקר</option>
-                                    <option value="משמרת צהריים">משמרת צהריים</option>
-                                    <option value="משמרת ערב">משמרת ערב</option>
+                                    <option value="">בחר משמרת . . .</option>
+                                    <option value="משמרת בוקר" disabled={!shiftAvailability.morning}>משמרת בוקר</option>
+                                    <option value="משמרת צהריים" disabled={!shiftAvailability.noon}>משמרת צהריים</option>
+                                    <option value="משמרת ערב" disabled={!shiftAvailability.evening}>משמרת ערב</option>
                                 </select>
-                                {errors.teacher && <span className="text-red-500 text-xs">{errors.teacher.message}</span>}
+                                {errors.shift && <span className="text-red-500 text-xs">{errors.shift.message}</span>}
                             </div>
                         </div>
                         <div>
@@ -131,14 +150,14 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                                 אחר:
                             </label>
                             <div className="mt-2">
-                                <input
+                                <textarea maxLength={500}
                                     placeholder='הערות . . .'
                                     id="other"
                                     name="other"
                                     type="text"
                                     autoComplete="off"
                                     {...register('other')}
-                                    className="ps-2 pe-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    className="ps-2 h-20 pe-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                                 {errors.other && <span className="text-red-500 text-xs">{errors.other.message}</span>}
                             </div>

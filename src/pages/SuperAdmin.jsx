@@ -66,7 +66,7 @@ const SuperAdmin = () => {
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} />}
-            {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} filteredStudents={filteredStudents} />}
+            {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             <div className="flex justify-around items-center w-full pt-3">
                 <div className='flex items-center gap-3'>
                     <button onClick={() => { setCurrentEditUser(user), setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
@@ -85,7 +85,7 @@ const SuperAdmin = () => {
                                 window.location.replace('/')
                             }
                             catch (error) {
-                                console.log(error);
+                                alert("שגיאה")
                             }
                         }
                     }} className='text-lg sm:text-xl sm:pt-1 text-red-600'> <FaSignOutAlt />

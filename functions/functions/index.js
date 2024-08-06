@@ -61,7 +61,7 @@ exports.changeUserPassword = functions.https.onCall(async (data, context) => {
             message: 'Password updated successfully'
         };
     } catch (error) {
-        console.error('Error updating password:', error);
+        alert("שגיאה")
         return {
             status: 'error',
             message: 'Error updating password'

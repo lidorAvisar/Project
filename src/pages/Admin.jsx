@@ -47,7 +47,6 @@ const Admin = () => {
     if (isError) {
         return <div>{error}</div>
     }
-    console.log(filteredStudents);
     return (
         <div className='space-y-5 overflow-x-auto flex flex-col items-center md:px-16 h-screen'>
             {openModalAddStudent && <AddStudentModal setOpenModalAddStudent={setOpenModalAddStudent} openModalAddStudent={openModalAddStudent} refetch={refetch} />}
@@ -65,7 +64,7 @@ const Admin = () => {
                                     window.location.replace('/');
                                 }
                                 catch (error) {
-                                    console.log(error);
+                                    alert("שגיאה")
                                 }
                             }
                         }} className='text-xl text-red-600 flex items-center gap-2'><FaSignOutAlt className='mt-1' /><span className='hidden sm:block'>התנתק</span>

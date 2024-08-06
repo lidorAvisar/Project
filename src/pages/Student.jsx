@@ -99,7 +99,7 @@ const Student = () => {
                             signOut(auth);
                             window.location.replace('/');
                         } catch (error) {
-                            console.log(error);
+                            alert("שגיאה")
                         }
                     }
                 }} className='sm:text-lg flex items-center gap-2  text-red-600'><FaSignOutAlt /><span className='text-lg'>התנתק</span>
