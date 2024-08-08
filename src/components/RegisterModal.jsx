@@ -77,8 +77,8 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
     }
 
     return (
-        <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='w-[90%] sm:w-[85%] max-w-[600px] bg-slate-100  py-10 p-5 rounded-lg h-[92%] mt-14 mb-20 space-y-10 overflow-y-auto'>
+        <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md py-10'>
+            <div className='w-[90%] sm:w-[85%] max-w-[600px] bg-slate-100  py-10 p-5 rounded-lg h-[96%] mt-14 mb-20 space-y-10 overflow-y-auto'>
                 <p className='text-center font-bold text-lg'>משתמש חדש</p>
                 <form dir='rtl' className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                     <div>
