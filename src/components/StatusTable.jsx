@@ -81,7 +81,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                     )}
                 </div>
                 {filteredList.length > 0 ? (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto py-5 ">
                         <table dir='rtl' className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                             <thead>
                                 <tr className="bg-gray-800 text-white text-right">

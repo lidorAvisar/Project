@@ -78,7 +78,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='w-[90%] sm:w-[85%] max-w-[600px] bg-slate-100  py-5 p-5 rounded-lg h-[92%] mt-14 mb-20 space-y-10 overflow-y-auto'>
+            <div className='w-[90%] sm:w-[85%] max-w-[600px] bg-slate-100  py-10 p-5 rounded-lg h-[92%] mt-14 mb-20 space-y-10 overflow-y-auto'>
                 <p className='text-center font-bold text-lg'>משתמש חדש</p>
                 <form dir='rtl' className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                     <div>
@@ -227,7 +227,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                                     className="block w-full ps-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
-                            {errors.cycle && <p className="text-red-500">ת"ז זה אינו חוקי</p>}
+                            {errors.cycle && <p className="text-red-500">שדה חובה*</p>}
                         </div>}
                     </div>
                     <div className='space-y-6'>
