@@ -6,8 +6,9 @@ import { useState } from "react";
 import UpdatePasswordAdmin from "./UpdatePasswordAdmin";
 
 
-export function EditUserModal({ setOpenEditModal, user }) {
+export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch }) {
 
+    const queryClient = useQueryClient();
     const [openModalPassword, setOpenModalPassword] = useState(false);
 
     const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm({
@@ -16,18 +17,16 @@ export function EditUserModal({ setOpenEditModal, user }) {
         }
     });
 
-    const client = useQueryClient();
-
-    const handleRefetch = async () => {
-        await client.refetchQueries(['users'])
-    }
 
     const { mutate: updateAccountMutation, isLoading } = useMutation({
         mutationKey: ["users"],
         mutationFn: async (data) => await updateAccount(data.uid, data),
         onSuccess: () => {
-            setOpenEditModal(false);
-            handleRefetch()
+            queryClient.invalidateQueries(["users"]);
+            refetch();
+            setTimeout(() => {
+                setOpenEditModal(false);
+            }, 1000);
         },
     })
 
@@ -154,7 +153,7 @@ export function EditUserModal({ setOpenEditModal, user }) {
                                 id="userId"
                                 placeholder="הכנס תעודת זהות"
                                 autoComplete="userId"
-                                {...register("userId", { required: true, minLength: 9 })}
+                                {...register("userId", { required: true, minLength: 8, pattern: { value: /^[0-9]+$/, message: "ת.ז חייב להיות מספרים בלבד" } })}
                                 className="block w-full ps-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>

@@ -21,6 +21,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
     const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
     const [isExpanded, setIsExpanded] = useState(false);
+    const [teacherUid, setTeacherUid] = useState(null);
 
 
 
@@ -79,19 +80,41 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
         if (data) {
             let studentClasses = data
                 .filter(item => item.studentUid === (studentDetails ? studentDetails.uid : studentUid))
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
+                .sort((a, b) => {
+                    // Sort by date in descending order
+                    const dateComparison = new Date(b.date) - new Date(a.date);
+
+                    if (dateComparison !== 0) {
+                        return dateComparison;
+                    }
+
+                    // If dates are the same, sort by shift order: morning, noon, evening
+                    const shiftOrder = ['משמרת בוקר', 'משמרת צהריים', 'משמרת ערב'];
+                    return shiftOrder.indexOf(a.shift) - shiftOrder.indexOf(b.shift);
+                });
 
             if (currentUser.user === "מורה נהיגה") {
-                studentClasses = studentClasses.filter(item => item.shift === (studentShift === 'morning' ? 'משמרת בוקר' : studentShift === 'noon' ? 'משמרת צהריים' : 'משמרת ערב') && item.date === today);
+                studentClasses = studentClasses.filter(item =>
+                    item.shift === (studentShift === 'morning' ? 'משמרת בוקר' : studentShift === 'noon' ? 'משמרת צהריים' : 'משמרת ערב')
+                    && item.date === today
+                );
             }
 
-            setFilteredData(studentClasses.map(item => ({
-                ...item,
-                date: item.date || '',
-                drivingMinutes: item.drivingMinutes || '',
-                other: item.other || '',
-                teacher: item.teacher || '',
-            })));
+            // Map through studentClasses and add teacherUid to each object
+            const updatedStudentClasses = studentClasses.map(item => {
+                const teacher = filteredTeachers.find(teacher => teacher.displayName === item.teacher);
+                return {
+                    ...item,
+                    date: item.date || '',
+                    drivingMinutes: item.drivingMinutes || '',
+                    other: item.other || '',
+                    teacher: item.teacher || '',
+                    teacherUid: teacher ? teacher.uid : '',
+                    shift: item.shift || '',
+                };
+            });
+
+            setFilteredData(updatedStudentClasses);
 
             const totalMinutes = data.reduce((total, item) => {
                 if (item.studentUid === (studentDetails ? studentDetails.uid : studentUid)) {
@@ -102,15 +125,18 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
 
             setTotalDrivingMinutes(totalMinutes);
 
-            studentClasses.forEach((item, index) => {
-                setValue(`data[${index}].date`, item.date || '');
-                setValue(`data[${index}].drivingMinutes`, item.drivingMinutes || '');
-                setValue(`data[${index}].other`, item.other || '');
-                setValue(`data[${index}].teacher`, item.teacher || '');
-                setValue(`data[${index}].shift`, item.shift || '');
+            updatedStudentClasses.forEach((item, index) => {
+                setValue(`data[${index}].date`, item.date);
+                setValue(`data[${index}].drivingMinutes`, item.drivingMinutes);
+                setValue(`data[${index}].other`, item.other);
+                setValue(`data[${index}].teacher`, item.teacher);
+                setValue(`data[${index}].teacherUid`, item.teacherUid);
+                setValue(`data[${index}].shift`, item.shift);
             });
         }
     }, [data, studentDetails, setValue, today, studentUid, currentUser, studentShift]);
+
+
 
     const validateShiftLimits = (formData) => {
         const savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {
@@ -171,13 +197,12 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
             const lessonId = filteredData[i].uid;
             updateMutation({ lessonId, lessonData });
 
-            // Accumulate total minutes
+
             totalMinutes += parseInt(lessonData.drivingMinutes, 10) || 0;
         }
 
-        // Update total driving minutes
-        setTotalDrivingMinutes(totalMinutes);
 
+        setTotalDrivingMinutes(totalMinutes);
         await updateAccount(studentDetails.uid, { totalDrivingMinutes });
         await refetch();
         { currentUser.user === "מורה נהיגה" && await refetchStudent(); }
@@ -187,9 +212,17 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
     const handleSetData = (index, field, value) => {
         const updatedData = [...filteredData];
         updatedData[index][field] = value;
+
+        if (field === 'teacher') {
+            const teacher = filteredTeachers.find(teacher => teacher.displayName === value);
+            updatedData[index].teacherUid = teacher ? teacher.uid : '';
+            setValue(`data[${index}].teacherUid`, updatedData[index].teacherUid);
+        }
+
         setFilteredData(updatedData);
         setValue(`data[${index}].${field}`, value);
     };
+
 
     const handleDeleteLesson = async (lessonId) => {
         deleteLesson(lessonId);

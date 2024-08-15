@@ -7,8 +7,7 @@ const theoryList = [1, 2, 3, 4, 5, 6, 7, 8];
 const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
     const { control, handleSubmit, formState: { errors }, setValue, resetField } = useForm();
     const [selectedTheorySessions, setSelectedTheorySessions] = useState({});
-    const [theorySessionsCount, setTheorySessionsCount] = useState(studentDetails.theorySessionsQuantity);
-    const [theoryTestsCount, setTheoryTestsCount] = useState(studentDetails.theoryTestsQuantity);
+    const [theorySessionsCount, setTheorySessionsCount] = useState(studentDetails.theorySessionsQuantity ? studentDetails.theorySessionsQuantity : null);
 
     useEffect(() => {
         setSelectedTheorySessions(prev => {
@@ -47,28 +46,25 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
         resetField(`tests[${num - 1}].mistakes`);
     };
 
-    const today = new Date().toISOString().split('T')[0];
 
     const onSubmit = async (data) => {
-
         const studentUid = studentDetails.uid;
         const updatedData = {
             theorySessionsQuantity: theorySessionsCount,
-            theoryTestsQuantity: theoryTestsCount,
             detailsTheoryTest: data.tests
                 .filter(test => test.date && test.mistakes !== undefined)
                 .map((test, index) => ({
                     ...test,
                     testNumber: index + 1,
+                    mistakes: isNaN(test.mistakes) ? 0 : parseInt(test.mistakes, 10),
                 })),
         };
-
         try {
             await updateAccount(studentUid, updatedData);
             refetch();
             setOpenModalStudentData(false);
         } catch (error) {
-            alert("שגיאה ");
+            alert("לא ניתן לעדכן ");
         }
     };
 
@@ -95,7 +91,7 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
                     {theoryList.map(num => {
                         const test = studentDetails.detailsTheoryTest?.find(test => test.testNumber === num) || {};
                         return (
-                            <div key={num} className={`bg-white shadow-lg rounded-lg p-4 flex flex-col items-center ${test.mistakes === undefined ? 'bg-gray-100' : (test.mistakes > 4 ? 'bg-red-400' : 'bg-green-300')}`}>
+                            <div key={num} className={`shadow-lg rounded-lg p-4 flex flex-col items-center ${test.mistakes === undefined ? '' : (test.mistakes > 4 ? 'bg-red-400' : 'bg-green-400')}`}>
                                 <h4 className="text-xl font-bold mb-2">מבחן {num}</h4>
                                 <Controller
                                     control={control}
@@ -107,7 +103,6 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
                                             <input
                                                 type="date"
                                                 id={`date-${num}`}
-                                                min={today}
                                                 {...field}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             />
@@ -118,7 +113,7 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
                                 <Controller
                                     control={control}
                                     name={`tests[${num - 1}].mistakes`}
-                                    defaultValue={test.mistakes || ''}
+                                    defaultValue={test.mistakes === 0 ? 0 : test.mistakes || ''}
                                     render={({ field }) => (
                                         <div className="mb-2 w-full">
                                             <label htmlFor={`mistakes-${num}`} className="block text-gray-700 text-sm font-bold mb-1">מספר טעויות:</label>
@@ -136,7 +131,7 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
                                 <button
                                     type="button"
                                     onClick={() => handleReset(num)}
-                                    className="bg-red-500 text-white px-4 font-bold rounded mt-2"
+                                    className="bg-red-600 text-white px-4 font-bold rounded mt-2"
                                 >
                                     לאפס
                                 </button>

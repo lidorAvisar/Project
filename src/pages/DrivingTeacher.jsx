@@ -32,7 +32,6 @@ const DrivingTeacher = () => {
     }, []);
 
 
-
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['practical_driving'],
         queryFn: getPracticalDriving,
@@ -103,7 +102,7 @@ const DrivingTeacher = () => {
                 <div className='flex items-center justify-between px-5'>
                     <div className='flex items-center gap-5'>
                         <h2 className="text-lg sm:text-xl font-bold mb-2 pt-1 text-center sm:flex"><Greeting /> {currentUser?.displayName}</h2>
-                        <button onClick={() => { setLoadingRefresh(true), refetch }} className='text-lg flex items-center  gap-2 text-blue-600'>
+                        <button onClick={() => { setOpenModal(false), setLoadingRefresh(true), refetch }} className='text-lg flex items-center  gap-2 text-blue-600'>
                             <FaSyncAlt className={`${loadingRefresh && 'animate-spin'}`} /><span className='text-lg'>רענן</span>
                         </button>
                     </div>

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
 import TableDriving from './TableDriving';
-import { deleteAccount, deleteLessons, storage, updateAccount } from '../firebase/firebase_config';
+import { deleteAccount, deleteLessons, getPracticalDriving, storage, updateAccount } from '../firebase/firebase_config';
 import Theories from './Theories';
 import Tests from './Tests';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { BsTrash } from 'react-icons/bs';
 import { BiEditAlt } from 'react-icons/bi';
 import { EditUserModal } from './EditUserModal';
@@ -15,9 +15,27 @@ import { deleteObject, listAll, ref } from 'firebase/storage';
 
 
 const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filteredTeachers }) => {
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
 
     const [openEditModal, setOpenEditModal] = useState(false);
+
+    const { data, isLoading: lessonsLoading, isError, error } = useQuery({
+        queryKey: ['practical_driving'],
+        queryFn: getPracticalDriving,
+    });
+
+    useEffect(() => {
+        if (data && studentDetails) {
+            const totalNightDrivingMinutes = data.reduce((total, item) => {
+                if (item.studentUid === studentDetails.uid && item.shift === 'משמרת ערב') {
+                    return total + (parseInt(item.drivingMinutes, 10) || 0);
+                }
+                return total;
+            }, 0);
+
+            setValue('nightDriving', totalNightDrivingMinutes);
+        }
+    }, [data, studentDetails, setValue]);
 
     const deleteFiles = async (uid) => {
         const listRef = ref(storage, `students/${uid}`);
@@ -40,7 +58,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
             if (studentDetails.uid) {
                 await deleteFiles(studentDetails.uid);
             }
-
             await deleteAccount(id)
         },
         onSuccess: () => {
@@ -72,7 +89,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 mb-5 rounded-lg h-[90%] overflow-y-auto'>
-                {openEditModal && <EditUserModal user={studentDetails} setOpenEditModal={setOpenEditModal} />}
+                {openEditModal && <EditUserModal user={studentDetails} refetch={refetch} setOpenEditModal={setOpenEditModal} />}
                 <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
                     <p className='font-bold  text-xl'>{studentDetails.displayName}</p>
                     <div className='flex gap-3'>
@@ -240,6 +257,23 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                 />
                                 {errors.completeMinutes && <span className="text-red-500 text-sm">{errors.completeMinutes.message}</span>}
                             </div>
+                            <div className="mb-4">
+                                <label htmlFor="nightDriving" className="block text-right text-sm font-medium text-gray-700">
+                                  סה"כ דקות נהיגת לילה:
+                                </label>
+                                <input
+                                    min={0}
+                                    type="number"
+                                    id="nightDriving"
+                                    value={watch('nightDriving') || ""}
+                                    {...register('nightDriving')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="אין דקות"
+                                    readOnly 
+                                />
+                                {errors.nightDriving && <span className="text-red-500 text-sm">{errors.nightDriving.message}</span>}
+                            </div>
+
                         </div>
 
                         <div className='space-y-5'>

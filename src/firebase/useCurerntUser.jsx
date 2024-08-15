@@ -6,6 +6,7 @@ export const UserContext = createContext({});
 export function authWatch() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
+    
     useEffect(() => {
         onAuthStateChangedListener(async (user) => {
             setLoading(true)

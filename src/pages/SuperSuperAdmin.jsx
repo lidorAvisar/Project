@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiEditAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { FaSignOutAlt } from "react-icons/fa";
@@ -13,6 +13,8 @@ import { signOut } from 'firebase/auth';
 import StudentData from '../components/StudentData';
 import StatusTable from '../components/StatusTable';
 import Greeting from '../components/Greeting';
+import { MdOutlineAddToPhotos } from 'react-icons/md';
+import AddLessonModal from '../components/AddLessonModal';
 
 
 
@@ -24,10 +26,11 @@ const SuperSuperAdmin = () => {
     const [currentEditUser, setCurrentEditUser] = useState(null);
     const [userData, setUserData] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
+    const [openModalAddLesson, setOpenModalAddLesson] = useState(false);
+    const [filteredCurrentUser, setFilteredCurrentUser] = useState('')
     const [user] = useCurrentUser();
 
 
-    ///useQuery ['users']
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
@@ -55,27 +58,39 @@ const SuperSuperAdmin = () => {
     const filteredTeachers = data?.filter(account =>
         account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
+
+    useEffect(() => {
+        if (data) {
+            const filteredUsers = data.filter(users => users.uid === user.uid);
+            const filterCurrentUser = filteredUsers.length > 0 ? filteredUsers[0] : null;
+            setFilteredCurrentUser(filterCurrentUser);
+        }
+    }, [data, openEditModal]);
+
+
     if (isLoading) return <Loading />
 
     if (isError) {
         return <div>{error}</div>
     }
 
-    const sortedData = data.sort((a, b) => new Date(a.date) - new Date(b.date));
+    const sortedData = data?.sort((a, b) => new Date(a.date) - new Date(b.date));
+
 
 
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
-            {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} />}
+            {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
+            {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
-                    <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {user?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
+                    <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
                     <div dir='ltr' className="flex flex-col sm:flex-row items-center ">
                         <button onClick={async () => {
-                            if (window.confirm("האם אתה בטוח")) {
+                            if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
                                 try {
                                     await signOut(auth);
                                     window.location.replace('/')
@@ -86,7 +101,7 @@ const SuperSuperAdmin = () => {
                             }
                         }} className='flex items-center gap-2 sm:text-lg  text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>
                         </button>
-                        <button dir='ltr' onClick={() => { setCurrentEditUser(user), setOpenEditModal(true) }} className=' rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-blue-500 font-bold flex items-center w-fit gap-2'>
+                        <button dir='ltr' onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className=' rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-blue-500 font-bold flex items-center w-fit gap-2'>
                             <BiEditAlt className='text-2xl' /><span>עריכה</span>
                         </button>
                     </div>
@@ -104,7 +119,7 @@ const SuperSuperAdmin = () => {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {sortedData.filter(account => account.user === 'מ"פ').map(account => (
+                    {sortedData?.filter(account => account.user === 'מ"פ').map(account => (
                         <tr key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
@@ -127,7 +142,7 @@ const SuperSuperAdmin = () => {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {sortedData.filter(account => account.user === 'מ"מ').map(account => (
+                    {sortedData?.filter(account => account.user === 'מ"מ').map(account => (
                         <tr key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.departments}</td>
@@ -150,7 +165,7 @@ const SuperSuperAdmin = () => {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {data.filter(account => account.user === "מורה נהיגה").map(account => (
+                    {data?.filter(account => account.user === "מורה נהיגה").map(account => (
                         <tr key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
@@ -187,14 +202,16 @@ const SuperSuperAdmin = () => {
                         <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
                         <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
                         <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">מחלקה</th>
+                        <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">קבע שיעור</th>
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredStudents.map(account => (
+                    {filteredStudents?.map(account => (
                         <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className='hover:bg-gray-200 cursor-pointer' key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.departments}</td>
+                            <td className="text-center text-xl py-4 whitespace-nowrap"><MdOutlineAddToPhotos onClick={() => { setOpenModalAddLesson(true), setUserData(account); }} className='text-green-500 cursor-pointer inline-block' /></td>
                         </tr>
                     ))}
                 </tbody>

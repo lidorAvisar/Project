@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { addLesson, getPracticalDriving, updateAccount } from '../firebase/firebase_config';
 import { Loading } from './Loading';
 
-const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers }) => {
+const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData }) => {
     const queryClient = useQueryClient();
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [teacherUid, setTeacherUid] = useState();
@@ -23,6 +23,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['practical_driving']);
+            setOpenModalStudentData(false);
             setOpenModalAddLesson(false);
         }
     });
@@ -170,7 +171,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setOpenModalAddLesson(false)}
+                                onClick={() => { setOpenModalAddLesson(false), setOpenModalStudentData(false) }}
                                 className="flex w-full justify-center rounded-md bg-red-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
                                 סגור
                             </button>

@@ -48,7 +48,7 @@ const Tests = ({ studentDetails, refetch, setOpenModalStudentData }) => {
     return (
         <div className="bg-slate-200 w-full p-6 rounded-md shadow-lg">
             <p className="text-center font-bold text-2xl py-6 underline">טסטים</p>
-            {studentDetails.totalDrivingMinutes && studentDetails.totalDrivingMinutes >= studentDetails.completeMinutes ? <form onSubmit={handleSubmit(onSubmit)}>
+            {studentDetails.totalDrivingMinutes && studentDetails.totalDrivingMinutes >= studentDetails.completeMinutes && studentDetails.nightDriving && studentDetails.nightDriving >= 40 ? <form onSubmit={handleSubmit(onSubmit)}>
                 <div>
                     <table dir='rtl' className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
                         <thead>
