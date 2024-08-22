@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, updatePassword
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import process from 'process'
+
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -106,7 +106,7 @@ export const createUserDocFromAuth = async (userAuth, additional = {}) => {
         ...additional
       }
     )
-  }
+  };
   return userDocRef;
 };
 
@@ -116,7 +116,6 @@ export const getUserDoc = async (uid) => {
     const userDocRef = doc(db, "users", uid);
     const userSnapshot = await getDoc(userDocRef);
     return userSnapshot.data();
-
   }
   catch (error) {
     alert("לא נמצא")
@@ -133,7 +132,7 @@ export const getAccounts = async () => {
   }
 
   const usersData = userDocs.docs.map(doc => {
-    return doc.data();
+    return doc.data();  
   })
 
   return usersData;

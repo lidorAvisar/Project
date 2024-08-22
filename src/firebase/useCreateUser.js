@@ -72,6 +72,5 @@ export default function useCreateUser() {
         onSuccess: () => handleRefetch(),
     });
 
-
     return { createUser, other, createAdmin }
 }

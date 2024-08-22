@@ -108,9 +108,9 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                             <td className="py-3 px-4">{student.departments}</td>
                                             <td className="py-3 px-4">{student.userId}</td>
                                             <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes >= student.completeMinutes ? 'bg-green-500' : 'bg-orange-500'}`}>{student.totalDrivingMinutes ? student.totalDrivingMinutes : 'טרם'}</td>
-                                            <td className="py-3 px-4">{student.tests ? student.tests.map(test => test.status === "Pass" ? 'עבר' : 'נכשל') : 'טרם'}</td>
+                                            <td className="py-3 px-4">{student.tests ? student.tests.some(test => test.status === "Pass" ? 'עבר' : 'נכשל') : 'טרם'}</td>
                                             <td className="py-3 px-4">{student.carType ? student.carType : 'טרם'}</td>
-                                            <td className="py-3 px-4">{student.detailsTheoryTest ? student.detailsTheoryTest.map(test => test.mistakes <= 4 ? 'עבר' : 'נכשל') : 'טרם'}</td>
+                                            <td className="py-3 px-4"> {student.detailsTheoryTest ? student.detailsTheoryTest.some(test => test.mistakes <= 4) ? 'עבר' : 'נכשל' : 'טרם'}</td>
                                             <td className="py-3 px-4">{student.previousLicense ? student.previousLicense : 'טרם'}</td>
                                             <td className="py-3 px-4">{student.mandatoryLessons ? student.mandatoryLessons : 'טרם'}</td>
                                         </tr>

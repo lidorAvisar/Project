@@ -139,33 +139,43 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
 
 
     const validateShiftLimits = (formData) => {
-        const savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {
-            'משמרת בוקר': 0,
-            'משמרת צהריים': 0,
-            'משמרת ערב': 0
-        };
+        const savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {};
 
-        const shiftTotals = { ...savedShiftMinutes };
-
+        const shiftTotals = {};
 
         // Calculate totals for each shift from form data
         formData.data.forEach(lesson => {
+            const date = lesson.date; // Assuming lesson.date contains the date of the lesson
             const shift = lesson.shift;
             const minutes = parseInt(lesson.drivingMinutes, 10) || 0;
 
-            if (!shiftTotals[shift]) {
-                shiftTotals[shift] = 0;
+            if (!savedShiftMinutes[date]) {
+                savedShiftMinutes[date] = {
+                    'משמרת בוקר': 0,
+                    'משמרת צהריים': 0,
+                    'משמרת ערב': 0
+                };
             }
-            shiftTotals[shift] += minutes;
-        });
 
+            if (!shiftTotals[date]) {
+                shiftTotals[date] = { ...savedShiftMinutes[date] };
+            }
+
+            if (!shiftTotals[date][shift]) {
+                shiftTotals[date][shift] = 0;
+            }
+
+            shiftTotals[date][shift] += minutes;
+        });
 
         // Check if any shift exceeds the limit
         const errors = {};
-        Object.keys(shiftTotals).forEach(shift => {
-            if (shiftTotals[shift] > SHIFT_LIMITS[shift]) {
-                errors[shift] = `הגעת למגבלה של ${SHIFT_LIMITS[shift]} דקות עבור ${shift}`;
-            }
+        Object.keys(shiftTotals).forEach(date => {
+            Object.keys(shiftTotals[date]).forEach(shift => {
+                if (shiftTotals[date][shift] > SHIFT_LIMITS[shift]) {
+                    errors[`${date} - ${shift}`] = `הגעת למגבלה של ${SHIFT_LIMITS[shift]} דקות עבור ${shift} בתאריך ${date}`;
+                }
+            });
         });
 
         // Save updated totals to localStorage if no errors
@@ -177,7 +187,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
     };
 
     const onSubmit = async (formData) => {
-        if (currentUser.user === "מורה נהיגה") {
+        if (currentUser.user === "מורה נהיגה" || currentUser.user === "מנהל") {
             const confirmation = window.confirm('האם אתה בטוח במספר הדקות?');
             if (!confirmation) {
                 return;
@@ -230,7 +240,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
     };
 
     const isTeacher = currentUser?.user === "מורה נהיגה";
-    const isAssistant = currentUser?.user === 'מ"מ' || currentUser?.user === 'מ"פ' || currentUser?.user === "מנהל";
+    const isAssistant = currentUser?.user === 'מ"מ' || currentUser?.user === 'מ"פ';
 
     if (isLoading || teacherLoading) {
         <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
@@ -336,7 +346,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                     />
                                     {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
                                 </div>
-                                {isAssistant && <div className='flex justify-center '>
+                                {isAssistant || currentUser.user === "מנהל" && <div className='flex justify-center '>
                                     <button
                                         onClick={() => {
                                             if (window.confirm("האם אתה בטוח?")) handleDeleteLesson(item.uid);
@@ -361,7 +371,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-2">ד'ק נהיגה</th>
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 px-8">שם מורה</th>
                                     <th className={`text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 ${isExpanded !== false ? 'w-60' : 'max-w-[100px]'}`}>אחר</th>
-                                    {isAssistant && <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-1">מחיקה</th>}
+                                    {isAssistant || currentUser.user === "מנהל" && <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-1">מחיקה</th>}
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y w-full divide-gray-200">
@@ -458,7 +468,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, ref
                                             )}
                                             {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
                                         </td>
-                                        {isAssistant && <td>
+                                        {isAssistant || currentUser.user === "מנהל" && <td>
                                             <BsTrash
                                                 onClick={() => { if (window.confirm("האם אתה בטוח?")) handleDeleteLesson(item.uid); }}
                                                 className='text-red-500 text-lg cursor-pointer mx-auto'
