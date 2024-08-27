@@ -16,7 +16,6 @@ const DrivingTeacher = () => {
     const [studentUid, setStudentUid] = useState();
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [studentShift, setStudentShift] = useState(null);
-    const [loadingRefresh, setLoadingRefresh] = useState(false);
 
     useEffect(() => {
         const savedDate = localStorage.getItem('lastDate');
@@ -32,12 +31,12 @@ const DrivingTeacher = () => {
     }, []);
 
 
-    const { data, isLoading, isError, error, refetch } = useQuery({
+    const { data, isLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
         queryFn: getPracticalDriving,
     });
 
-    const { data: studentData, isLoading: studentLoading } = useQuery({
+    const { data: studentData, isLoading: studentLoading, refetch: usersRefetch } = useQuery({
         queryKey: ['users'],
         queryFn: getAccounts,
     });
@@ -88,9 +87,6 @@ const DrivingTeacher = () => {
         }
     }, [studentData, studentUid]);
 
-    setTimeout(() => {
-        loadingRefresh && setLoadingRefresh(false);
-    }, 1000);
 
     if (loading || isLoading || studentLoading) {
         return <Loading />;
@@ -102,9 +98,6 @@ const DrivingTeacher = () => {
                 <div className='flex items-center justify-between px-5'>
                     <div className='flex items-center gap-5'>
                         <h2 className="text-lg sm:text-xl font-bold mb-2 pt-1 text-center sm:flex"><Greeting /> {currentUser?.displayName}</h2>
-                        <button onClick={() => { setOpenModal(false), setLoadingRefresh(true), refetch }} className='text-lg flex items-center  gap-2 text-blue-600'>
-                            <FaSyncAlt className={`${loadingRefresh && 'animate-spin'}`} /><span className='text-lg'>רענן</span>
-                        </button>
                     </div>
                     <button onClick={() => {
                         if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
@@ -159,7 +152,7 @@ const DrivingTeacher = () => {
             </div>
             <hr className='w-[90%]  border-black' />
             {openModal && <div className='px-2 w-full max-w-[1000px]'>
-                <TableDriving studentDetails={selectedStudent} studentUid={studentUid} setOpenModalStudentData={setOpenModal} refetchStudent={refetch} studentShift={studentShift} />
+                <TableDriving studentDetails={selectedStudent} studentUid={studentUid} setOpenModalStudentData={setOpenModal} studentShift={studentShift} usersRefetch={usersRefetch} />
             </div>}
         </div>
     );

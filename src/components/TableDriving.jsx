@@ -135,7 +135,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     }, [data, studentDetails, setValue, today, studentUid, currentUser, studentShift]);
 
     useEffect(() => {
-        if (studentDetails.previousLicense !== "no") {
+        if (studentDetails?.previousLicense && studentDetails.previousLicense !== "no") {
             setCompleteMinutes(800);
         }
         else {
@@ -289,7 +289,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     if (isError) {
         return <div>{error.message}</div>;
     }
-
 
     return (
         <div className='bg-white w-full p-2 rounded-md shadow-lg'>
@@ -520,7 +519,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     {deleteLoading && <p className='text-xl pt-2 text-center animate-pulse'>Delete . . . </p>}
                     <div className='p-2'>
                         <p className={`${totalDrivingMinutes >= completeMinutes ? 'bg-green-500 text-white' : 'bg-red-500 text-white'} w-fit text-lg font-bold p-1 rounded-md underline`}>
-                            {loading ? <span className='animate-ping'>. . . </span> : totalDrivingMinutes}<span> :סה"כ דקות נהיגה</span></p>
+                            {loading ? <span className='animate-ping'>. . . </span> : studentDetails?.totalDrivingMinutes?studentDetails.totalDrivingMinutes:0}<span> :סה"כ דקות נהיגה</span></p>
                     </div>
                     <div className="text-center">
                         <button type="submit" className="bg-blue-500 text-white px-10 font-bold py-2 rounded w-[60%] max-w-[350px]">
