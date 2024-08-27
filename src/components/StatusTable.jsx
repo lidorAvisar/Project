@@ -90,7 +90,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                     <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">מחזור</th>
                                     <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">מחלקה</th>
                                     <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">מספר זהות</th>
-                                    <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">סה"כ דקות</th>
+                                    <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">סה"כ דקות שבוצעו</th>
                                     <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">טסט</th>
                                     <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">ביצוע היתר נהיגה</th>
                                     <th className="w-1/12 py-3 px-4 uppercase font-semibold text-sm">מבחן תאוריה</th>
@@ -107,10 +107,29 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                             <td className="py-3 px-4">{student.cycle}</td>
                                             <td className="py-3 px-4">{student.departments}</td>
                                             <td className="py-3 px-4">{student.userId}</td>
-                                            <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes >= student.completeMinutes ? 'bg-green-500' : 'bg-orange-500'}`}>{student.totalDrivingMinutes ? student.totalDrivingMinutes : 'טרם'}</td>
-                                            <td className="py-3 px-4">{student.tests ? student.tests.some(test => test.status === "Pass" ? 'עבר' : 'נכשל') : 'טרם'}</td>
+                                            <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes ? (
+                                                student.previousLicense === "no" ? (
+                                                    student.totalDrivingMinutes >= 1280 ? 'bg-green-500' : 'bg-orange-500'
+                                                ) : (
+                                                    student.totalDrivingMinutes >= 800 ? 'bg-green-500' : 'bg-orange-500'
+                                                )
+                                            ) : 'bg-orange-500'
+                                                }`}>
+                                                {student.totalDrivingMinutes ? student.totalDrivingMinutes : 'טרם'}
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                {student.tests && student.tests.length > 0 ? (student.tests.slice(-1)[0].status === "Pass" ?
+                                                    `עבר/${student.tests.slice(-1)[0].id}` :
+                                                    `נכשל/${student.tests.slice(-1)[0].id}`
+                                                ) : 'טרם'}
+                                            </td>
                                             <td className="py-3 px-4">{student.carType ? student.carType : 'טרם'}</td>
-                                            <td className="py-3 px-4"> {student.detailsTheoryTest ? student.detailsTheoryTest.some(test => test.mistakes <= 4) ? 'עבר' : 'נכשל' : 'טרם'}</td>
+                                            <td className="py-3 px-4">
+                                                {student.detailsTheoryTest && student.detailsTheoryTest.length > 0 ? (                                                    student.detailsTheoryTest.slice(-1)[0].mistakes <= 4 ?
+                                                        `עבר/${student.detailsTheoryTest.slice(-1)[0].testNumber}` :
+                                                        `נכשל/${student.detailsTheoryTest.slice(-1)[0].testNumber}`
+                                                ) : 'טרם'}
+                                            </td>
                                             <td className="py-3 px-4">{student.previousLicense ? student.previousLicense : 'טרם'}</td>
                                             <td className="py-3 px-4">{student.mandatoryLessons ? student.mandatoryLessons : 'טרם'}</td>
                                         </tr>

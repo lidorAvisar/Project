@@ -15,6 +15,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         queryFn: getPracticalDriving,
     });
 
+
     const { mutate: addLessonMutation, isLoading: loading, error: err } = useMutation({
         mutationKey: ["practical_driving"],
         mutationFn: async (lessonData) => {
@@ -71,6 +72,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
+    
 
     if (isLoading || loading) {
         return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>

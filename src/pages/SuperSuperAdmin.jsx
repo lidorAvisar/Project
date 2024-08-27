@@ -35,7 +35,7 @@ const SuperSuperAdmin = () => {
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
     });
-
+    
 
     const { mutate: deleteAdmin } = useMutation({
         mutationKey: ['users'],
@@ -82,7 +82,7 @@ const SuperSuperAdmin = () => {
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
-            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} filteredTeachers={filteredTeachers} />}
+            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">

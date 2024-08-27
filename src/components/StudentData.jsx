@@ -14,10 +14,11 @@ import { Loading } from './Loading';
 import { deleteObject, listAll, ref } from 'firebase/storage';
 
 
-const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filteredTeachers }) => {
+const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers }) => {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
 
     const [openEditModal, setOpenEditModal] = useState(false);
+    const [nightDriving, setNightDriving] = useState(0);
 
     const { data, isLoading: lessonsLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
@@ -33,9 +34,9 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                 return total;
             }, 0);
 
-            setValue('nightDriving', totalNightDrivingMinutes);
+            setNightDriving(totalNightDrivingMinutes);
         }
-    }, [data, studentDetails, setValue]);
+    }, [data, studentDetails, lessonsLoading]);
 
     const deleteFiles = async (uid) => {
         const listRef = ref(storage, `students/${uid}`);
@@ -61,7 +62,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
             await deleteAccount(id)
         },
         onSuccess: () => {
-            refetch()
+            usersRefetch()
             setOpenModalStudentData(false)
         },
     });
@@ -71,7 +72,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
         try {
             const studentUid = studentDetails.uid;
             await updateAccount(studentUid, data);
-            refetch();
+            usersRefetch();
             setOpenModalStudentData(false);
         }
         catch (error) {
@@ -89,7 +90,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 mb-5 rounded-lg h-[90%] overflow-y-auto'>
-                {openEditModal && <EditUserModal user={studentDetails} refetch={refetch} setOpenEditModal={setOpenEditModal} />}
+                {openEditModal && <EditUserModal user={studentDetails} usersRefetch={usersRefetch} setOpenEditModal={setOpenEditModal} />}
                 <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
                     <p className='font-bold  text-xl'>{studentDetails.displayName}</p>
                     <div className='flex gap-3'>
@@ -245,35 +246,19 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                 {errors.form115 && <span className="text-red-500 text-sm">{errors.form115.message}</span>}
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="completeMinutes" className="block text-right text-sm font-medium text-gray-700">סה"כ דקות להשלמה:</label>
-                                <input
-                                    min={0}
-                                    type="number"
-                                    id="completeMinutes"
-                                    defaultValue={studentDetails?.completeMinutes || ""}
-                                    {...register('completeMinutes', { required: "זהו שדה חובה" })}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס דקות"
-                                />
-                                {errors.completeMinutes && <span className="text-red-500 text-sm">{errors.completeMinutes.message}</span>}
+                                <label htmlFor="totalDrivingMinutes" className="block text-right text-sm font-medium text-gray-700">סה"כ דקות שבוצעו:</label>
+                                <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md">
+                                    {studentDetails?.totalDrivingMinutes || "טרם"}
+                                </p>
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="nightDriving" className="block text-right text-sm font-medium text-gray-700">
-                                  סה"כ דקות נהיגת לילה:
+                                    סה"כ דקות נהיגת לילה:
                                 </label>
-                                <input
-                                    min={0}
-                                    type="number"
-                                    id="nightDriving"
-                                    value={watch('nightDriving') || ""}
-                                    {...register('nightDriving')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="אין דקות"
-                                    readOnly 
-                                />
-                                {errors.nightDriving && <span className="text-red-500 text-sm">{errors.nightDriving.message}</span>}
+                                <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md">
+                                    {nightDriving}
+                                </p>
                             </div>
-
                         </div>
 
                         <div className='space-y-5'>
@@ -303,18 +288,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                     </div>
                                 </div>
                                 {errors.mandatoryLessons && <span className="text-red-500 text-sm">{errors.mandatoryLessons.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="mandatoryLessonsScore" className="block text-right text-sm font-medium text-gray-700">מבחן שיעורי חובה:</label>
-                                <input
-                                    type="text"
-                                    id="mandatoryLessonsScore"
-                                    defaultValue={studentDetails?.mandatoryLessonsScore || ""}
-                                    {...register('mandatoryLessonsScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.mandatoryLessonsScore && <span className="text-red-500 text-sm">{errors.mandatoryLessonsScore.message}</span>}
                             </div>
                             <div className="mb-4">
                                 <label className="block text-right text-sm font-medium text-gray-700">קשירת מטענים:</label>
@@ -381,6 +354,18 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                 {errors.HazardousMaterials && <span className="text-red-500 text-sm">{errors.HazardousMaterials.message}</span>}
                             </div>
                             <div className="mb-4">
+                                <label htmlFor="hazardousMaterialsScore" className="block text-right text-sm font-medium text-gray-700">מבחן חומ"ס:</label>
+                                <input
+                                    type="text"
+                                    id="hazardousMaterialsScore"
+                                    defaultValue={studentDetails?.hazardousMaterialsScore || ""}
+                                    {...register('hazardousMaterialsScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.hazardousMaterialsScore && <span className="text-red-500 text-sm">{errors.hazardousMaterialsScore.message}</span>}
+                            </div>
+                            <div className="mb-4">
                                 <label className="block text-right text-sm font-medium text-gray-700">מסמכי הרכב:</label>
                                 <div className='flex gap-4'>
                                     <div>
@@ -432,20 +417,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                 </div>
                                 {errors.safetyModule && <span className="text-red-500 text-sm">{errors.safetyModule.message}</span>}
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="safetyModuleScore" className="block text-right text-sm font-medium text-gray-700">מבחן לומדת בטיחות:</label>
-                                <input
-                                    type="text"
-                                    id="safetyModuleScore"
-                                    defaultValue={studentDetails?.safetyModuleScore || ""}
-                                    {...register('safetyModuleScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.safetyModuleScore && <span className="text-red-500 text-sm">{errors.safetyModuleScore.message}</span>}
-                            </div>
                         </div>
-
                         <div className='space-y-5'>
                             <h3 className="text-lg font-bold mb-2 text-right underline">סוג רכב</h3>
                             <div className="mb-4">
@@ -457,11 +429,22 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                                     className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
                                 >
                                     <option className='font-thin' value="">בחר סוג רכב. . .</option>
-                                    <option className='font-bold' value="ג'יפ">ג'יפ</option>
-                                    <option className='font-bold' value="דוד">דוד</option>
+                                    <option className='font-bold' value="ג'יפ/דוד">ג'יפ/דוד</option>
                                     <option className='font-bold' value="האמר">האמר</option>
                                 </select>
                                 {errors.carType && <span className="text-red-500 text-sm">{errors.carType.message}</span>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="carTypeScore" className="block text-right text-sm font-medium text-gray-700">מבחן {studentDetails?.carType}:</label>
+                                <input
+                                    type="text"
+                                    id="carTypeScore"
+                                    defaultValue={studentDetails?.carTypeScore || ""}
+                                    {...register('carTypeScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.carTypeScore && <span className="text-red-500 text-sm">{errors.carTypeScore.message}</span>}
                             </div>
                         </div>
                         <div className="flex justify-center">
@@ -471,9 +454,9 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, refetch, filtere
                         </div>
                     </form>
                     <AddFileStudent studentDetails={studentDetails} />
-                    <Theories studentDetails={studentDetails} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />
-                    <TableDriving studentDetails={studentDetails} filteredTeachers={filteredTeachers} setOpenModalStudentData={setOpenModalStudentData} />
-                    <Tests studentDetails={studentDetails} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />
+                    <Theories studentDetails={studentDetails} usersRefetch={usersRefetch} setOpenModalStudentData={setOpenModalStudentData} />
+                    <TableDriving studentDetails={studentDetails} filteredTeachers={filteredTeachers} setOpenModalStudentData={setOpenModalStudentData} usersRefetch={usersRefetch} />
+                    <Tests studentDetails={studentDetails} usersRefetch={usersRefetch} setOpenModalStudentData={setOpenModalStudentData} />
                     <button
                         onClick={() => setOpenModalStudentData(false)}
                         type="button"

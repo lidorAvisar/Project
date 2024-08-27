@@ -11,7 +11,7 @@ import Greeting from '../components/Greeting';
 const Student = () => {
     const [currentUser, _, loading] = useCurrentUser();
     const [drivingMinutes, setDrivingMinutes] = useState(0);
-    const [totalRequiredMinutes, setTotalRequiredMinutes] = useState(1280); // Default to 1280 minutes
+    const [totalRequiredMinutes, setTotalRequiredMinutes] = useState(1280);
     const [filteredLessons, setFilteredLessons] = useState([]);
     const [theoryTestPassed, setTheoryTestPassed] = useState(false);
     const [finalTestPassed, setFinalTestPassed] = useState(false);

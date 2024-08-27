@@ -6,6 +6,7 @@ import { useMutation } from 'react-query';
 const Tests = ({ studentDetails, refetch, setOpenModalStudentData }) => {
     const initialTests = studentDetails?.tests?.length > 0 ? studentDetails.tests : [{ id: 1, date: '', status: '' }];
     const [tests, setTests] = useState(initialTests);
+    const [completeMinutes, setCompleteMinutes] = useState(null);
 
     const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
@@ -45,10 +46,20 @@ const Tests = ({ studentDetails, refetch, setOpenModalStudentData }) => {
         setValue('tests', tests);
     }, [tests, setValue]);
 
+    useEffect(() => {
+        if (studentDetails.previousLicense !== "no") {
+            setCompleteMinutes(800);
+        }
+        else {
+            setCompleteMinutes(1280);
+        }
+    }, [studentDetails]);
+
+
     return (
         <div className="bg-slate-200 w-full p-6 rounded-md shadow-lg">
             <p className="text-center font-bold text-2xl py-6 underline">טסטים</p>
-            {studentDetails.totalDrivingMinutes && studentDetails.totalDrivingMinutes >= studentDetails.completeMinutes && studentDetails.nightDriving && studentDetails.nightDriving >= 40 ? <form onSubmit={handleSubmit(onSubmit)}>
+            {studentDetails.totalDrivingMinutes && studentDetails.totalDrivingMinutes >= completeMinutes && studentDetails.nightDriving && studentDetails.nightDriving >= 40 ? <form onSubmit={handleSubmit(onSubmit)}>
                 <div>
                     <table dir='rtl' className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
                         <thead>

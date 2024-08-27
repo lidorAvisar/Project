@@ -132,7 +132,7 @@ export const getAccounts = async () => {
   }
 
   const usersData = userDocs.docs.map(doc => {
-    return doc.data();  
+    return doc.data();
   })
 
   return usersData;
@@ -221,7 +221,8 @@ export const deleteLesson = async (lessonId) => {
   try {
     await deleteDoc(lessonDocRef);
     return lessonDocRef;
-  } catch (err) {
+  }
+  catch (err) {
     throw err;
   }
 }
