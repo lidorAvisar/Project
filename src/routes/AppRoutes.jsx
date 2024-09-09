@@ -10,6 +10,7 @@ import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from '../components/Loading';
 import Student from '../pages/Student';
 import SuperSuperAdmin from '../pages/SuperSuperAdmin';
+import Contractor from '../pages/Contractor';
 
 
 const AppRoutes = () => {
@@ -35,6 +36,9 @@ const AppRoutes = () => {
                         break;
                     case 'מנהל':
                         navigate('/super_super_admin');
+                        break;
+                    case 'קבלן':
+                        navigate('/contractor');
                         break;
                     default:
                         navigate('/');
@@ -65,6 +69,7 @@ const AppRoutes = () => {
                     <Route path='/admin' element={<Admin />} />
                     <Route path='/super_admin' element={<SuperAdmin />} />
                     <Route path='/super_super_admin' element={<SuperSuperAdmin />} />
+                    <Route path='/contractor' element={<Contractor />} />
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>

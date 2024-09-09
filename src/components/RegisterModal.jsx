@@ -51,7 +51,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
             setValue('cycle', null);
         }
 
-        else if (value === 'מ"פ') {
+        else if (value === 'מ"פ' || value === "קבלן") {
             setCycle(false)
             setDepartmentsToogle(true);
             setDepartmentToogle(false)
@@ -152,6 +152,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                                 name="user" id="user" {...register("user", { required: true })}>
                                 <option value="">בחר משתמש . . .</option>
                                 {currentUser.user === "מנהל" && <option className='font-bold' value='מ"פ'>מ"פ</option>}
+                                {currentUser.user === "מנהל" && <option className='font-bold' value='קבלן'>קבלן</option>}
                                 <option className='font-bold' value='מ"מ'>מ"מ</option>
                                 <option className='font-bold' value='מורה נהיגה'>מורה נהיגה</option>
                                 <option className='font-bold' value='תלמידים'>תלמיד</option>

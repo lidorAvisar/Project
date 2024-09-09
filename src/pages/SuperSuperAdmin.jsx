@@ -132,6 +132,29 @@ const SuperSuperAdmin = () => {
                     ))}
                 </tbody>
             </table>
+            <p className='text-center font-bold text-xl py-6'>רשימת קבלנים</p>
+            <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-gray-200 shadow-md ">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
+                        <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
+                        <th className=" text-center py-3 pe-2 text-[15px] font-medium text-gray-500 uppercase tracking-wider">עריכה/מחיקה</th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {sortedData?.filter(account => account.user === 'קבלן').map(account => (
+                        <tr key={account.uid}>
+                            <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
+                            <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
+                            <td className="text-center text-[14px] py-4 whitespace-nowrap flex justify-center text-xl gap-3 "><BiEditAlt onClick={() => {
+                                setCurrentEditUser(account)
+                                setOpenEditModal(true)
+                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח?") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <p className='text-center font-bold text-xl py-6'>רשימת מ"מ</p>
             <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-gray-200 shadow-md ">
                 <thead className="bg-gray-50">

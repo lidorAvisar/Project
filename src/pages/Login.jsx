@@ -3,6 +3,9 @@ import { GiSteeringWheel } from "react-icons/gi";
 import { LuEye } from "react-icons/lu";
 import { useForm } from "react-hook-form";
 import { signUpWithEmailAndPassword } from "../firebase/firebase_config";
+import { IoArrowUndoOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
+
 
 
 
@@ -38,7 +41,7 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-             await signUpWithEmailAndPassword(data.email, data.password)
+            await signUpWithEmailAndPassword(data.email, data.password)
             reset();
         }
         catch (error) {
@@ -47,7 +50,7 @@ const Login = () => {
     };
 
     return (
-        <div className="flex min-h-full flex-1 flex-col justify-center  px-6 mt-10 lg:px-8">
+        <div className="flex min-h-full flex-1 flex-col justify-center space-y-3  px-6 mt-10 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col gap-4">
                 <GiSteeringWheel className="mx-auto h-10 w-auto animate-spin text-green-900 " style={{ animationDuration: '2.5s' }} />
                 <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
@@ -62,7 +65,7 @@ const Login = () => {
                         </label>
                         <div className="mt-2">
                             <input
-                            dir="ltr"
+                                dir="ltr"
                                 id="email"
                                 type="email"
                                 placeholder="הכנס אימייל"
@@ -111,6 +114,9 @@ const Login = () => {
                         </button>
                     </div>
                 </form>
+            </div>
+            <div className="flex justify-center py-5">
+                <Link to={'https://mador-till-prod.github.io/lomda-cards-theory/src/'}> <button dir="rtl" className="flex items-center gap-3 bg-green-500 p-1 rounded-md px-2 text-white font-bold">לימודי תאוריה<IoArrowUndoOutline className="mx-auto h-5 w-auto" /></button></Link>
             </div>
         </div>
     )
