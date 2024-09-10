@@ -5,7 +5,7 @@ import { useCurrentUser } from '../firebase/useCurerntUser';
 
 const StatusTable = ({ setOpenModalStudentsTable }) => {
     const [currentUser] = useCurrentUser();
-    const [selectedDepartment, setSelectedDepartment] = useState('everything');
+    const [selectedDepartment, setSelectedDepartment] = useState(['everything']);
     const [selectedCycle, setSelectedCycle] = useState('everything');
 
     const { data, isLoading, isError, error, refetch } = useQuery({
@@ -15,9 +15,9 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
 
     useEffect(() => {
         if (currentUser.user === 'מ"מ' && currentUser.departments) {
-            setSelectedDepartment(currentUser.departments);
+            setSelectedDepartment([currentUser.departments]);
         } else {
-            setSelectedDepartment('everything');
+            setSelectedDepartment(['everything']);
         }
     }, [currentUser]);
 
@@ -26,7 +26,11 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
     };
 
     const handleFilterChange = (event) => {
-        setSelectedDepartment(event.target.value);
+        const value = Array.from(
+            event.target.selectedOptions,
+            (option) => option.value
+        );
+        setSelectedDepartment(value);
     };
 
     const handleFilterChangeCycle = (event) => {
@@ -37,49 +41,53 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
 
     const filteredList = data.filter(student =>
         student.user === "תלמידים" &&
-        (selectedDepartment === 'everything' || student.departments === selectedDepartment) &&
+        (selectedDepartment.includes('everything') || selectedDepartment.includes(student.departments)) &&
         (selectedCycle === 'everything' || student.cycle === selectedCycle)
     );
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='w-[100%] max-w-[1200px] bg-slate-100 p-4 mb-5 rounded-lg h-[92%] py-10 overflow-y-auto'>
-                <div className='flex items-center gap-3 py-4 justify-around'>
-                    <button onClick={() => setOpenModalStudentsTable(false)} className='bg-red-500 text-white p-1 rounded-md px-8 font-bold'>סגור</button>
+                <div className='flex items-center justify-between py-3'>
+                    <button onClick={() => setOpenModalStudentsTable(false)} className='bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
                     <h2 className="text-center text-xl sm:text-2xl font-bold">סטטוס תלמידים</h2>
+                    <h2></h2>
+                </div>
                     {currentUser.user !== 'מ"מ' && (
-                        <div className='sm:flex gap-5'>
-                            <div dir='rtl' className='flex flex-col justify-center'>
-                                <label htmlFor="departmentFilter" className="font-bold mr-2">סנן לפי מחלקה:</label>
+                        <div dir='rtl' className='w-full flex flex-col sm:flex-row items-center justify-between gap-5'>
+                            {/* Department Filter */}
+                            <div className='w-full flex flex-col items-center justify-center'>
+                                <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
                                 <select
                                     id="departmentFilter"
+                                    multiple
                                     value={selectedDepartment}
                                     onChange={handleFilterChange}
-                                    className="p-2 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
                                 >
                                     <option value="everything">הכל</option>
                                     {[...Array(12).keys()].map(num => (
-                                        <option key={num + 1} value={num + 1}>{num + 1}</option>
+                                        <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
                                     ))}
                                 </select>
                             </div>
-                            <div dir='rtl' className='flex flex-col justify-center'>
-                                <label htmlFor="cycleFilter" className="font-bold mr-2">סנן לפי מחזור:</label>
+
+                            <div className='w-full flex flex-col items-center justify-center'>
+                                <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
                                 <select
                                     id="cycleFilter"
                                     value={selectedCycle}
                                     onChange={handleFilterChangeCycle}
-                                    className="p-2 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
                                 >
                                     <option value="everything">הכל</option>
                                     {uniqueCycles.map((cycle, i) => (
-                                        <option key={i} value={cycle}>{cycle}</option>
+                                        <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
                     )}
-                </div>
                 {filteredList.length > 0 ? (
                     <div className="overflow-x-auto py-5 ">
                         <table dir='rtl' className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -125,9 +133,9 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                             </td>
                                             <td className="py-3 px-4">{student.carType ? student.carType : 'טרם'}</td>
                                             <td className="py-3 px-4">
-                                                {student.detailsTheoryTest && student.detailsTheoryTest.length > 0 ? (                                                    student.detailsTheoryTest.slice(-1)[0].mistakes <= 4 ?
-                                                        `עבר/${student.detailsTheoryTest.slice(-1)[0].testNumber}` :
-                                                        `נכשל/${student.detailsTheoryTest.slice(-1)[0].testNumber}`
+                                                {student.detailsTheoryTest && student.detailsTheoryTest.length > 0 ? (student.detailsTheoryTest.slice(-1)[0].mistakes <= 4 ?
+                                                    `עבר/${student.detailsTheoryTest.slice(-1)[0].testNumber}` :
+                                                    `נכשל/${student.detailsTheoryTest.slice(-1)[0].testNumber}`
                                                 ) : 'טרם'}
                                             </td>
                                             <td className="py-3 px-4">{student.previousLicense ? student.previousLicense : 'טרם'}</td>

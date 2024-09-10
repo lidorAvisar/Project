@@ -10,7 +10,7 @@ export const departments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const RegisterModal = ({ setOpenRegisterModal }) => {
     const [currentUser] = useCurrentUser();
-    const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm();
+    const { register, handleSubmit, reset, formState: { errors }, setValue, watch } = useForm();
 
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
     const [departmentToogle, setDepartmentToogle] = useState(false);
@@ -43,30 +43,42 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
 
     const handleSelectChange = (value) => {
-        if (value === "מורה נהיגה") {
-            setCycle(false)
-            setDepartmentsToogle(false);
-            setDepartmentToogle(false);
-            setValue('departments', null);
-            setValue('cycle', null);
-        }
-
-        else if (value === 'מ"פ' || value === "קבלן") {
-            setCycle(false)
-            setDepartmentsToogle(true);
-            setDepartmentToogle(false)
-            setValue('departments', []);
-            setValue('cycle', null);
-        }
-        else if (value === 'מ"מ') {
-            setDepartmentsToogle(false);
-            setDepartmentToogle(true);
-            setValue('cycle', null);
-        }
-        else {
-            setCycle(true);
-            setDepartmentsToogle(false);
-            setDepartmentToogle(true);
+        console.log(value);
+        switch (value) {
+            case "מורה נהיגה":
+                setCycle(false);
+                setDepartmentsToogle(false);
+                setDepartmentToogle(false);
+                setValue('departments', null);
+                setValue('cycle', null);
+                break;
+            case 'מ"פ':
+                setCycle(false);
+                setDepartmentsToogle(true);
+                setDepartmentToogle(false);
+                setValue('departments', []);
+                setValue('cycle', null);
+                break;
+            case 'מ"מ':
+                setCycle(false);
+                setDepartmentsToogle(false);
+                setDepartmentToogle(true);
+                setValue('departments', null);
+                setValue('cycle', null);
+                break;
+            case "קבלן":
+                setCycle(false);
+                setDepartmentsToogle(false);
+                setDepartmentToogle(false);
+                setValue('departments', []);
+                setValue('cycle', null);
+                break;
+            default:
+                setCycle(true);
+                setDepartmentsToogle(false);
+                setDepartmentToogle(true);
+                setValue('departments', []);
+                break;
         }
     };
 
@@ -148,7 +160,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                             </label>
                         </div>
                         <div className="mt-2">
-                            <select onClick={(e) => { handleSelectChange(e.target.value) }} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                            <select onClick={(e) => { handleSelectChange(e.target.value) }} onInput={(e) => { handleSelectChange(e.target.value) }} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                 name="user" id="user" {...register("user", { required: true })}>
                                 <option value="">בחר משתמש . . .</option>
                                 {currentUser.user === "מנהל" && <option className='font-bold' value='מ"פ'>מ"פ</option>}
@@ -167,11 +179,11 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                                 </div>
                                 <div className="mt-2">
                                     <select
+                                        value={watch("departments")}
                                         className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                         id="departments"
                                         {...register("departments", { required: true })}
                                         multiple
-
                                     >
                                         {departments.map((item, i) => (
                                             <option key={i} className='font-bold' value={item}>{item}</option>

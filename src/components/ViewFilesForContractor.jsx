@@ -97,7 +97,7 @@ const ViewFilesForContractor = ({ studentDetails }) => {
             </div>
             {selectedFile && (
                 <div className="w-full fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
-                    <div className="w-[50%] max-w-[500px] bg-white rounded-lg p-3 space-y-4 mx-1">
+                    <div className="w-[40%] max-w-[450px] bg-white rounded-lg p-3 space-y-4 mx-1">
                         <div dir='rtl' className="flex justify-between items-center">
                             <h3 className="text-lg font-medium text-gray-900">{decodeURIComponent(selectedFile.split('?')[0].split('%2F').pop())}</h3>
                             <button onClick={closeModal} className="text-red-500 font-bold text-3xl hover:text-red-700">

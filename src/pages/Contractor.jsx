@@ -38,9 +38,8 @@ const Contractor = () => {
         return <div>{error}</div>;
     }
 
-    const filteredMM = data.filter(account =>
-        account.user === 'מ"מ' && user?.departments?.includes(account.departments)
-    );
+    const filteredMM = data?.filter(account =>
+        account.user === 'מ"מ').sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
     const filteredTeachers = data?.filter(account =>
         account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
@@ -50,6 +49,7 @@ const Contractor = () => {
     ).filter(student =>
         student.displayName.includes(studentSearch)
     );
+
 
 
     return (
