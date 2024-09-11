@@ -45,10 +45,9 @@ const Contractor = () => {
         account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
     const filteredStudents = data.filter(account =>
-        account.user === 'תלמידים' && user?.departments?.includes(account.departments)
-    ).filter(student =>
-        student.displayName.includes(studentSearch)
-    );
+        account.user === 'תלמידים').filter(student =>
+            student.displayName.includes(studentSearch)
+        );
 
 
 
