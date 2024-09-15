@@ -80,7 +80,7 @@ const SuperAdmin = () => {
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
-            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} />}
+            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
             <div className="flex justify-around items-center w-full pt-3">

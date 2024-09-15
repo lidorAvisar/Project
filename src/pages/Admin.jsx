@@ -51,7 +51,7 @@ const Admin = () => {
         <div className='space-y-5 overflow-x-auto flex flex-col items-center md:px-16 h-screen'>
             {openModalAddStudent && <AddStudentModal setOpenModalAddStudent={setOpenModalAddStudent} openModalAddStudent={openModalAddStudent} refetch={refetch} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={studentDetails} filteredTeachers={filteredTeachers} refetch={refetch} />}
-            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={studentDetails} refetch={refetch} filteredTeachers={filteredTeachers} />}
+            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={studentDetails} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} filteredStudents={filteredStudents} />}
             <div dir='rtl' className='w-full flex flex-col items-center'>
                 <p className='font-bold text-lg text-gray-500 py-2 flex flex-col sm:flex-row sm:gap-2'> <Greeting /> {currentUser.displayName} , מח' {currentUser.departments}</p>

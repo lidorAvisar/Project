@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 const theoryList = [1, 2, 3, 4, 5, 6, 7, 8];
 
-const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
+const Theories = ({ studentDetails, setOpenModalStudentData, usersRefetch }) => {
     const { control, handleSubmit, formState: { errors }, setValue, resetField } = useForm();
     const [selectedTheorySessions, setSelectedTheorySessions] = useState({});
     const [theorySessionsCount, setTheorySessionsCount] = useState(studentDetails.theorySessionsQuantity ? studentDetails.theorySessionsQuantity : null);
@@ -48,6 +48,8 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
 
 
     const onSubmit = async (data) => {
+        console.log(data);
+
         const studentUid = studentDetails.uid;
         const updatedData = {
             theorySessionsQuantity: theorySessionsCount,
@@ -61,9 +63,10 @@ const Theories = ({ studentDetails, setOpenModalStudentData, refetch }) => {
         };
         try {
             await updateAccount(studentUid, updatedData);
-            refetch();
+            usersRefetch();
             setOpenModalStudentData(false);
         } catch (error) {
+            console.log(error);
             alert("לא ניתן לעדכן ");
         }
     };
