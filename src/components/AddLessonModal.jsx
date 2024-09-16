@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { addLesson, getPracticalDriving, updateAccount } from '../firebase/firebase_config';
+import { useMutation, useQueryClient } from 'react-query';
+import { addLesson, updateAccount } from '../firebase/firebase_config';
 import { Loading } from './Loading';
 
 const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData }) => {
@@ -9,12 +9,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [teacherUid, setTeacherUid] = useState();
     const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
-
-    const { data: lessons, isLoading, error } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
-
 
     const { mutate: addLessonMutation, isLoading: loading, error: err } = useMutation({
         mutationKey: ["practical_driving"],
@@ -48,6 +42,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
     const handleTeacherChange = (event) => {
         const selectedTeacher = filteredTeachers.find(account => account.displayName === event.target.value);
+        console.log(selectedTeacher);
         setTeacherUid(selectedTeacher.uid);
     };
 
@@ -72,16 +67,12 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
-    
 
-    if (isLoading || loading) {
+
+    if ( loading) {
         return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
             <Loading />
         </div>
-    }
-
-    if (error || err) {
-        return <p>{error || err}</p>
     }
 
     const today = new Date().toISOString().split('T')[0];
@@ -99,6 +90,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                             <div className="mt-2">
                                 <select
                                     onClick={handleTeacherChange}
+                                    onInput={handleTeacherChange}
                                     className='ps-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                     name="teacher"
                                     id="teacher"
