@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
-import { addLesson, updateAccount } from '../firebase/firebase_config';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { addLesson, getPracticalDriving, updateAccount } from '../firebase/firebase_config';
 import { Loading } from './Loading';
+import { useCurrentUser } from '../firebase/useCurerntUser';
 
 const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData }) => {
+    const [currentUser] = useCurrentUser();
     const queryClient = useQueryClient();
     const { register, handleSubmit, formState: { errors } } = useForm();
+
     const [teacherUid, setTeacherUid] = useState();
     const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
+
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['practical_driving'],
+        queryFn: getPracticalDriving,
+    });
 
     const { mutate: addLessonMutation, isLoading: loading, error: err } = useMutation({
         mutationKey: ["practical_driving"],
@@ -18,7 +26,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['practical_driving']);
-            setOpenModalStudentData(false);
+            { currentUser.user === "מנהל" || currentUser.user === 'מ"פ' && setOpenModalStudentData(false); }
             setOpenModalAddLesson(false);
         }
     });
@@ -69,7 +77,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
     }, []);
 
 
-    if ( loading) {
+    if (isLoading || loading) {
         return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
             <Loading />
         </div>
