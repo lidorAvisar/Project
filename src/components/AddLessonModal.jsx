@@ -11,7 +11,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     const [teacherUid, setTeacherUid] = useState();
-    const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
@@ -53,29 +52,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         console.log(selectedTeacher);
         setTeacherUid(selectedTeacher.uid);
     };
-
-    useEffect(() => {
-        const checkShiftAvailability = () => {
-            const israelTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" });
-            const currentHour = new Date(israelTime).getHours();
-
-            if (currentHour >= 0 && currentHour < 12) {
-                setShiftAvailability({ morning: true, noon: true, evening: true });
-            } else if (currentHour >= 12 && currentHour < 18) {
-                setShiftAvailability({ morning: false, noon: true, evening: true });
-            } else if (currentHour >= 18 && currentHour < 21) {
-                setShiftAvailability({ morning: false, noon: false, evening: true });
-            } else {
-                setShiftAvailability({ morning: false, noon: false, evening: false });
-            }
-        };
-        checkShiftAvailability(); // Initial check when component mounts
-
-        const intervalId = setInterval(checkShiftAvailability, 60000); // Check every minute
-
-        return () => clearInterval(intervalId); // Cleanup interval on component unmount
-    }, []);
-
 
     if (isLoading || loading) {
         return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
@@ -141,9 +117,9 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                                     {...register('shift', { required: 'This field is required' })}
                                 >
                                     <option value="">בחר משמרת . . .</option>
-                                    <option value="משמרת בוקר" disabled={!shiftAvailability.morning}>משמרת בוקר</option>
-                                    <option value="משמרת צהריים" disabled={!shiftAvailability.noon}>משמרת צהריים</option>
-                                    <option value="משמרת ערב" disabled={!shiftAvailability.evening}>משמרת ערב</option>
+                                    <option value="משמרת בוקר">משמרת בוקר</option>
+                                    <option value="משמרת צהריים">משמרת צהריים</option>
+                                    <option value="משמרת ערב">משמרת ערב</option>
                                 </select>
                                 {errors.shift && <span className="text-red-500 text-xs">{errors.shift.message}</span>}
                             </div>

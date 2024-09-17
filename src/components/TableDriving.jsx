@@ -19,7 +19,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
     const [filteredData, setFilteredData] = useState([]);
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(studentDetails?.totalDrivingMinutes ? studentDetails.totalDrivingMinutes : 0);
-    const [shiftAvailability, setShiftAvailability] = useState({ morning: true, noon: true, evening: true });
     const [isExpanded, setIsExpanded] = useState(false);
     const [completeMinutes, setCompleteMinutes] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -51,28 +50,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
 
     const filteredTeachers = studentData?.filter(account =>
         account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
-
-    useEffect(() => {
-        const checkShiftAvailability = () => {
-            const israelTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" });
-            const currentHour = new Date(israelTime).getHours();
-
-            if (currentHour >= 0 && currentHour < 12) {
-                setShiftAvailability({ morning: true, noon: true, evening: true });
-            } else if (currentHour >= 12 && currentHour < 18) {
-                setShiftAvailability({ morning: false, noon: true, evening: true });
-            } else if (currentHour >= 18 && currentHour < 21) {
-                setShiftAvailability({ morning: false, noon: false, evening: true });
-            } else {
-                setShiftAvailability({ morning: false, noon: false, evening: false });
-            }
-        };
-        checkShiftAvailability();
-
-        const intervalId = setInterval(checkShiftAvailability, 60000);
-
-        return () => clearInterval(intervalId);
-    }, []);
 
     const handleExpand = (index) => {
         setIsExpanded(index);
@@ -333,9 +310,9 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                         disabled={isTeacher}
                                     >
                                         <option value="">בחר משמרת . . .</option>
-                                        <option value="משמרת בוקר" disabled={!shiftAvailability.morning}>משמרת בוקר</option>
-                                        <option value="משמרת צהריים" disabled={!shiftAvailability.noon}>משמרת צהריים</option>
-                                        <option value="משמרת ערב" disabled={!shiftAvailability.evening}>משמרת ערב</option>
+                                        <option value="משמרת בוקר">משמרת בוקר</option>
+                                        <option value="משמרת צהריים">משמרת צהריים</option>
+                                        <option value="משמרת ערב">משמרת ערב</option>
                                     </select>
                                     {errors.data?.[index]?.shift && <span className="text-red-500 text-xs">חובה*</span>}
                                 </div>
@@ -435,9 +412,9 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                                 disabled={isTeacher}
                                             >
                                                 <option value="">בחר משמרת . . .</option>
-                                                <option value="משמרת בוקר" disabled={!shiftAvailability.morning}>משמרת בוקר</option>
-                                                <option value="משמרת צהריים" disabled={!shiftAvailability.noon}>משמרת צהריים</option>
-                                                <option value="משמרת ערב" disabled={!shiftAvailability.evening}>משמרת ערב</option>
+                                                <option value="משמרת בוקר">משמרת בוקר</option>
+                                                <option value="משמרת צהריים">משמרת צהריים</option>
+                                                <option value="משמרת ערב">משמרת ערב</option>
                                             </select>
                                             <br />
                                             {errors.data?.[index]?.shift && <span className="text-red-500 text-xs">חובה*</span>}
