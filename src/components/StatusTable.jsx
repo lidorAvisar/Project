@@ -53,41 +53,41 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                     <h2 className="text-center text-xl sm:text-2xl font-bold">סטטוס תלמידים</h2>
                     <h2></h2>
                 </div>
-                    {currentUser.user !== 'מ"מ' && (
-                        <div dir='rtl' className='w-full flex flex-col sm:flex-row items-center justify-between gap-5'>
-                            {/* Department Filter */}
-                            <div className='w-full flex flex-col items-center justify-center'>
-                                <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
-                                <select
-                                    id="departmentFilter"
-                                    multiple
-                                    value={selectedDepartment}
-                                    onChange={handleFilterChange}
-                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
-                                >
-                                    <option value="everything">הכל</option>
-                                    {[...Array(12).keys()].map(num => (
-                                        <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className='w-full flex flex-col items-center justify-center'>
-                                <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
-                                <select
-                                    id="cycleFilter"
-                                    value={selectedCycle}
-                                    onChange={handleFilterChangeCycle}
-                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
-                                >
-                                    <option value="everything">הכל</option>
-                                    {uniqueCycles.map((cycle, i) => (
-                                        <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
-                                    ))}
-                                </select>
-                            </div>
+                {currentUser.user !== 'מ"מ' && (
+                    <div dir='rtl' className='w-full flex flex-col sm:flex-row items-center justify-between gap-5'>
+                        {/* Department Filter */}
+                        <div className='w-full flex flex-col items-center justify-center'>
+                            <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
+                            <select
+                                id="departmentFilter"
+                                multiple
+                                value={selectedDepartment}
+                                onChange={handleFilterChange}
+                                className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
+                            >
+                                <option value="everything">הכל</option>
+                                {[...Array(12).keys()].map(num => (
+                                    <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
+                                ))}
+                            </select>
                         </div>
-                    )}
+
+                        <div className='w-full flex flex-col items-center justify-center'>
+                            <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
+                            <select
+                                id="cycleFilter"
+                                value={selectedCycle}
+                                onChange={handleFilterChangeCycle}
+                                className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
+                            >
+                                <option value="everything">הכל</option>
+                                {uniqueCycles.map((cycle, i) => (
+                                    <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                )}
                 {filteredList.length > 0 ? (
                     <div className="overflow-x-auto py-5 ">
                         <table dir='rtl' className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -148,6 +148,9 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                 ) : (
                     <p className='font-bold text-center text-2xl pt-10'>אין תוצאות</p>
                 )}
+                <div className='flex justify-center'>
+                <button onClick={() => setOpenModalStudentsTable(false)} className='w-[50%] max-w-96 bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
+                </div>
             </div>
         </div>
     );

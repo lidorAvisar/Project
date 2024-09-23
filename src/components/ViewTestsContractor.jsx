@@ -5,7 +5,7 @@ const ViewTestsContractor = ({ studentDetails }) => {
     const [completeMinutes, setCompleteMinutes] = useState(null);
 
     useEffect(() => {
-        if (studentDetails.previousLicense !== "no") {
+        if (studentDetails?.previousLicense !== "no") {
             setCompleteMinutes(800);
         }
         else {
@@ -38,7 +38,7 @@ const ViewTestsContractor = ({ studentDetails }) => {
                     </table>
                 </div>
             ) : (
-                <p className='font-bold text-xl text-center text-red-500'> 😌עדיין אינו מוכן לטסט</p>)}
+                <p className='font-bold text-xl text-center text-red-500'> 😌עדיין אינו/ה מוכנ/ה לטסט</p>)}
         </div>
     );
 }

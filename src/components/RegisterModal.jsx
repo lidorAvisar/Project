@@ -22,6 +22,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
 
     const onSubmit = (data) => {
+        console.log(data);
         setLoading(true);
         try {
             if (departmentsToogle) {
@@ -43,7 +44,6 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
 
     const handleSelectChange = (value) => {
-        console.log(value);
         switch (value) {
             case "מורה נהיגה":
                 setCycle(false);

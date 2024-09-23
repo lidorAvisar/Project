@@ -11,7 +11,7 @@ const ViewFilesForContractor = ({ studentDetails }) => {
     }, []);
 
     const fetchUploadedFiles = async () => {
-        const listRef = ref(storage, `students/${studentDetails.uid}`);
+        const listRef = ref(storage, `students/${studentDetails?.uid}`);
         try {
             const res = await listAll(listRef);
             const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));

@@ -8,7 +8,7 @@ import { BsTrash } from 'react-icons/bs';
 
 const SHIFT_LIMITS = {
     'משמרת בוקר': 240,
-    'משמרת צהריים': 270,
+    'משמרת צהריים': 300,
     'משמרת ערב': 150,
 };
 
@@ -22,7 +22,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     const [isExpanded, setIsExpanded] = useState(false);
     const [completeMinutes, setCompleteMinutes] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
-
+    const [isShiftOver, setIsShiftOver] = useState(false);
 
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['practical_driving'],
@@ -58,7 +58,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     const handleClose = () => {
         setIsExpanded(false);
     };
-
 
     useEffect(() => {
         if (data) {
@@ -120,50 +119,84 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         }
     }, [studentDetails]);
 
+    useEffect(() => {
+        const checkShiftStatus = () => {
+            // Get current time in Israel time
+            const now = new Date();
+            const israelOffset = 3 * 60; // UTC+3 in minutes during daylight saving time
+            const localTime = new Date(now.getTime() + (now.getTimezoneOffset() + israelOffset) * 60000);
+            const currentHours = localTime.getHours();
+
+            // Shift times in English: morning until 12:00, noon until 18:00, evening until 21:00
+            let shiftEndTime;
+
+            if (studentShift === "morning") {
+                shiftEndTime = 12; // Morning shift ends at 12:00 PM
+            } else if (studentShift === "noon") {
+                shiftEndTime = 18; // Noon shift ends at 6:00 PM
+            } else if (studentShift === "evening") {
+                shiftEndTime = 21; // Evening shift ends at 9:00 PM
+            }
+
+            // Check if the shift end time has passed
+            if (shiftEndTime && currentHours >= shiftEndTime) {
+                setIsShiftOver(true);
+            } else {
+                setIsShiftOver(false);
+            }
+        };
+
+        // Check every second
+        const intervalId = setInterval(checkShiftStatus, 1000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(intervalId);
+    }, [studentShift]);
+
     const validateShiftLimits = (formData) => {
         const savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {};
+        const errors = {}; // To collect errors
 
-        const shiftTotals = {};
-
-        // Calculate totals for each shift from form data
-        formData.data.forEach(lesson => {
-            const date = lesson.date; // Assuming lesson.date contains the date of the lesson
+        // Iterate over each lesson in form data
+        for (const lesson of formData.data) {
+            const date = lesson.date;  // Assuming lesson.date contains the date of the lesson
             const shift = lesson.shift;
-            const minutes = parseInt(lesson.drivingMinutes, 10) || 0;
+            const studentName = studentDetails.displayName;
+            const newMinutes = parseInt(lesson.drivingMinutes, 10) || 0;
 
-            if (!savedShiftMinutes[date]) {
-                savedShiftMinutes[date] = {
-                    'משמרת בוקר': 0,
-                    'משמרת צהריים': 0,
-                    'משמרת ערב': 0
+            // Ensure the date exists in savedShiftMinutes
+            if (!savedShiftMinutes) {
+                savedShiftMinutes = {
+                    'משמרת בוקר': { totalMinutes: 0, students: {} },
+                    'משמרת צהריים': { totalMinutes: 0, students: {} },
+                    'משמרת ערב': { totalMinutes: 0, students: {} }
                 };
             }
 
-            if (!shiftTotals[date]) {
-                shiftTotals[date] = { ...savedShiftMinutes[date] };
+            // Retrieve existing shift data
+            const shiftData = savedShiftMinutes[shift];
+            const existingStudentMinutes = shiftData.students[studentName] || 0;
+
+            // Calculate the new total minutes
+            const updatedTotalMinutes = shiftData.totalMinutes - existingStudentMinutes + newMinutes;
+
+            // Check if the total shift minutes exceed the limit
+            if (updatedTotalMinutes > SHIFT_LIMITS[shift]) {
+                errors[`${date} - ${shift}`] = `הגעת למגבלה של ${SHIFT_LIMITS[shift]} דקות עבור ${shift} בתאריך ${date}`;
+                console.log("Shift limit exceeded:", errors);
+
+                return errors; // Stop further processing and return the error
             }
 
-            if (!shiftTotals[date][shift]) {
-                shiftTotals[date][shift] = 0;
-            }
+            // If no errors, update the total shift minutes and the student's minutes
+            shiftData.totalMinutes = updatedTotalMinutes;
+            shiftData.students[studentName] = newMinutes;
 
-            shiftTotals[date][shift] += minutes;
-        });
-
-        // Check if any shift exceeds the limit
-        const errors = {};
-        Object.keys(shiftTotals).forEach(date => {
-            Object.keys(shiftTotals[date]).forEach(shift => {
-                if (shiftTotals[date][shift] > SHIFT_LIMITS[shift]) {
-                    errors[`${date} - ${shift}`] = `הגעת למגבלה של ${SHIFT_LIMITS[shift]} דקות עבור ${shift} בתאריך ${date}`;
-                }
-            });
-        });
-
-        // Save updated totals to localStorage if no errors
-        if (Object.keys(errors).length === 0) {
-            localStorage.setItem('totalShiftMinutes', JSON.stringify(shiftTotals));
+            // Save the updated shift data for the specific date and shift
+            savedShiftMinutes[shift] = shiftData;
         }
+
+        localStorage.setItem('totalShiftMinutes', JSON.stringify(savedShiftMinutes));
 
         return errors;
     };
@@ -198,9 +231,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     }
                     return total;
                 }, 0);
-
-                console.log(totalMinutes);
-
                 await updateStudentAccount({ totalDrivingMinutes: totalMinutes });
                 await usersRefetch();
                 setOpenModalStudentData(false);
@@ -320,7 +350,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                     <label className="block text-gray-700 text-sm font-bold mb-1">ד'ק נהיגה</label>
                                     <input
                                         min={0}
-                                        readOnly={isAssistant}
+                                        readOnly={isAssistant || currentUser?.user === "מורה נהיגה" && isShiftOver}
                                         type="number"
                                         placeholder='הכנס דקות'
                                         value={item.drivingMinutes}
@@ -356,7 +386,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                         {...register(`data[${index}].other`)}
                                         onChange={(e) => handleSetData(index, 'other', e.target.value)}
                                         className={`w-full h-20 border p-2 rounded ${errors.data?.[index]?.other ? 'border-red-500' : 'border-gray-300'}`}
-                                        readOnly={isTeacher}
                                     />
                                     {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
                                 </div>
@@ -428,7 +457,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                                 {...register(`data[${index}].drivingMinutes`, isTeacher && { required: true })}
                                                 onChange={(e) => handleSetData(index, 'drivingMinutes', e.target.value)}
                                                 className={`w-full border p-2 rounded ${errors.data?.[index]?.drivingMinutes ? 'border-red-500' : 'border-gray-300'}`}
-                                                readOnly={isAssistant}
+                                                readOnly={isAssistant || currentUser?.user === "מורה נהיגה" && isShiftOver}
                                             /> <br />
                                             {errors.data?.[index]?.drivingMinutes && <span className="text-white text-xs">חובה*</span>}
                                         </td>
@@ -496,7 +525,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     {deleteLoading && <p className='text-xl pt-2 text-center animate-pulse'>Delete . . . </p>}
                     <div className='p-2'>
                         <p className={`${totalDrivingMinutes >= completeMinutes ? 'bg-green-500 text-white' : 'bg-red-500 text-white'} w-fit text-lg font-bold p-1 rounded-md underline`}>
-                            {loading ? <span className='animate-ping'>. . . </span> : studentDetails?.totalDrivingMinutes?studentDetails.totalDrivingMinutes:0}<span> :סה"כ דקות נהיגה</span></p>
+                            {loading ? <span className='animate-ping'>. . . </span> : studentDetails?.totalDrivingMinutes ? studentDetails.totalDrivingMinutes : 0}<span> :סה"כ דקות נהיגה</span></p>
                     </div>
                     <div className="text-center">
                         <button type="submit" className="bg-blue-500 text-white px-10 font-bold py-2 rounded w-[60%] max-w-[350px]">

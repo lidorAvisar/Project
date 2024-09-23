@@ -126,7 +126,7 @@ const Tests = ({ studentDetails, refetch, setOpenModalStudentData }) => {
                     </button>
                 </div>
             </form> :
-                <p className='font-bold text-xl text-center text-red-500'> 😌עדיין אינו מוכן לטסט</p>
+                <p className='font-bold text-xl text-center text-red-500'> 😌עדיין אינו/ה מוכנ/ה לטסט</p>
             }
         </div>
     );

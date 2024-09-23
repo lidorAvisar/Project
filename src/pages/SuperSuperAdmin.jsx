@@ -15,6 +15,7 @@ import StatusTable from '../components/StatusTable';
 import Greeting from '../components/Greeting';
 import { MdOutlineAddToPhotos } from 'react-icons/md';
 import AddLessonModal from '../components/AddLessonModal';
+import DailyDrivingStatus from '../components/DailyDrivingStatus';
 
 
 
@@ -23,6 +24,7 @@ const SuperSuperAdmin = () => {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
     const [openModalStudentsTable, setOpenModalStudentsTable] = useState(false);
+    const [openModalDailyDrivingStatus, setOpenModalDailyDrivingStatus] = useState(false);
     const [currentEditUser, setCurrentEditUser] = useState(null);
     const [userData, setUserData] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
@@ -35,7 +37,7 @@ const SuperSuperAdmin = () => {
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
     });
-    
+
 
     const { mutate: deleteAdmin } = useMutation({
         mutationKey: ['users'],
@@ -84,6 +86,7 @@ const SuperSuperAdmin = () => {
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
@@ -206,7 +209,10 @@ const SuperSuperAdmin = () => {
                 </tbody>
             </table>
             <div className='w-full flex items-center justify-around gap-3'>
-                <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
+                <div className='flex gap-3'>
+                    <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
+                    <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+                </div>
                 <p className='text-center font-bold text-xl py-5'>רשימת תלמידים</p>
             </div>
             <div className='flex items-center justify-around w-full py-2'>

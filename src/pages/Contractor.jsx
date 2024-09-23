@@ -10,6 +10,7 @@ import { signOut } from 'firebase/auth';
 import StatusTable from '../components/StatusTable';
 import Greeting from '../components/Greeting';
 import ConstractorUserData from '../components/ConstractorUserData';
+import DailyDrivingStatus from '../components/DailyDrivingStatus';
 
 
 
@@ -17,6 +18,7 @@ const Contractor = () => {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
     const [openModalStudentsTable, setOpenModalStudentsTable] = useState(false);
+    const [openModalDailyDrivingStatus, setOpenModalDailyDrivingStatus] = useState(false);
     const [userData, setUserData] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
     const [user] = useCurrentUser();
@@ -50,12 +52,12 @@ const Contractor = () => {
         );
 
 
-
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openEditModal && <EditUserModal user={user} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
             {openModalStudentData && <ConstractorUserData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
             <div className="flex justify-around items-center w-full pt-3">
                 <div className='flex items-center gap-3'>
                     <button onClick={() => { setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
@@ -114,7 +116,10 @@ const Contractor = () => {
                 </tbody>
             </table>
             <div className='w-full flex items-center justify-around gap-3'>
-                <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
+                <div className='flex gap-3'>
+                    <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
+                    <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+                </div>
                 <p className='text-center font-bold text-xl py-5'>רשימת תלמידים</p>
             </div>
             <div className='flex items-center justify-around w-full py-2'>

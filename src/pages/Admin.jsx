@@ -13,6 +13,7 @@ import StudentData from '../components/StudentData';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import StatusTable from '../components/StatusTable';
 import Greeting from '../components/Greeting';
+import DailyDrivingStatus from '../components/DailyDrivingStatus';
 
 const Admin = () => {
     const [currentUser, _, loading] = useCurrentUser();
@@ -20,6 +21,7 @@ const Admin = () => {
     const [openModalAddLesson, setOpenModalAddLesson] = useState(false);
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
     const [openModalStudentsTable, setOpenModalStudentsTable] = useState(false);
+    const [openModalDailyDrivingStatus, setOpenModalDailyDrivingStatus] = useState(false);
     const [studentDetails, setStudentDetails] = useState();
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -53,6 +55,7 @@ const Admin = () => {
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={studentDetails} filteredTeachers={filteredTeachers} refetch={refetch} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={studentDetails} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} filteredStudents={filteredStudents} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
             <div dir='rtl' className='w-full flex flex-col items-center'>
                 <p className='font-bold text-lg text-gray-500 py-2 flex flex-col sm:flex-row sm:gap-2'> <Greeting /> {currentUser.displayName} , מח' {currentUser.departments}</p>
                 <div className='w-full flex flex-row items-center justify-around gap-3 pt-3'>
@@ -74,8 +77,9 @@ const Admin = () => {
 
                         <IoMdPersonAdd onClick={() => setOpenModalAddStudent(true)} className='text-4xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full p-1 cursor-pointer' />
                     </div>
-                    <div>
+                    <div className='flex gap-3'>
                         <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
+                        <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
                     </div>
                 </div>
                 <p className='font-bold text-xl lg:text-2xl py-5 pt-8 underline'>רשימת תלמידים</p>

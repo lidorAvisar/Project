@@ -12,7 +12,7 @@ const ViewTheoriesForConstractor = ({ studentDetails }) => {
                         {theoryList.map(num => (
                             <div
                                 key={num}
-                                className={`mt-1 block w-full px-2 py-1.5 text-center text-white rounded-md ${num <= studentDetails.theorySessionsQuantity ? 'bg-green-500' : 'bg-gray-400'}`}
+                                className={`mt-1 block w-full px-2 py-1.5 text-center text-white rounded-md ${num <= studentDetails?.theorySessionsQuantity ? 'bg-green-500' : 'bg-gray-400'}`}
                             >
                                 <span className='hidden sm:block'>תאוריה</span> {num}
                             </div>
@@ -22,7 +22,7 @@ const ViewTheoriesForConstractor = ({ studentDetails }) => {
                 <h3 className="text-lg text-center font-bold mb-2 underline">מבחני תיאוריה</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {theoryList.map(num => {
-                        const test = studentDetails.detailsTheoryTest?.find(test => test.testNumber === num) || {};
+                        const test = studentDetails?.detailsTheoryTest?.find(test => test.testNumber === num) || {};
                         return (
                             <div key={num} className={`shadow-lg rounded-lg p-4 flex flex-col items-center ${test.mistakes === undefined ? '' : (test.mistakes > 4 ? 'bg-red-400' : 'bg-green-400')}`}>
                                 <h4 className="text-xl font-bold mb-2">מבחן {num}</h4>

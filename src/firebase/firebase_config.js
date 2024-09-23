@@ -36,7 +36,7 @@ export const signUpWithEmailAndPassword = async (email, password) => {
   return res;
 }
 
-//מייצר לך משתמש , באמצעות יצירה של המ"פ
+//בfireStore מייצר לך משתמש
 export const createUserDoc = async (data) => {
   const { uid, email, displayName, ...additional } = data;
   const userDocRef = doc(db, "users", uid);
@@ -65,7 +65,7 @@ export const addUser = async (email, password) => {
   const payload = {
     email: email,
     password: password,
-    returnSecureToken: false
+    returnSecureToken: true
   };
 
   try {
@@ -86,9 +86,14 @@ export const addUser = async (email, password) => {
     return data;
   }
   catch (error) {
-    alert("שגיאה")
+    if (error.message === "EMAIL_EXISTS") {
+      alert("האימייל הזה כבר קיים במערכת.");
+    } else {
+      alert("שגיאה ביצירת המשתמש.");
+    }
   }
 };
+
 
 //יצירת משתמש באמצעות הרשמה
 export const createUserDocFromAuth = async (userAuth, additional = {}) => {

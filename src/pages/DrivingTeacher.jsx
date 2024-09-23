@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import TableDriving from '../components/TableDriving';
 import { FaSignOutAlt, FaSyncAlt } from 'react-icons/fa';
 import { signOut } from 'firebase/auth';
 import { auth, getAccounts, getPracticalDriving } from '../firebase/firebase_config';
@@ -7,6 +6,7 @@ import { useQuery } from 'react-query';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from '../components/Loading';
 import Greeting from '../components/Greeting';
+import TeacherUserData from '../components/TeacherUserData';
 
 const DrivingTeacher = () => {
     const today = new Date().toISOString().split('T')[0];
@@ -20,15 +20,16 @@ const DrivingTeacher = () => {
     useEffect(() => {
         const savedDate = localStorage.getItem('lastDate');
         if (savedDate !== today) {
-            const initialShiftMinutes = {
-                'משמרת בוקר': 0,
-                'משמרת צהריים': 0,
-                'משמרת ערב': 0
+            const initialShiftData = {
+                'משמרת בוקר': { totalMinutes: 0, students: {} },
+                'משמרת צהריים': { totalMinutes: 0, students: {} },
+                'משמרת ערב': { totalMinutes: 0, students: {} }
             };
-            localStorage.setItem('totalShiftMinutes', JSON.stringify(initialShiftMinutes));
+            localStorage.setItem('totalShiftMinutes', JSON.stringify(initialShiftData));
             localStorage.setItem('lastDate', today);
         }
     }, []);
+
 
 
     const { data, isLoading, isError, error } = useQuery({
@@ -152,7 +153,7 @@ const DrivingTeacher = () => {
             </div>
             <hr className='w-[90%]  border-black' />
             {openModal && <div className='px-2 w-full max-w-[1000px]'>
-                <TableDriving studentDetails={selectedStudent} studentUid={studentUid} setOpenModalStudentData={setOpenModal} studentShift={studentShift} usersRefetch={usersRefetch} />
+                <TeacherUserData studentDetails={selectedStudent} studentUid={studentUid} setOpenModalStudentData={setOpenModal} studentShift={studentShift} usersRefetch={usersRefetch} />
             </div>}
         </div>
     );
