@@ -12,7 +12,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
     const [teacherUid, setTeacherUid] = useState();
 
-    const { data, isLoading, isError, error } = useQuery({
+    const { data:allLessons, isLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
         queryFn: getPracticalDriving,
     });
@@ -36,6 +36,19 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         data.teacherUid = teacherUid;
         data.student = studentDetails.displayName;
         data.drivingMinutes = null;
+
+        // Check if the student is already assigned for this shift on this day
+        const existingLesson = allLessons?.find(lesson =>
+            lesson.studentUid === data.studentUid &&
+            lesson.date === data.date &&
+            lesson.shift === data.shift
+        );
+
+        if (existingLesson) {
+            alert('התלמיד כבר משובץ למשמרת זו');
+            return; 
+        }
+
         try {
             const lessonId = crypto.randomUUID();
             const lessonData = { lessonId, data }
@@ -43,13 +56,12 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             updateAccount(studentDetails.uid, { lessonId })
 
         } catch (error) {
-            alert(error);
+            alert("לא נוסף השיעור");
         }
     };
 
     const handleTeacherChange = (event) => {
         const selectedTeacher = filteredTeachers.find(account => account.displayName === event.target.value);
-        console.log(selectedTeacher);
         setTeacherUid(selectedTeacher.uid);
     };
 
@@ -78,7 +90,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                                     id="teacher"
                                     {...register('teacher', { required: 'This field is required' })}
                                 >
-                                    <option className value="">בחר מורה . . .</option>
+                                    <option value="">בחר מורה . . .</option>
                                     {filteredTeachers?.map(account => (
                                         <option key={account.displayName} value={account.displayName}>{account.displayName}</option>
                                     ))}

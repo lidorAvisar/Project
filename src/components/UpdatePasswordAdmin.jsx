@@ -6,21 +6,20 @@ import { changePassword } from '../firebase/firebase_config';
 
 const ChangePasswordModal = ({ setOpenModalPassword, user }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const [success, setSuccess] = useState(null);
-    const [err, setErr] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const onSubmit = async (data) => {
-        try {
 
+    const onSubmit = async (data) => {
+        setLoading(true);
+        try {
             await changePassword(user.uid, data.newPassword);
             reset(); // Clear form inputs after successful password change
         } catch (error) {
             alert("שינוי סיסמא נכשל")
+            setLoading(false)
         }
+        setLoading(false)
     };
-
-
-
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
@@ -51,14 +50,11 @@ const ChangePasswordModal = ({ setOpenModalPassword, user }) => {
                             </div>
                             {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
                         </div>
-
-                        {success && <p className="text-green-500 text-xs mt-1">{success}</p>}
-                        <p className="text-red-500 text-xs mt-1">{err}</p>
                         <div className='flex flex-col gap-5'>
                             <button
                                 type="submit"
                                 className=" w-full justify-center rounded-md bg-blue-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                                עדכן סיסמא
+                                {loading ? 'טוען . . .' : 'עדכן סיסמא'}
                             </button>
                             <button
                                 onClick={() => setOpenModalPassword(false)}
