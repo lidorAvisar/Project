@@ -22,7 +22,6 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
 
     const onSubmit = (data) => {
-        console.log(data);
         setLoading(true);
         try {
             if (departmentsToogle) {
