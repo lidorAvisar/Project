@@ -54,6 +54,22 @@ export const createUserDoc = async (data) => {
   return userDocRef;
 };
 
+// העברת נתוני התלמיד לארכיון
+export const archiveStudent = async (studentDetails) => {
+  const { uid } = studentDetails;
+  const archiveDocRef = doc(db, "student_archive", uid);
+  try {
+    await setDoc(archiveDocRef, {
+      ...studentDetails,
+      archivedAt: new Date(),
+    });
+  }
+  catch (error) {
+    console.log(error);
+  }
+};
+
+
 export const addUserToAuth = async (email, password) => {
   return await createUserWithEmailAndPassword(auth, email, password);
 }
@@ -141,6 +157,26 @@ export const getAccounts = async () => {
   })
 
   return usersData;
+}
+
+// משיג את כל התלמידים בארכיון
+export const getArchiveAccounts = async () => {
+  try {
+    const queryObject = query(collection(db, "student_archive"));
+    const userDocs = await getDocs(queryObject);
+    if (userDocs.empty) {
+      return [];
+    }
+
+    const usersData = userDocs.docs.map(doc => {
+      return doc.data();
+    })
+
+    return usersData;
+  }
+  catch (error) {
+    alert("לא מצליח להשיג את התלמידים")
+  }
 }
 
 //משיג את השיעורי נהיגה

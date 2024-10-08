@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
 import TableDriving from './TableDriving';
-import { deleteAccount, deleteLessons, getPracticalDriving, storage, updateAccount } from '../firebase/firebase_config';
+import { archiveStudent, deleteAccount, deleteLessons, getPracticalDriving, storage, updateAccount } from '../firebase/firebase_config';
 import Theories from './Theories';
 import Tests from './Tests';
 import { useMutation, useQuery } from 'react-query';
@@ -12,6 +12,8 @@ import { EditUserModal } from './EditUserModal';
 import AddFileStudent from './AddFileStudent';
 import { Loading } from './Loading';
 import { deleteObject, listAll, ref } from 'firebase/storage';
+import { GiArchiveRegister } from "react-icons/gi";
+
 
 
 const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers }) => {
@@ -49,6 +51,23 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             alert("הקבצים של אותו תלמיד לא נמחקו")
         }
     };
+
+    const { mutate: archived } = useMutation({
+        mutationKey: ['student_archive'],
+        mutationFn: async () => {
+            try {
+                await archiveStudent(studentDetails);
+                deleteMutation(studentDetails.uid)
+            }
+            catch (error) {
+                console.log(error);
+                alert("לא הצליחה העברת התלמיד")
+            }
+        },
+        onSuccess: () => {
+            alert("התלמיד העובר לארכיון בהצלחה!")
+        },
+    })
 
     const { mutate: deleteMutation, isLoading } = useMutation({
         mutationKey: ['users'],
@@ -91,17 +110,24 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
                 {openEditModal && <EditUserModal user={studentDetails} usersRefetch={usersRefetch} setOpenEditModal={setOpenEditModal} />}
-                <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
-                    <p className='font-bold  text-xl'>{studentDetails.displayName}</p>
-                    <div className='flex gap-3'>
-                        <button onClick={() => setOpenModalStudentData(false)} className='bg-green-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold w-fit flex items-center shadow-lg'>
-                            <TiArrowBack className='text-2xl' /><span className='hidden sm:flex'>חזור</span>
-                        </button>
-                        <button onClick={() => setOpenEditModal(true)} className='bg-blue-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
-                            <BiEditAlt className='text-2xl' /><span className='hidden sm:flex'>עריכה</span>
-                        </button>
-                        <button onClick={() => window.confirm("האם אתה בטוח?") && deleteMutation(studentDetails.uid)} className='bg-red-500 rounded-lg w-fit p-1 px-2 sm:px-3 text-white font-bold flex items-center gap-2 shadow-lg'>
-                            <BsTrash className='text-xl' /> <span className='hidden sm:flex'>הסר תלמיד</span>
+                <div className='flex flex-col gap-2'>
+                    <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
+                        <p className='font-bold  text-xl'>{studentDetails.displayName}</p>
+                        <div className='flex gap-3'>
+                            <button onClick={() => setOpenModalStudentData(false)} className='bg-green-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold w-fit flex items-center shadow-lg'>
+                                <TiArrowBack className='text-2xl' /><span className='hidden sm:flex'>חזור</span>
+                            </button>
+                            <button onClick={() => setOpenEditModal(true)} className='bg-blue-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
+                                <BiEditAlt className='text-2xl' /><span className='hidden sm:flex'>עריכה</span>
+                            </button>
+                            <button onClick={() => window.confirm("האם אתה בטוח?") && deleteMutation(studentDetails.uid)} className='bg-red-500 rounded-lg w-fit p-1 px-2 sm:px-3 text-white font-bold flex items-center gap-2 shadow-lg'>
+                                <BsTrash className='text-xl' /> <span className='hidden sm:flex'>הסר תלמיד</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
+                        <button onClick={() => window.confirm("האם אתה בטוח להעביר תלמיד זה לארכיון? פעולה זו תמחוק את נתוניו מהפעילות ויעביר את נתוניו לארכיון") && archived()} className='bg-gray-500 rounded-lg w-fit p-1 px-2 sm:px-3 text-white font-bold flex items-center gap-2 shadow-lg'>
+                            <GiArchiveRegister className='text-xl' /> <span className='hidden sm:flex'>העבר לארכיון</span>
                         </button>
                     </div>
                 </div>
@@ -429,8 +455,12 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                     className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
                                 >
                                     <option className='font-thin' value="">בחר סוג רכב. . .</option>
-                                    <option className='font-bold' value="ג'יפ/דוד">ג'יפ/דוד</option>
+                                    <option className='font-bold' value="ג'יפ">ג'יפ</option>
+                                    <option className='font-bold' value="דוד">דוד</option>
                                     <option className='font-bold' value="האמר">האמר</option>
+                                    <option className='font-bold' value="טיגריס">טיגריס</option>
+                                    <option className='font-bold' value="האמר ממוגן">האמר ממוגן</option>
+                                    <option className='font-bold' value="סאונה">סאונה</option>
                                 </select>
                                 {errors.carType && <span className="text-red-500 text-sm">{errors.carType.message}</span>}
                             </div>

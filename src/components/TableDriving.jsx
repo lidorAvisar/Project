@@ -286,6 +286,9 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
 
     const isTeacher = currentUser?.user === "מורה נהיגה";
     const isAssistant = currentUser?.user === 'מ"מ' || currentUser?.user === 'מ"פ';
+    console.log(currentUser.user);
+    console.log(isAssistant);
+
 
     if (isLoading || teacherLoading) {
         <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
@@ -389,17 +392,19 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                     />
                                     {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
                                 </div>
-                                {isAssistant || currentUser.user === "מנהל" && <div className='flex justify-center '>
-                                    <button
-                                        onClick={() => {
-                                            if (window.confirm("האם אתה בטוח?")) handleDeleteLesson(item.uid);
-                                        }}
-                                        type='button'
-                                        className='p-1 px-8 bg-red-500 text-white font-bold rounded-md'
-                                    >
-                                        מחק שיעור
-                                    </button>
-                                </div>}
+                                {(isAssistant || currentUser.user === "מנהל") && (
+                                    <div className='flex justify-center'>
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm("האם אתה בטוח?")) handleDeleteLesson(item.uid);
+                                            }}
+                                            type='button'
+                                            className='p-1 px-8 bg-red-500 text-white font-bold rounded-md'
+                                        >
+                                            מחק שיעור
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -414,7 +419,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-2">ד'ק נהיגה</th>
                                     <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 px-8">שם מורה</th>
                                     <th className={`text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 ${isExpanded !== false ? 'w-60' : 'max-w-[100px]'}`}>אחר</th>
-                                    {isAssistant || currentUser.user === "מנהל" && <th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-1">מחיקה</th>}
+                                    {(isAssistant || currentUser.user === "מנהל") && (<th className="text-center text-[15px] font-medium text-gray-500 uppercase tracking-wider border border-gray-200 p-1">מחיקה</th>)}
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y w-full divide-gray-200">
@@ -511,12 +516,13 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                             )}
                                             {errors.data?.[index]?.other && <span className="text-red-500 text-xs">Required</span>}
                                         </td>
-                                        {isAssistant || currentUser.user === "מנהל" && <td>
+                                        {(isAssistant || currentUser.user === "מנהל") && (<td>
                                             <BsTrash
                                                 onClick={() => { if (window.confirm("האם אתה בטוח?")) handleDeleteLesson(item.uid); }}
                                                 className='text-red-500 text-lg cursor-pointer mx-auto'
                                             />
-                                        </td>}
+                                        </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

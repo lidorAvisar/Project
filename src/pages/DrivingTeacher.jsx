@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSignOutAlt, FaSyncAlt } from 'react-icons/fa';
+import { FaSignOutAlt } from 'react-icons/fa';
 import { signOut } from 'firebase/auth';
 import { auth, getAccounts, getPracticalDriving } from '../firebase/firebase_config';
 import { useQuery } from 'react-query';

@@ -16,6 +16,8 @@ import Greeting from '../components/Greeting';
 import { MdOutlineAddToPhotos } from 'react-icons/md';
 import AddLessonModal from '../components/AddLessonModal';
 import DailyDrivingStatus from '../components/DailyDrivingStatus';
+import Archives from '../components/Archives';
+import { GiArchiveRegister } from 'react-icons/gi';
 
 
 
@@ -29,6 +31,7 @@ const SuperSuperAdmin = () => {
     const [userData, setUserData] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
     const [openModalAddLesson, setOpenModalAddLesson] = useState(false);
+    const [openModalArchives, setOpenModalArchives] = useState(false);
     const [filteredCurrentUser, setFilteredCurrentUser] = useState('')
     const [user] = useCurrentUser();
 
@@ -88,25 +91,33 @@ const SuperSuperAdmin = () => {
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
+            {openModalArchives && <Archives setOpenModalArchives={setOpenModalArchives} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
                     <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
-                    <div dir='ltr' className="flex flex-col sm:flex-row items-center ">
-                        <button onClick={async () => {
-                            if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
-                                try {
-                                    await signOut(auth);
-                                    window.location.replace('/')
+                    <div className='flex flex-col items-center'>
+                        <div dir='ltr' className="flex flex-col sm:flex-row items-center ">
+                            <button onClick={async () => {
+                                if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
+                                    try {
+                                        await signOut(auth);
+                                        window.location.replace('/')
+                                    }
+                                    catch (error) {
+                                        alert("שגיאה")
+                                    }
                                 }
-                                catch (error) {
-                                    alert("שגיאה")
-                                }
-                            }
-                        }} className='flex items-center gap-2 sm:text-lg  text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>
-                        </button>
-                        <button dir='ltr' onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className=' rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-blue-500 font-bold flex items-center w-fit gap-2'>
-                            <BiEditAlt className='text-2xl' /><span>עריכה</span>
-                        </button>
+                            }} className='flex items-center gap-2 sm:text-lg  text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>
+                            </button>
+                            <button dir='ltr' onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className=' rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-blue-500 font-bold flex items-center w-fit gap-2'>
+                                <BiEditAlt className='text-2xl' /><span>עריכה</span>
+                            </button>
+                        </div>
+                        <div>
+                            <button onClick={() => setOpenModalArchives(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-gray-500 font-bold flex items-center gap-2'>
+                               <span>ארכיון</span> <GiArchiveRegister className='text-xl' /> 
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <button onClick={() => setOpenRegisterModal(true)} className="flex items-center gap-2 text-center rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-300" > <FaUserPlus className=" text-lg" /> <span className="hidden sm:inline">הוסף משתמש</span></button>

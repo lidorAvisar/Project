@@ -124,6 +124,7 @@ const Theories = ({ studentDetails, setOpenModalStudentData, usersRefetch }) => 
                                                 type="number"
                                                 id={`mistakes-${num}`}
                                                 min={0}
+                                                max={30}
                                                 {...field}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             />

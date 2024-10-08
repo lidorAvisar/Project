@@ -115,13 +115,20 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                             <td className="py-3 px-4">{student.cycle}</td>
                                             <td className="py-3 px-4">{student.departments}</td>
                                             <td className="py-3 px-4">{student.userId}</td>
-                                            <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes ? (
-                                                student.previousLicense === "no" ? (
-                                                    student.totalDrivingMinutes >= 1280 ? 'bg-green-500' : 'bg-orange-500'
-                                                ) : (
-                                                    student.totalDrivingMinutes >= 800 ? 'bg-green-500' : 'bg-orange-500'
-                                                )
-                                            ) : 'bg-orange-500'
+                                            <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes &&
+                                                    student.nightDriving &&
+                                                    student.tests &&
+                                                    student.tests.length > 0 &&
+                                                    student.tests.slice(-1)[0].status === "Pass" &&
+                                                    student.nightDriving >= 40
+                                                    ? student.previousLicense === "no"
+                                                        ? student.totalDrivingMinutes >= 1280
+                                                            ? 'bg-green-500'
+                                                            : 'bg-orange-500'
+                                                        : student.totalDrivingMinutes >= 800
+                                                            ? 'bg-green-500'
+                                                            : 'bg-orange-500'
+                                                    : 'bg-orange-500'
                                                 }`}>
                                                 {student.totalDrivingMinutes ? student.totalDrivingMinutes : 'טרם'}
                                             </td>
@@ -149,7 +156,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                     <p className='font-bold text-center text-2xl pt-10'>אין תוצאות</p>
                 )}
                 <div className='flex justify-center'>
-                <button onClick={() => setOpenModalStudentsTable(false)} className='w-[50%] max-w-96 bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
+                    <button onClick={() => setOpenModalStudentsTable(false)} className='w-[50%] max-w-96 bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
                 </div>
             </div>
         </div>
