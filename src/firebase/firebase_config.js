@@ -211,6 +211,7 @@ export const deleteAccount = async (id) => {
 
 // עדכון נתוני המשתמש
 export const updateAccount = async (id, data) => {
+  
   try {
     const userDocRef = doc(db, "users", id);
     if (data.hasOwnProperty("lessonId")) {

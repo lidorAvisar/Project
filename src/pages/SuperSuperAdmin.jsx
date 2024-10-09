@@ -16,8 +16,9 @@ import Greeting from '../components/Greeting';
 import { MdOutlineAddToPhotos } from 'react-icons/md';
 import AddLessonModal from '../components/AddLessonModal';
 import DailyDrivingStatus from '../components/DailyDrivingStatus';
-import Archives from '../components/Archives';
 import { GiArchiveRegister } from 'react-icons/gi';
+import ArchiveByCycle from '../components/ArchiveByCycle';
+import MoveToArchive from '../components/MoveToArchive';
 
 
 
@@ -31,8 +32,9 @@ const SuperSuperAdmin = () => {
     const [userData, setUserData] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
     const [openModalAddLesson, setOpenModalAddLesson] = useState(false);
-    const [openModalArchives, setOpenModalArchives] = useState(false);
+    const [openModalArchiveByCycle, setOpenModalArchiveByCycle] = useState(false);
     const [filteredCurrentUser, setFilteredCurrentUser] = useState('')
+    const [openModalMoveToArchive, setOpenModalMoveToArchive] = useState(false);
     const [user] = useCurrentUser();
 
 
@@ -91,7 +93,8 @@ const SuperSuperAdmin = () => {
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
-            {openModalArchives && <Archives setOpenModalArchives={setOpenModalArchives} />}
+            {openModalArchiveByCycle && <ArchiveByCycle setOpenModalArchiveByCycle={setOpenModalArchiveByCycle} />}
+            {openModalMoveToArchive && <MoveToArchive setOpenModalMoveToArchive={setOpenModalMoveToArchive} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
                     <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
@@ -114,8 +117,8 @@ const SuperSuperAdmin = () => {
                             </button>
                         </div>
                         <div>
-                            <button onClick={() => setOpenModalArchives(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-gray-500 font-bold flex items-center gap-2'>
-                               <span>ארכיון</span> <GiArchiveRegister className='text-xl' /> 
+                            <button onClick={() => setOpenModalArchiveByCycle(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-gray-500 font-bold flex items-center gap-2'>
+                                <span>ארכיון</span> <GiArchiveRegister className='text-xl' />
                             </button>
                         </div>
                     </div>
@@ -219,10 +222,17 @@ const SuperSuperAdmin = () => {
 
                 </tbody>
             </table>
-            <div className='w-full flex items-center justify-around gap-3'>
-                <div className='flex gap-3'>
-                    <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
-                    <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+            <div className='w-full flex items-center justify-around gap-3 py-5'>
+                <div className='flex flex-col gap-3'>
+                    <div className='flex gap-3'>
+                        <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
+                        <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+                    </div>
+                    <div className='flex justify-center'>
+                        <button onClick={() => setOpenModalMoveToArchive(true)} className='bg-slate-300 rounded-lg w-fit p-1 px-2 sm:px-3 font-bold flex items-center gap-2'>
+                            <GiArchiveRegister className='text-xl' /> <span>העבר לארכיון</span>
+                        </button>
+                    </div>
                 </div>
                 <p className='text-center font-bold text-xl py-5'>רשימת תלמידים</p>
             </div>
@@ -247,7 +257,7 @@ const SuperSuperAdmin = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {filteredStudents?.map(account => (
-                        <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className='hover:bg-gray-200 cursor-pointer' key={account.uid}>
+                        <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className={`cursor-pointer ${account.newStatus&&account.newStatus==="expelled"?'bg-red-300':account.newStatus==="finished successfully"?'bg-green-300':'hover:bg-gray-200'}`} key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.departments}</td>

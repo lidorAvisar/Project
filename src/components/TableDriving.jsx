@@ -286,8 +286,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
 
     const isTeacher = currentUser?.user === "מורה נהיגה";
     const isAssistant = currentUser?.user === 'מ"מ' || currentUser?.user === 'מ"פ';
-    console.log(currentUser.user);
-    console.log(isAssistant);
 
 
     if (isLoading || teacherLoading) {

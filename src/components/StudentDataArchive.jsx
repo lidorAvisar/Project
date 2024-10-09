@@ -6,7 +6,7 @@ import { TiArrowBack } from 'react-icons/ti'
 
 const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
     return (
-        <div className='z-20 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
+        <div className='z-30 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 space-y-3 mb-5 rounded-lg h-[90%] overflow-y-auto'>
                 <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
                     <p className='font-bold  text-xl'>{userData.displayName}</p>
@@ -77,12 +77,12 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
                             {userData?.totalDrivingMinutes || "טרם"}
                         </p>
                     </div>
-                    {/* <div className="mb-4">
+                    <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">סה"כ דקות נהיגת לילה:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {nightDriving || "טרם"}
+                            {userData.nightDriving || "טרם"}
                         </p>
-                    </div> */}
+                    </div>
                 </div>
 
                 <div dir='rtl' className='space-y-5'>

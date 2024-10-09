@@ -116,19 +116,19 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                             <td className="py-3 px-4">{student.departments}</td>
                                             <td className="py-3 px-4">{student.userId}</td>
                                             <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes &&
-                                                    student.nightDriving &&
-                                                    student.tests &&
-                                                    student.tests.length > 0 &&
-                                                    student.tests.slice(-1)[0].status === "Pass" &&
-                                                    student.nightDriving >= 40
-                                                    ? student.previousLicense === "no"
-                                                        ? student.totalDrivingMinutes >= 1280
-                                                            ? 'bg-green-500'
-                                                            : 'bg-orange-500'
-                                                        : student.totalDrivingMinutes >= 800
-                                                            ? 'bg-green-500'
-                                                            : 'bg-orange-500'
-                                                    : 'bg-orange-500'
+                                                student.nightDriving &&
+                                                student.detailsTheoryTest &&
+                                                student.detailsTheoryTest.length > 0 &&
+                                                student.detailsTheoryTest.slice(-1)[0].mistakes <= 4 &&
+                                                student.nightDriving >= 40
+                                                ? student.previousLicense === "no"
+                                                    ? student.totalDrivingMinutes >= 1280
+                                                        ? 'bg-green-500'
+                                                        : 'bg-orange-500'
+                                                    : student.totalDrivingMinutes >= 800
+                                                        ? 'bg-green-500'
+                                                        : 'bg-orange-500'
+                                                : 'bg-orange-500'
                                                 }`}>
                                                 {student.totalDrivingMinutes ? student.totalDrivingMinutes : 'טרם'}
                                             </td>

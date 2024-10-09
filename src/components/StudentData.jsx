@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
 import TableDriving from './TableDriving';
-import { archiveStudent, deleteAccount, deleteLessons, getPracticalDriving, storage, updateAccount } from '../firebase/firebase_config';
+import { deleteAccount, deleteLessons, getPracticalDriving, storage, updateAccount } from '../firebase/firebase_config';
 import Theories from './Theories';
 import Tests from './Tests';
 import { useMutation, useQuery } from 'react-query';
@@ -13,6 +13,7 @@ import AddFileStudent from './AddFileStudent';
 import { Loading } from './Loading';
 import { deleteObject, listAll, ref } from 'firebase/storage';
 import { GiArchiveRegister } from "react-icons/gi";
+import StatusBar from './StatusBar';
 
 
 
@@ -52,23 +53,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
         }
     };
 
-    const { mutate: archived } = useMutation({
-        mutationKey: ['student_archive'],
-        mutationFn: async () => {
-            try {
-                await archiveStudent(studentDetails);
-                deleteMutation(studentDetails.uid)
-            }
-            catch (error) {
-                console.log(error);
-                alert("לא הצליחה העברת התלמיד")
-            }
-        },
-        onSuccess: () => {
-            alert("התלמיד העובר לארכיון בהצלחה!")
-        },
-    })
-
     const { mutate: deleteMutation, isLoading } = useMutation({
         mutationKey: ['users'],
         mutationFn: async (id) => {
@@ -88,6 +72,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
 
 
     const onSubmit = async (data) => {
+
         try {
             const studentUid = studentDetails.uid;
             await updateAccount(studentUid, data);
@@ -98,6 +83,23 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             alert("שגיאה");
         }
     };
+
+    useEffect(() => {
+        const updateNightDriving = async () => {
+            if (!studentDetails.nightDriving || studentDetails.nightDriving !== nightDriving) {
+                try {
+                    await updateAccount(studentDetails.uid, { nightDriving });
+                }
+                catch (error) {
+                    console.log(error);
+                }
+
+            }
+        };
+
+        updateNightDriving();
+    }, [studentDetails, nightDriving]);
+
 
     if (isLoading) {
         return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
@@ -125,11 +127,9 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                             </button>
                         </div>
                     </div>
-                    <div className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
-                        <button onClick={() => window.confirm("האם אתה בטוח להעביר תלמיד זה לארכיון? פעולה זו תמחוק את נתוניו מהפעילות ויעביר את נתוניו לארכיון") && archived()} className='bg-gray-500 rounded-lg w-fit p-1 px-2 sm:px-3 text-white font-bold flex items-center gap-2 shadow-lg'>
-                            <GiArchiveRegister className='text-xl' /> <span className='hidden sm:flex'>העבר לארכיון</span>
-                        </button>
-                    </div>
+                </div>
+                <div dir='rtl' className='py-1'>
+                    <StatusBar studentId={studentDetails.uid} usersRefetch={usersRefetch} studentDetails={studentDetails}  />
                 </div>
                 <div className="flex flex-col items-center w-full">
                     <form onSubmit={handleSubmit(onSubmit)} dir='rtl' className="w-full bg-white rounded-lg overflow-hidden shadow-lg p-2 sm:p-6 mb-20 my-5 space-y-6 max-w-[900px]">
