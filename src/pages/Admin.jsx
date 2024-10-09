@@ -105,7 +105,7 @@ const Admin = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {filteredStudents?.map(account => (
-                        <tr key={account.uid}>
+                        <tr className={`cursor-pointer ${account.newStatus&&account.newStatus==="expelled"?'bg-red-300':account.newStatus==="finished successfully"?'bg-green-300':'hover:bg-gray-200'}`} key={account.uid}>
                             <td className="text-center py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center py-4 whitespace-nowrap">{account.userId}</td>
                             <td className="text-center text-xl py-4 whitespace-nowrap"><GoChecklist onClick={() => { setOpenModalStudentData(true); setStudentDetails(account); }} className='text-gray-500 cursor-pointer inline-block' /></td>

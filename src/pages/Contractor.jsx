@@ -142,7 +142,7 @@ const Contractor = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {filteredStudents.map(account => (
-                        <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className='hover:bg-gray-200 cursor-pointer' key={account.uid}>
+                        <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className={`cursor-pointer ${account.newStatus&&account.newStatus==="expelled"?'bg-red-300':account.newStatus==="finished successfully"?'bg-green-300':'hover:bg-gray-200'}`} key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.departments}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
