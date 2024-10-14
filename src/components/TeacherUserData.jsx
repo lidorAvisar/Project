@@ -80,10 +80,10 @@ const TeacherUserData = ({ studentDetails, studentUid, setOpenModalStudentData, 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">אם יש רשיון קודם:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {studentDetails?.previousLicense === "B"
-                                ? "B"
-                                : studentDetails?.previousLicense === "motorcycle"
-                                    ? "אופנוע"
+                            {studentDetails?.previousLicense === "B Manual"
+                                ? "B ידני"
+                                : studentDetails?.previousLicense === "B Auto"
+                                    ? "B אוטומט"
                                     : "לא"}
                         </p>
                     </div>
@@ -94,14 +94,6 @@ const TeacherUserData = ({ studentDetails, studentUid, setOpenModalStudentData, 
                             {studentDetails?.glasses === "yes" ? "כן" : "לא"}
                         </p>
                     </div>
-
-                    <div className="mb-4">
-                        <p className="block  text-lg font-bold text-gray-700 ">טופס 115:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {studentDetails?.form115 === "yes" ? "כן" : "לא"}
-                        </p>
-                    </div>
-
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">סה"כ דקות שבוצעו:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">

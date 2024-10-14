@@ -40,6 +40,7 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
         }
         reset();
     };
+    
 
     return <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
         {openModalPassword && <UpdatePasswordAdmin setOpenModalPassword={setOpenModalPassword} user={user} />}
@@ -159,6 +160,20 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
                         </div>
                         {errors.userId && <p className="text-red-500">ת"ז זה אינו חוקי</p>}
                     </div>
+                    {user.user === "מורה נהיגה" &&
+                        <div>
+                            <label htmlFor="school" className="text-lg block font-medium leading-6 text-gray-900">
+                                בית ספר:
+                            </label>
+                            <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                name="school" id="school" {...register("school", { required: true })}>
+                                <option value="">בחר בית ספר . . .</option>
+                                <option className='font-bold' value='שרייבר'>שרייבר</option>
+                                <option className='font-bold' value='יובלי'>יובלי</option>
+                                <option className='font-bold' value='צבאי'>צבאי</option>
+                            </select>
+                            {errors.school && <p className="text-red-500">בית ספר זה אינו חוקי</p>}
+                        </div>}
                     <div className="text-center font-bold underline text-blue-700 hover:text-blue-500">
                         <p onClick={() => setOpenModalPassword(true)} className="cursor-pointer">לחץ לשינוי סיסמא</p>
                     </div>

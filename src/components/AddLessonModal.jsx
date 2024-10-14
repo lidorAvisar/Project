@@ -4,15 +4,19 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { addLesson, getPracticalDriving, updateAccount } from '../firebase/firebase_config';
 import { Loading } from './Loading';
 import { useCurrentUser } from '../firebase/useCurerntUser';
+import { IoArrowDown } from 'react-icons/io5';
 
 const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData }) => {
+    const schools = ["שרייבר", "יובלי", "צבאי"]
+
+    const [expandedSchool, setExpandedSchool] = useState(null);
     const [currentUser] = useCurrentUser();
     const queryClient = useQueryClient();
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     const [teacherUid, setTeacherUid] = useState();
 
-    const { data:allLessons, isLoading, isError, error } = useQuery({
+    const { data: allLessons, isLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
         queryFn: getPracticalDriving,
     });
@@ -46,7 +50,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
         if (existingLesson) {
             alert('התלמיד כבר משובץ למשמרת זו');
-            return; 
+            return;
         }
 
         try {
@@ -58,6 +62,14 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         } catch (error) {
             alert("לא נוסף השיעור");
         }
+    };
+
+    const handleToggleSchool = (school) => {
+        setExpandedSchool(expandedSchool === school ? null : school);
+    };
+
+    const getTeachersCount = (school) => {
+        return filteredTeachers?.filter(account => account.school === school).length || 0;
     };
 
     const handleTeacherChange = (event) => {
@@ -73,29 +85,66 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='w-[90%] sm:w-96 bg-slate-100 p-4 py-8 rounded-lg'>
-                <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
+            <div className='w-[90%] h-[94%] sm:w-96 bg-slate-100 p-4 py-8 rounded-lg overflow-y-auto'>
+                <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <p className='text-center font-bold text-lg underline'>{studentDetails.displayName}</p>
-                    <form dir='rtl' className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                    <form dir='rtl' className="space-y-6 py-5" onSubmit={handleSubmit(onSubmit)}>
                         <div>
                             <label htmlFor="teacher" className="block text-lg font-medium leading-6 text-gray-900">
                                 שם מורה:
                             </label>
                             <div className="mt-2">
-                                <select
-                                    onClick={handleTeacherChange}
-                                    onInput={handleTeacherChange}
-                                    className='ps-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                                    name="teacher"
-                                    id="teacher"
-                                    {...register('teacher', { required: 'This field is required' })}
-                                >
-                                    <option value="">בחר מורה . . .</option>
-                                    {filteredTeachers?.map(account => (
-                                        <option key={account.displayName} value={account.displayName}>{account.displayName}</option>
-                                    ))}
-                                </select>
-                                {errors.teacher && <span className="text-red-500 text-xs">{errors.teacher.message}</span>}
+                                {schools.map((school, index) => (
+                                    <div key={index} className='mb-5 w-[95%] max-w-[1000px]'>
+                                        {/* School Row */}
+                                        <div
+                                            className='flex flex-col justify-center gap-2 items-center w-full cursor-pointer bg-gray-200 p-1 rounded-md shadow-md'
+                                            onClick={() => handleToggleSchool(school)}
+                                        >
+                                            <span className='text-lg font-bold'>{school} {getTeachersCount(school)}</span>
+                                            <span className='text-lg font-bold'><IoArrowDown /></span>
+                                        </div>
+
+                                        {/* Teachers Table - Expand/Collapse */}
+                                        {expandedSchool === school && (
+                                            <div className='overflow-hidden transition-all ease-in-out duration-500'>
+                                                <div className='py-3'>
+                                                    <select
+                                                        onClick={handleTeacherChange}
+                                                        onInput={handleTeacherChange}
+                                                        className='ps-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                                        name="teacher"
+                                                        id="teacher"
+                                                        {...register('teacher', { required: 'This field is required' })}
+                                                    >
+                                                        <option value="">בחר מורה . . .</option>
+                                                        {filteredTeachers?.filter(account => account.school === school).map(account => (
+                                                            <option key={account.displayName} value={account.displayName}>{account.displayName}</option>
+                                                        ))}
+                                                    </select>
+                                                    {errors.teacher && <span className="text-red-500 text-xs">{errors.teacher.message}</span>}
+                                                </div>
+
+                                                {/* <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md mt-3">
+                                                    <thead className="bg-gray-50">
+                                                        <tr>
+                                                            <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
+                                                            <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white divide-y divide-gray-200">
+                                                        {filteredTeachers?.filter(account => account.school === school).map(account => (
+                                                            <tr key={account.uid}>
+                                                                <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
+                                                                <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table> */}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                         <div>

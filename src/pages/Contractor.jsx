@@ -11,10 +11,14 @@ import StatusTable from '../components/StatusTable';
 import Greeting from '../components/Greeting';
 import ConstractorUserData from '../components/ConstractorUserData';
 import DailyDrivingStatus from '../components/DailyDrivingStatus';
+import { IoArrowDown } from 'react-icons/io5';
 
 
 
 const Contractor = () => {
+    const schools = ["שרייבר", "יובלי", "צבאי"]
+
+    const [expandedSchool, setExpandedSchool] = useState(null);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
     const [openModalStudentsTable, setOpenModalStudentsTable] = useState(false);
@@ -33,6 +37,13 @@ const Contractor = () => {
         setStudentSearch(e.target.value);
     };
 
+    const handleToggleSchool = (school) => {
+        setExpandedSchool(expandedSchool === school ? null : school);
+    };
+
+    const getTeachersCount = (school) => {
+        return filteredTeachers?.filter(account => account.school === school).length || 0;
+    };
 
     if (isLoading) return <Loading />;
 
@@ -98,23 +109,41 @@ const Contractor = () => {
                     ))}
                 </tbody>
             </table>
-            <p className='text-center font-bold text-xl py-5'>רשימת מורי נהיגה</p>
-            <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md ">
-                <thead className="bg-gray-50">
-                    <tr>
-                        <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
-                        <th className=" text-center py-3  text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredTeachers.map(account => (
-                        <tr key={account.uid}>
-                            <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
-                            <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <p className='text-center font-bold text-xl py-5'>רשימת בתי ספר</p>
+            {schools.map((school, index) => (
+                <div key={index} className='mb-5 w-[95%] max-w-[1000px]'>
+                    {/* School Row */}
+                    <div
+                        className='flex flex-col justify-center gap-2 items-center w-full cursor-pointer bg-gray-200 p-3 rounded-md shadow-md'
+                        onClick={() => handleToggleSchool(school)}
+                    >
+                        <span className='text-lg font-bold'>{school} {getTeachersCount(school)}</span>
+                        <span className='text-lg font-bold'><IoArrowDown /></span>
+                    </div>
+
+                    {/* Teachers Table - Expand/Collapse */}
+                    {expandedSchool === school && (
+                        <div className='overflow-hidden transition-all ease-in-out duration-500'>
+                            <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md mt-3">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
+                                        <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {filteredTeachers?.filter(account => account.school === school).map(account => (
+                                        <tr key={account.uid}>
+                                            <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
+                                            <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            ))}
             <div className='w-full flex items-center justify-around gap-3'>
                 <div className='flex gap-3'>
                     <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
@@ -142,7 +171,7 @@ const Contractor = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {filteredStudents.map(account => (
-                        <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className={`cursor-pointer ${account.newStatus&&account.newStatus==="expelled"?'bg-red-300':account.newStatus==="finished successfully"?'bg-green-300':'hover:bg-gray-200'}`} key={account.uid}>
+                        <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className={`cursor-pointer ${account.newStatus && account.newStatus === "expelled" ? 'bg-red-300' : account.newStatus === "finished successfully" ? 'bg-green-300' : 'hover:bg-gray-200'}`} key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.departments}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>

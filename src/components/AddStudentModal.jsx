@@ -14,6 +14,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
     const [currentUser] = useCurrentUser();
     const [showPassword, setShowPassword] = useState(false);
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
+    const [schools, setSchools] = useState(false);
 
     const { mutate: addUser, isLoading } = useMutation({
         mutationKey: ["users"],
@@ -36,12 +37,14 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
 
     const handleSelectChange = (value) => {
         if (value === "מורה נהיגה") {
+            setSchools(true);
             setDepartmentsToogle(false);
             setValue('departments', null);
             setValue('cycle', null);
         }
         else {
             setDepartmentsToogle(true);
+            setValue('school', null)
         }
     };
 
@@ -124,7 +127,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                                 </label>
                             </div>
                             <div className="mt-2">
-                                <select onClick={(e) => { handleSelectChange(e.target.value) }} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                <select onClick={(e) => { handleSelectChange(e.target.value) }} onInput={(e) => { handleSelectChange(e.target.value) }} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                     name="user" id="user" {...register("user", { required: true })}>
                                     <option value="">בחר משתמש . . .</option>
                                     <option className='font-bold' value='תלמידים'>תלמיד</option>
@@ -181,6 +184,19 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                                 />
                             </div>
                             {errors.cycle && <p className="text-red-500">הכנס מספר</p>}
+                        </div>}
+                        {schools && <div>
+                            <label htmlFor="school" className="text-lg block font-medium leading-6 text-gray-900">
+                                בית ספר:
+                            </label>
+                            <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                name="school" id="school" {...register("school", { required: true })}>
+                                <option value="">בחר בית ספר . . .</option>
+                                <option className='font-bold' value='שרייבר'>שרייבר</option>
+                                <option className='font-bold' value='יובלי'>יובלי</option>
+                                <option className='font-bold' value='צבאי'>צבאי</option>
+                            </select>
+                            {errors.school && <p className="text-red-500">בית ספר זה אינו חוקי</p>}
                         </div>}
                         <div className='space-y-5'>
                             <button

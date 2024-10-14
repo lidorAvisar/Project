@@ -50,31 +50,31 @@ const Admin = () => {
         return <div>{error}</div>
     }
     return (
-        <div className='space-y-5 overflow-x-auto flex flex-col items-center md:px-16 h-screen'>
+        <div className='space-y-5 mb-16 flex flex-col items-center md:px-16'>
             {openModalAddStudent && <AddStudentModal setOpenModalAddStudent={setOpenModalAddStudent} openModalAddStudent={openModalAddStudent} refetch={refetch} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={studentDetails} filteredTeachers={filteredTeachers} refetch={refetch} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={studentDetails} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} filteredStudents={filteredStudents} />}
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
-            <div dir='rtl' className='w-full flex flex-col items-center'>
-                <p className='font-bold text-lg text-gray-500 py-2 flex flex-col sm:flex-row sm:gap-2'> <Greeting /> {currentUser.displayName} , מח' {currentUser.departments}</p>
-                <div className='w-full flex flex-row items-center justify-around gap-3 pt-3'>
-                    <div>
-                        <button onClick={() => {
-                            if (window.confirm("האם אתה בטוח")) {
-                                try {
-                                    signOut(auth);
-                                    window.location.replace('/');
-                                }
-                                catch (error) {
-                                    alert("שגיאה")
-                                }
-                            }
-                        }} className='text-xl text-red-600 flex items-center gap-2'><FaSignOutAlt className='mt-1' /><span className='hidden sm:block'>התנתק</span>
-                        </button>
-                    </div>
-                    <div className='flex items-center gap-2'>
 
+            <div dir='rtl' className='w-full flex flex-col items-center'>
+                <p className='font-bold text-lg text-gray-500 py-2 flex flex-col sm:flex-row sm:gap-2'>
+                    <Greeting /> {currentUser.displayName}, מח' {currentUser.departments}
+                </p>
+                <div className='w-full flex flex-row items-center justify-around gap-3 pt-3'>
+                    <button onClick={() => {
+                        if (window.confirm("האם אתה בטוח")) {
+                            try {
+                                signOut(auth);
+                                window.location.replace('/');
+                            } catch (error) {
+                                alert("שגיאה");
+                            }
+                        }
+                    }} className='text-xl text-red-600 flex items-center gap-2'>
+                        <FaSignOutAlt className='mt-1' /><span className='hidden sm:block'>התנתק</span>
+                    </button>
+                    <div className='flex items-center gap-2'>
                         <IoMdPersonAdd onClick={() => setOpenModalAddStudent(true)} className='text-4xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full p-1 cursor-pointer' />
                     </div>
                     <div className='flex gap-3'>
@@ -94,27 +94,31 @@ const Admin = () => {
                     <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
                 </div>
             </div>
-            <table dir='rtl' className="table-auto min-w-full divide-y divide-gray-200 shadow-xl py-10">
-                <thead className="bg-gray-50">
-                    <tr>
-                        <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
-                        <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
-                        <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">מידע</th>
-                        <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">קבע שיעור</th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredStudents?.map(account => (
-                        <tr className={`cursor-pointer ${account.newStatus&&account.newStatus==="expelled"?'bg-red-300':account.newStatus==="finished successfully"?'bg-green-300':'hover:bg-gray-200'}`} key={account.uid}>
-                            <td className="text-center py-4 whitespace-nowrap">{account.displayName}</td>
-                            <td className="text-center py-4 whitespace-nowrap">{account.userId}</td>
-                            <td className="text-center text-xl py-4 whitespace-nowrap"><GoChecklist onClick={() => { setOpenModalStudentData(true); setStudentDetails(account); }} className='text-gray-500 cursor-pointer inline-block' /></td>
-                            <td className="text-center text-xl py-4 whitespace-nowrap"><MdOutlineAddToPhotos onClick={() => { setOpenModalAddLesson(true); setStudentDetails(account); }} className='text-green-500 cursor-pointer inline-block' /></td>
+
+            {/* Table wrapper to limit its height and provide scrolling */}
+            <div className='w-full overflow-y-auto max-h-[54vh] shadow-lg '>
+                <table dir='rtl' className="table-auto min-w-full divide-y divide-gray-200 shadow-xl py-10">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
+                            <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">ת.ז</th>
+                            <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">מידע</th>
+                            <th className="text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">קבע שיעור</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            {filteredStudents?.length < 1 && <p className='text-center font-bold text-2xl'>אין תוצאות</p>}
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {filteredStudents?.map(account => (
+                            <tr className={`cursor-pointer ${account.newStatus && account.newStatus === "expelled" ? 'bg-red-300' : account.newStatus === "finished successfully" ? 'bg-green-300' : 'hover:bg-gray-200'}`} key={account.uid}>
+                                <td className="text-center py-4 whitespace-nowrap">{account.displayName}</td>
+                                <td className="text-center py-4 whitespace-nowrap">{account.userId}</td>
+                                <td className="text-center text-xl py-4 whitespace-nowrap"><GoChecklist onClick={() => { setOpenModalStudentData(true); setStudentDetails(account); }} className='text-gray-500 cursor-pointer inline-block' /></td>
+                                <td className="text-center text-xl py-4 whitespace-nowrap"><MdOutlineAddToPhotos onClick={() => { setOpenModalAddLesson(true); setStudentDetails(account); }} className='text-green-500 cursor-pointer inline-block' /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                {filteredStudents?.length < 1 && <p className='text-center font-bold text-2xl'>אין תוצאות</p>}
+            </div>
         </div>
     );
 };

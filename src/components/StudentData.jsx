@@ -187,22 +187,22 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 <label className="block text-right text-sm font-medium text-gray-700">אם יש רשיון קודם:</label>
                                 <div className='flex gap-4'>
                                     <div>
-                                        <label htmlFor="previousLicenseYesB">B</label>
+                                        <label htmlFor="previousLicenseYesBManual">B ידני</label>
                                         <input
                                             type="radio"
-                                            id="previousLicenseYesB"
-                                            value="B"
-                                            defaultChecked={studentDetails?.previousLicense === "B"}
+                                            id="previousLicenseYesBManual"
+                                            value="B Manual"
+                                            defaultChecked={studentDetails?.previousLicense === "B Manual"}
                                             {...register('previousLicense', { required: "זהו שדה חובה" })}
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="previousLicenseYesMotorcycle">אופנוע</label>
+                                        <label htmlFor="previousLicenseYesBAuto">B אוטומט</label>
                                         <input
                                             type="radio"
-                                            id="previousLicenseYesMotorcycle"
-                                            value="motorcycle"
-                                            defaultChecked={studentDetails?.previousLicense === "motorcycle"}
+                                            id="previousLicenseYesBAuto"
+                                            value="B Auto"
+                                            defaultChecked={studentDetails?.previousLicense === "B Auto"}
                                             {...register('previousLicense', { required: "זהו שדה חובה" })}
                                         />
                                     </div>
@@ -246,32 +246,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 {errors.glasses && <span className="text-red-500 text-sm">{errors.glasses.message}</span>}
                             </div>
                             <div className="mb-4">
-                                <label className="block text-right text-sm font-medium text-gray-700">טופס 115:</label>
-                                <div className='flex gap-4'>
-                                    <div>
-                                        <label htmlFor="haveForm115">כן</label>
-                                        <input
-                                            type="radio"
-                                            id="haveForm115"
-                                            value="yes"
-                                            defaultChecked={studentDetails?.form115 === "yes"}
-                                            {...register('form115', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="noForm115">לא</label>
-                                        <input
-                                            type="radio"
-                                            id="noForm115"
-                                            value="no"
-                                            defaultChecked={studentDetails?.form115 === "no"}
-                                            {...register('form115', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                </div>
-                                {errors.form115 && <span className="text-red-500 text-sm">{errors.form115.message}</span>}
-                            </div>
-                            <div className="mb-4">
                                 <label htmlFor="totalDrivingMinutes" className="block text-right text-sm font-medium text-gray-700">סה"כ דקות שבוצעו:</label>
                                 <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md">
                                     {studentDetails?.totalDrivingMinutes || "טרם"}
@@ -286,7 +260,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 </p>
                             </div>
                         </div>
-
                         <div className='space-y-5'>
                             <h3 className="text-lg font-bold mb-2 text-right underline">תוכנית למידה</h3>
                             <div className="mb-4">
@@ -315,32 +288,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 </div>
                                 {errors.mandatoryLessons && <span className="text-red-500 text-sm">{errors.mandatoryLessons.message}</span>}
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-right text-sm font-medium text-gray-700">קשירת מטענים:</label>
-                                <div className='flex gap-4'>
-                                    <div>
-                                        <label htmlFor="cargoSecuringYes">כן</label>
-                                        <input
-                                            type="radio"
-                                            id="cargoSecuringYes"
-                                            value="yes"
-                                            defaultChecked={studentDetails?.cargoSecuring === "yes"}
-                                            {...register('cargoSecuring', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="cargoSecuringNo">לא</label>
-                                        <input
-                                            type="radio"
-                                            id="cargoSecuringNo"
-                                            value="no"
-                                            defaultChecked={studentDetails?.cargoSecuring === "no"}
-                                            {...register('cargoSecuring', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                </div>
-                                {errors.cargoSecuring && <span className="text-red-500 text-sm">{errors.cargoSecuring.message}</span>}
-                            </div>
+                          
                             <div className="mb-4">
                                 <label htmlFor="cargoSecuringScore" className="block text-right text-sm font-medium text-gray-700">מבחן קשירת מטענים:</label>
                                 <input
@@ -353,32 +301,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 />
                                 {errors.cargoSecuringScore && <span className="text-red-500 text-sm">{errors.cargoSecuringScore.message}</span>}
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-right text-sm font-medium text-gray-700">חומרים מסוכנים:</label>
-                                <div className='flex gap-4'>
-                                    <div>
-                                        <label htmlFor="HazardousMaterialsYes">כן</label>
-                                        <input
-                                            type="radio"
-                                            id="HazardousMaterialsYes"
-                                            value="yes"
-                                            defaultChecked={studentDetails?.HazardousMaterials === "yes"}
-                                            {...register('HazardousMaterials', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="HazardousMaterialsNo">לא</label>
-                                        <input
-                                            type="radio"
-                                            id="HazardousMaterialsNo"
-                                            value="no"
-                                            defaultChecked={studentDetails?.HazardousMaterials === "no"}
-                                            {...register('HazardousMaterials', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                </div>
-                                {errors.HazardousMaterials && <span className="text-red-500 text-sm">{errors.HazardousMaterials.message}</span>}
-                            </div>
+                           
                             <div className="mb-4">
                                 <label htmlFor="hazardousMaterialsScore" className="block text-right text-sm font-medium text-gray-700">מבחן חומ"ס:</label>
                                 <input
@@ -392,59 +315,79 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 {errors.hazardousMaterialsScore && <span className="text-red-500 text-sm">{errors.hazardousMaterialsScore.message}</span>}
                             </div>
                             <div className="mb-4">
-                                <label className="block text-right text-sm font-medium text-gray-700">מסמכי הרכב:</label>
-                                <div className='flex gap-4'>
-                                    <div>
-                                        <label htmlFor="vehicleDocumentsYes">כן</label>
-                                        <input
-                                            type="radio"
-                                            id="vehicleDocumentsYes"
-                                            value="yes"
-                                            defaultChecked={studentDetails?.vehicleDocuments === "yes"}
-                                            {...register('vehicleDocuments', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="vehicleDocumentsNo">לא</label>
-                                        <input
-                                            type="radio"
-                                            id="vehicleDocumentsNo"
-                                            value="no"
-                                            defaultChecked={studentDetails?.vehicleDocuments === "no"}
-                                            {...register('vehicleDocuments', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                </div>
-                                {errors.vehicleDocuments && <span className="text-red-500 text-sm">{errors.vehicleDocuments.message}</span>}
+                                <label htmlFor="hummerCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן האמר:</label>
+                                <input
+                                    type="text"
+                                    id="hummerCarScore"
+                                    defaultValue={studentDetails?.hummerCarScore || ""}
+                                    {...register('hummerCarScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.hummerCarScore && <span className="text-red-500 text-sm">{errors.hummerCarScore.message}</span>}
                             </div>
                             <div className="mb-4">
-                                <label className="block text-right text-sm font-medium text-gray-700">לומדת בטיחות:</label>
-                                <div className='flex gap-4'>
-                                    <div>
-                                        <label htmlFor="safetyModuleYes">כן</label>
-                                        <input
-                                            type="radio"
-                                            id="safetyModuleYes"
-                                            value="yes"
-                                            defaultChecked={studentDetails?.safetyModule === "yes"}
-                                            {...register('safetyModule', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="safetyModuleNo">לא</label>
-                                        <input
-                                            type="radio"
-                                            id="safetyModuleNo"
-                                            value="no"
-                                            defaultChecked={studentDetails?.safetyModule === "no"}
-                                            {...register('safetyModule', { required: "זהו שדה חובה" })}
-                                        />
-                                    </div>
-                                </div>
-                                {errors.safetyModule && <span className="text-red-500 text-sm">{errors.safetyModule.message}</span>}
+                                <label htmlFor="hummerProtectedCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן האמר ממוגן:</label>
+                                <input
+                                    type="text"
+                                    id="hummerProtectedCarScore"
+                                    defaultValue={studentDetails?.hummerProtectedCarScore || ""}
+                                    {...register('hummerProtectedCarScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.hummerProtectedCarScore && <span className="text-red-500 text-sm">{errors.hummerProtectedCarScore.message}</span>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="davidCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן דויד:</label>
+                                <input
+                                    type="text"
+                                    id="davidCarScore"
+                                    defaultValue={studentDetails?.davidCarScore || ""}
+                                    {...register('davidCarScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.davidCarScore && <span className="text-red-500 text-sm">{errors.davidCarScore.message}</span>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="tigerCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן טיגריס:</label>
+                                <input
+                                    type="text"
+                                    id="tigerCarScore"
+                                    defaultValue={studentDetails?.tigerCarScore || ""}
+                                    {...register('tigerCarScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.tigerCarScore && <span className="text-red-500 text-sm">{errors.tigerCarScore.message}</span>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="jeepCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן ג'יפ:</label>
+                                <input
+                                    type="text"
+                                    id="jeepCarScore"
+                                    defaultValue={studentDetails?.jeepCarScore || ""}
+                                    {...register('jeepCarScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.jeepCarScore && <span className="text-red-500 text-sm">{errors.jeepCarScore.message}</span>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="saunaCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן סאונה:</label>
+                                <input
+                                    type="text"
+                                    id="saunaCarScore"
+                                    defaultValue={studentDetails?.saunaCarScore || ""}
+                                    {...register('saunaCarScore')}
+                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                    placeholder="הכנס ציון"
+                                />
+                                {errors.saunaCarScore && <span className="text-red-500 text-sm">{errors.saunaCarScore.message}</span>}
                             </div>
                         </div>
-                        <div className='space-y-5'>
+                        {/* <div className='space-y-5'>
                             <h3 className="text-lg font-bold mb-2 text-right underline">סוג רכב</h3>
                             <div className="mb-4">
                                 <label htmlFor="carType" className="block text-right text-sm font-medium text-gray-700">סוג רכב:</label>
@@ -476,7 +419,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 />
                                 {errors.carTypeScore && <span className="text-red-500 text-sm">{errors.carTypeScore.message}</span>}
                             </div>
-                        </div>
+                        </div> */}
                         <div className="flex justify-center">
                             <button type="submit" className="bg-green-500 text-white font-bold py-2 w-64 rounded-lg">
                                 עדכן

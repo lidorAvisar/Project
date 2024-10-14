@@ -15,6 +15,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
     const [departmentToogle, setDepartmentToogle] = useState(false);
     const [cycle, setCycle] = useState(false);
+    const [schools, setSchools] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -23,6 +24,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const onSubmit = (data) => {
         setLoading(true);
+        
         try {
             if (departmentsToogle) {
                 createAdmin(data);
@@ -43,11 +45,14 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
 
     const handleSelectChange = (value) => {
+        console.log(value);
+        
         switch (value) {
             case "מורה נהיגה":
                 setCycle(false);
                 setDepartmentsToogle(false);
                 setDepartmentToogle(false);
+                setSchools(true);
                 setValue('departments', null);
                 setValue('cycle', null);
                 break;
@@ -55,22 +60,28 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setCycle(false);
                 setDepartmentsToogle(true);
                 setDepartmentToogle(false);
+                setSchools(false);
                 setValue('departments', []);
                 setValue('cycle', null);
+                setValue('school',null);
                 break;
             case 'מ"מ':
                 setCycle(false);
                 setDepartmentsToogle(false);
                 setDepartmentToogle(true);
+                setSchools(false);
                 setValue('departments', null);
                 setValue('cycle', null);
+                setValue('school',null);
                 break;
             case "קבלן":
                 setCycle(false);
                 setDepartmentsToogle(false);
                 setDepartmentToogle(false);
+                setSchools(false);
                 setValue('departments', []);
                 setValue('cycle', null);
+                setValue('school',null);
                 break;
             default:
                 setCycle(true);
@@ -226,6 +237,20 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                             </div>
                             {errors.userId && <p className="text-red-500">ת"ז זה אינו חוקי</p>}
                         </div>
+                        {schools && <div>
+                            <label htmlFor="school" className="text-lg block font-medium leading-6 text-gray-900">
+                                בית ספר:
+                            </label>
+                            <select  className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                name="school" id="school" {...register("school", { required: true })}>
+                                <option value="">בחר בית ספר . . .</option>
+                                <option className='font-bold' value='שרייבר'>שרייבר</option>
+                                <option className='font-bold' value='יובלי'>יובלי</option>
+                                <option className='font-bold' value='צבאי'>צבאי</option>
+                            </select>
+                            {errors.school && <p className="text-red-500">בית ספר זה אינו חוקי</p>}
+                        </div>}
+
                         {cycle && <div>
                             <label htmlFor="cycle" className="text-lg block font-medium leading-6 text-gray-900">
                                 מספר מחזור:

@@ -97,8 +97,9 @@ const DrivingTeacher = () => {
         <div className='flex flex-col justify-center items-center gap-5 mb-12'>
             <div dir='rtl' className="w-full max-w-[1000px] px-2 mt-5 space-y-5">
                 <div className='flex items-center justify-between px-5'>
-                    <div className='flex items-center gap-5'>
-                        <h2 className="text-lg sm:text-xl font-bold mb-2 pt-1 text-center sm:flex"><Greeting /> {currentUser?.displayName}</h2>
+                    <div className='flex flex-col justify-center items-center'>
+                        <h2 className="text-lg sm:text-xl font-bold  text-center sm:flex"><Greeting /> {currentUser?.displayName}</h2>
+                        <h2 className="text-lg sm:text-xl text-center sm:flex gap-1"><span>בית ספר: </span>  <span className='font-bold'> {currentUser?.school}</span></h2>
                     </div>
                     <button onClick={() => {
                         if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {

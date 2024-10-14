@@ -12,6 +12,10 @@ const SHIFT_LIMITS = {
     'משמרת ערב': 150,
 };
 
+// state = `${Teacher} - ${School}`
+// const teacher = state.split('-')[0];
+// const school = state.split('-')[1];
+
 const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, studentShift, usersRefetch }) => {
     const today = new Date().toISOString().split('T')[0];
 
@@ -49,7 +53,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     });
 
     const filteredTeachers = studentData?.filter(account =>
-        account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+        account.user === "מורה נהיגה").sort((a, b) => a.displayName.localeCompare(b.displayName, 'he')).sort((a, b) => a.school.localeCompare(b.school, 'he'));
 
     const handleExpand = (index) => {
         setIsExpanded(index);
@@ -82,10 +86,9 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     && item.date === today
                 );
             }
-
             // Map through studentClasses and add teacherUid to each object
             const updatedStudentClasses = studentClasses.map(item => {
-                const teacher = filteredTeachers.find(teacher => teacher.displayName === item.teacher);
+                const teacher = filteredTeachers.find(teacher => teacher.uid === item.teacherUid);
                 return {
                     ...item,
                     date: item.date || '',
@@ -302,10 +305,10 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         <div className='bg-white w-full p-2 rounded-md shadow-lg'>
             <div className='flex justify-around items-center'>
                 <p className='text-center font-bold text-sm underline py-6 text-blue-600'>
-                    {studentDetails?.previousLicense === 'B'
-                        ? 'B רשיון על'
-                        : studentDetails?.previousLicense === 'motorcycle'
-                            ? 'רשיון על אופנוע'
+                    {studentDetails?.previousLicense === 'B Manual'
+                        ? 'ידני B רשיון על'
+                        : studentDetails?.previousLicense === 'B Auto'
+                            ? 'אוטומט B רשיון על'
                             : 'אין רשיון קודם'}
                 </p>
                 <p className='text-center font-bold text-lg sm:text-xl py-6 '>
@@ -371,8 +374,8 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                         disabled={isTeacher}
                                     >
                                         {filteredTeachers?.map((teacher) => (
-                                            <option key={teacher.uid}>
-                                                {teacher.displayName}
+                                            <option key={teacher.uid} value={teacher.displayName}>
+                                                {`${teacher.displayName} - ${teacher.school}`}
                                             </option>
                                         ))}
                                     </select>
@@ -473,8 +476,8 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                                 disabled={isTeacher}
                                             >
                                                 {filteredTeachers?.map((teacher, i) => (
-                                                    <option key={i}>
-                                                        {teacher.displayName}
+                                                    <option key={teacher.uid} value={teacher.displayName}>
+                                                        {`${teacher.displayName} - ${teacher.school}`}
                                                     </option>
                                                 ))}
                                             </select>
