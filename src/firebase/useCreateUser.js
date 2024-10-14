@@ -34,6 +34,7 @@ export default function useCreateUser() {
                 departments: userData.departments,
                 cycle: userData.cycle,
                 user: userData.user,
+                school: userData.school,
                 uid: uid,  // Ensure the UID is passed to createUserDoc,
                 lessons: [],
             });

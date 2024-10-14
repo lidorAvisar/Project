@@ -24,7 +24,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const onSubmit = (data) => {
         setLoading(true);
-        
+
         try {
             if (departmentsToogle) {
                 createAdmin(data);
@@ -45,8 +45,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
 
     const handleSelectChange = (value) => {
-        console.log(value);
-        
+
         switch (value) {
             case "מורה נהיגה":
                 setCycle(false);
@@ -63,7 +62,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setSchools(false);
                 setValue('departments', []);
                 setValue('cycle', null);
-                setValue('school',null);
+                setValue('school', null);
                 break;
             case 'מ"מ':
                 setCycle(false);
@@ -72,7 +71,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setSchools(false);
                 setValue('departments', null);
                 setValue('cycle', null);
-                setValue('school',null);
+                setValue('school', null);
                 break;
             case "קבלן":
                 setCycle(false);
@@ -81,7 +80,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setSchools(false);
                 setValue('departments', []);
                 setValue('cycle', null);
-                setValue('school',null);
+                setValue('school', null);
                 break;
             default:
                 setCycle(true);
@@ -241,7 +240,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                             <label htmlFor="school" className="text-lg block font-medium leading-6 text-gray-900">
                                 בית ספר:
                             </label>
-                            <select  className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                            <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                 name="school" id="school" {...register("school", { required: true })}>
                                 <option value="">בחר בית ספר . . .</option>
                                 <option className='font-bold' value='שרייבר'>שרייבר</option>
