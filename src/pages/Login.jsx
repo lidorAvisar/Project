@@ -4,6 +4,7 @@ import { LuEye } from "react-icons/lu";
 import { useForm } from "react-hook-form";
 import { signUpWithEmailAndPassword } from "../firebase/firebase_config";
 import { IoArrowUndoOutline } from "react-icons/io5";
+import SignaturePad from "../components/SignaturePad";
 
 
 const Login = () => {
@@ -112,13 +113,16 @@ const Login = () => {
                     </div>
                 </form>
             </div>
-            <div className="flex justify-center py-5">
+            <div className="flex flex-col items-center justify-center py-5">
                 <a href="https://mador-till-prod.github.io/lomda-cards-theory/src/" target="_blank" rel="noopener noreferrer">
                     <button dir="rtl" className="flex items-center gap-3 bg-green-500 p-1 rounded-md px-2 text-white font-bold">
                         לימודי תאוריה
                         <IoArrowUndoOutline className="mx-auto h-5 w-auto" />
                     </button>
                 </a>
+                {/* <div>
+                    <SignaturePad />
+                </div> */}
             </div>
         </div>
     )

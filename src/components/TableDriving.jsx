@@ -52,8 +52,10 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         },
     });
 
-    const filteredTeachers = studentData?.filter(account =>
-        account.user === "מורה נהיגה").sort((a, b) => a.displayName.localeCompare(b.displayName, 'he')).sort((a, b) => a.school.localeCompare(b.school, 'he'));
+    const filteredTeachers = studentData
+        ?.filter(account => account.user === "מורה נהיגה")
+        .sort((a, b) => (a.displayName?.localeCompare(b.displayName || '', 'he')))
+        .sort((a, b) => (a.school?.localeCompare(b.school || '', 'he')));
 
     const handleExpand = (index) => {
         setIsExpanded(index);
@@ -271,8 +273,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     }
                     return total;
                 }, 0);
-
-                console.log(totalMinutes);
 
                 await updateStudentAccount({ totalDrivingMinutes: totalMinutes });
                 await usersRefetch();
