@@ -96,7 +96,6 @@ const SuperSuperAdmin = () => {
 
     const sortedData = data?.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    console.log(filteredTeachers);
     
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
