@@ -20,6 +20,7 @@ import { GiArchiveRegister } from 'react-icons/gi';
 import ArchiveByCycle from '../components/ArchiveByCycle';
 import MoveToArchive from '../components/MoveToArchive';
 import { IoArrowDown } from "react-icons/io5";
+import StudentsTests from '../components/StudentsTests';
 
 
 
@@ -40,12 +41,17 @@ const SuperSuperAdmin = () => {
     const [openModalArchiveByCycle, setOpenModalArchiveByCycle] = useState(false);
     const [filteredCurrentUser, setFilteredCurrentUser] = useState('')
     const [openModalMoveToArchive, setOpenModalMoveToArchive] = useState(false);
+    const [openModalStudentsTests, setOpenModalStudentsTests] = useState(false);
     const [user] = useCurrentUser();
 
 
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
+
+        onError(e) {
+            alert("שגיאה בעת משיכת הנתונים העדכניים")
+        }
     });
 
 
@@ -96,7 +102,7 @@ const SuperSuperAdmin = () => {
 
     const sortedData = data?.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    
+
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
@@ -107,6 +113,7 @@ const SuperSuperAdmin = () => {
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
             {openModalArchiveByCycle && <ArchiveByCycle setOpenModalArchiveByCycle={setOpenModalArchiveByCycle} />}
             {openModalMoveToArchive && <MoveToArchive setOpenModalMoveToArchive={setOpenModalMoveToArchive} />}
+            {openModalStudentsTests && <StudentsTests setOpenModalStudentsTests={setOpenModalStudentsTests} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
                     <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
@@ -122,7 +129,7 @@ const SuperSuperAdmin = () => {
                                         alert("שגיאה")
                                     }
                                 }
-                            }} className='flex items-center gap-2 sm:text-lg  text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>
+                            }} className='flex items-center gap-2 text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>
                             </button>
                             <button dir='ltr' onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className=' rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-blue-500 font-bold flex items-center w-fit gap-2'>
                                 <BiEditAlt className='text-2xl' /><span>עריכה</span>
@@ -212,7 +219,7 @@ const SuperSuperAdmin = () => {
                 <div key={index} className='mb-5 w-[95%] max-w-[1000px]'>
                     {/* School Row */}
                     <div
-                        className='flex flex-col justify-center gap-2 items-center w-full cursor-pointer bg-gray-200 p-3 rounded-md shadow-md'
+                        className='flex flex-col justify-center gap-2 items-center w-full cursor-pointer bg-gray-200 p-3 rounded-md shadow-md hover:scale-105 transition duration-200'
                         onClick={() => handleToggleSchool(school)}
                     >
                         <span className='text-lg font-bold'>{school} {getTeachersCount(school)}</span>
@@ -221,7 +228,7 @@ const SuperSuperAdmin = () => {
 
                     {/* Teachers Table - Expand/Collapse */}
                     {expandedSchool === school && (
-                        <div className='overflow-hidden transition-all ease-in-out duration-500'>
+                        <div>
                             <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md mt-3">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -258,9 +265,12 @@ const SuperSuperAdmin = () => {
                         <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
                         <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
                     </div>
-                    <div className='flex justify-center'>
+                    <div className='flex justify-center gap-3'>
                         <button onClick={() => setOpenModalMoveToArchive(true)} className='bg-slate-300 rounded-lg w-fit p-1 px-2 sm:px-3 font-bold flex items-center gap-2'>
                             <GiArchiveRegister className='text-xl' /> <span>העבר לארכיון</span>
+                        </button>
+                        <button onClick={() => setOpenModalStudentsTests(true)} className='bg-slate-300 rounded-lg w-fit p-1 px-2 sm:px-3 font-bold flex items-center gap-2'>
+                            <span>מבחני תלמידים</span>
                         </button>
                     </div>
                 </div>

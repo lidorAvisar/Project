@@ -88,6 +88,8 @@ const SuperAdmin = () => {
     const filteredStudents = data.filter(account =>
         account.user === 'תלמידים' && user?.departments?.includes(account.departments)
     );
+    console.log(user);
+    
 
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">

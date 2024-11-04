@@ -4,6 +4,9 @@ import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDo
 import { getStorage } from "firebase/storage";
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
+const REQUESTS_LIMIT = 7;
+const TIME_WINDOW = 10 * 1000;
+
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -14,8 +17,6 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
-
-
 
 
 // Initialize Firebase
@@ -140,23 +141,45 @@ export const getUserDoc = async (uid) => {
   }
   catch (error) {
     alert("לא נמצא")
+    console.error(error)
   }
 }
 
 
 //משיג את כל המשתמשים
 export const getAccounts = async () => {
-  const queryObject = query(collection(db, "users"));
-  const userDocs = await getDocs(queryObject);
-  if (userDocs.empty) {
-    return [];
+  const now = Date.now();
+  const requestLog = JSON.parse(localStorage.getItem("requestLog")) || [];
+
+  // Remove any requests older than the current time window
+  const updatedLog = requestLog.filter(timestamp => now - timestamp < TIME_WINDOW);
+  updatedLog.push(now); // Add the current request timestamp
+
+  localStorage.setItem("requestLog", JSON.stringify(updatedLog));
+
+  // Check if the number of requests in the last minute exceeds the limit
+  if (updatedLog.length > REQUESTS_LIMIT) {
+    alert("עשית יותר מדי בקשות. אנא נסה שוב בעוד דקה.");
+    return;
   }
 
-  const usersData = userDocs.docs.map(doc => {
-    return doc.data();
-  })
+  try {
+    const queryObject = query(collection(db, "users"));
+    const userDocs = await getDocs(queryObject);
+    if (userDocs.empty) {
+      return [];
+    }
 
-  return usersData;
+    const usersData = userDocs.docs.map(doc => {
+      return doc.data();
+    })
+
+    return usersData;
+  }
+  catch (error) {
+    alert("לא נמצא")
+    console.error(error)
+  }
 }
 
 // משיג את כל התלמידים בארכיון
@@ -181,17 +204,23 @@ export const getArchiveAccounts = async () => {
 
 //משיג את השיעורי נהיגה
 export const getPracticalDriving = async () => {
-  const queryObject = query(collection(db, "practical_driving"));
-  const practical_drivingDocs = await getDocs(queryObject);
-  if (practical_drivingDocs.empty) {
-    return [];
+  try {
+    const queryObject = query(collection(db, "practical_driving"));
+    const practical_drivingDocs = await getDocs(queryObject);
+    if (practical_drivingDocs.empty) {
+      return [];
+    }
+
+    const drivingData = practical_drivingDocs.docs.map(doc => {
+      return doc.data();
+    })
+
+    return drivingData;
   }
 
-  const drivingData = practical_drivingDocs.docs.map(doc => {
-    return doc.data();
-  })
-
-  return drivingData;
+  catch (error) {
+    alert("שגיאה")
+  }
 }
 
 
@@ -211,7 +240,7 @@ export const deleteAccount = async (id) => {
 
 // עדכון נתוני המשתמש
 export const updateAccount = async (id, data) => {
-  
+
   try {
     const userDocRef = doc(db, "users", id);
     if (data.hasOwnProperty("lessonId")) {
@@ -297,3 +326,62 @@ export async function changePassword(uid, newPassword) {
     alert("שגיאה")
   }
 }
+
+//משיכת כל המבחני תלמידים
+export const getStudentsTests = async () => {
+  try {
+    const studentsTestsRef = collection(db, "students_tests");
+    const querySnapshot = await getDocs(studentsTestsRef);
+
+    const tests = querySnapshot.docs.map(doc => doc.data());
+
+    return tests;
+  }
+  catch (error) {
+    console.error("Error fetching student tests: ", error);
+    throw new Error("Failed to fetch student tests");
+  }
+};
+
+//הוספת מבחן לתלמיד-האמר,דוד,וכ'ו
+export const addStudentsTests = async (data) => {
+  try {
+    // Generate a new document reference with a specific ID
+    const studentsTestsRef = doc(collection(db, "students_tests"));
+    const newDocId = studentsTestsRef.id;  // This is the ID generated for the new document
+
+    // Prepare the data with the generated ID as the uid
+    const testData = {
+      vehicleType: data.vehicleType,
+      date: data.date,
+      questions: data.questions,
+      uid: newDocId,  // Set uid to match the document ID
+      createdAt: new Date(),
+    };
+
+    // Create the document with setDoc, specifying the uid field
+    await setDoc(studentsTestsRef, testData);
+
+  }
+  catch (error) {
+    alert("שגיאה בהוספת מבחן")
+    console.error("Error adding test: ", error);
+    throw new Error("Failed to add test");
+  }
+}
+
+//עדכון למבחני תלמידים
+export const updateStudentsTests = async (data, uid) => {
+  try {
+    // Reference to the student's test document
+    const testDocRef = doc(db, 'students_tests', uid);
+
+    // Update the document in Firestore
+    await updateDoc(testDocRef, data);
+
+    console.log("Test data updated successfully!");
+  }
+  catch (error) {
+    alert("Error updating test data: ")
+  }
+};

@@ -73,6 +73,7 @@ const AppRoutes = () => {
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>
+
         );
     }
     else {

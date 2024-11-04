@@ -6,6 +6,7 @@ import { auth, getPracticalDriving } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
 import { FaSignOutAlt } from 'react-icons/fa';
 import Greeting from '../components/Greeting';
+import { IoArrowUndoOutline } from 'react-icons/io5';
 
 
 const Student = () => {
@@ -109,8 +110,18 @@ const Student = () => {
             <div dir='rtl' className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-5">
                 {/* Progress Bar */}
                 <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-2">ההתקדמות שלך</h2>
-                    <div className="relative pt-1">
+                    <div className='flex justify-between items-center pt-3'>
+                        <h2 className="text-lg sm:text-xl font-semibold">ההתקדמות שלך</h2>
+                        <div className="flex flex-col items-center justify-center">
+                            <a href="https://mador-till-prod.github.io/lomda-cards-theory/src/" target="_blank" rel="noopener noreferrer">
+                                <button dir="rtl" className="flex items-center gap-3 bg-green-500 p-1 rounded-md text-white font-bold">
+                                    לימודי תאוריה
+                                    <IoArrowUndoOutline className="mx-auto h-5 w-auto" />
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    <div className="relative pt-10">
                         <div className="flex mb-2 items-center justify-between">
                             <div className="text-right">
                                 <span className="text-xs font-semibold inline-block text-green-600">

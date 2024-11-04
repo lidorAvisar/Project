@@ -7,7 +7,8 @@ import './App.css'
 function App() {
 
   return (
-    <div>
+    //use font Assistant
+    <div className=''>
       <UserProvider>
         <Router>
           <AppRoutes />

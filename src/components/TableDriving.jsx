@@ -159,7 +159,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     }, [studentShift]);
 
     const validateShiftLimits = (formData) => {
-        const savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {};
+        let savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {};
         const errors = {}; // To collect errors
 
         // Iterate over each lesson in form data
