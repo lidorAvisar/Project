@@ -9,7 +9,7 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
     const [openModaltestsList, setOpenModalTestsList] = useState(false);
     const [test, setTest] = useState([]);
 
-    const { register, handleSubmit, reset, control, setValue, watch, formState: { errors,isDirty } } = useForm({
+    const { register, handleSubmit, reset, control, setValue, watch, formState: { errors, isDirty } } = useForm({
         defaultValues: {
             vehicleType: '',
             questions: [{ questionText: '', answers: [{ text: '', isCorrect: false }] }]
@@ -234,6 +234,14 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
                             <span className={`${isLoading && 'animate-pulse'}`}>{isLoading ? 'Loading . . .' : 'שמור'}</span>
                         </button>
                     </form>
+                    <div className='w-full pt-5 mb-6'>
+                        <button
+                            onClick={() => setOpenModalStudentsTests(false)}
+                            className="bg-red-500 w-full text-white px-5 py-2 rounded-md font-bold"
+                        >
+                            סגור
+                        </button>
+                    </div>
                 </section>
             </div>
         </div>
