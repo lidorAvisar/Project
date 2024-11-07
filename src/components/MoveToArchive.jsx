@@ -99,6 +99,7 @@ const MoveToArchive = ({ setOpenModalMoveToArchive }) => {
                 <p className='text-center font-bold'>{selectedCycle} :מחזור שנבחר</p>
                 <div className='flex justify-center'>
                     <button
+                        disabled
                         onClick={handleMoveToArchive}
                         className='bg-slate-300 rounded-lg w-fit p-1 px-10 sm:px-12 font-bold flex items-center gap-2'
                     >

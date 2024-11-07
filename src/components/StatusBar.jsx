@@ -7,7 +7,7 @@ const StatusBar = ({ studentId, usersRefetch, studentDetails }) => {
     const statuses = ["active", "finished successfully", "expelled"];
 
     // Local state to store the selected status
-    const [selectedStatus, setSelectedStatus] = useState(studentDetails.newStatus ? studentDetails.newStatus : 'active'); // default to 'active'
+    const [selectedStatus, setSelectedStatus] = useState(studentDetails.newStatus ? studentDetails.newStatus : 'active');
 
     // Function to handle status change
     const handleStatusChange = async (newStatus) => {

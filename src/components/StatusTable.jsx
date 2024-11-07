@@ -43,7 +43,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
         student.user === "תלמידים" &&
         (selectedDepartment.includes('everything') || selectedDepartment.includes(student.departments)) &&
         (selectedCycle === 'everything' || student.cycle === selectedCycle)
-    );
+    ); 
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>

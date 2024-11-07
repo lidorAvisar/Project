@@ -6,7 +6,7 @@ const BarChartActiveStudents = ({ data, size = 600, barColor = '#2196f3' }) => {
     const adjustedSize = isMobile ? size * 0.8 : size;
     const maxStudents = Math.max(...data.map(item => item.value));
     const barWidth = adjustedSize / data.length;
-
+    
     return (
         <div className="flex flex-col items-center p-4 sm:p-8">
             <p className='font-bold text-lg sm:text-xl text-center'>תלמידים פעילים</p>
