@@ -21,6 +21,9 @@ import ArchiveByCycle from '../components/ArchiveByCycle';
 import MoveToArchive from '../components/MoveToArchive';
 import { IoArrowDown } from "react-icons/io5";
 import StudentsTests from '../components/StudentsTests';
+import Dashboard from '../components/Dashboard';
+import { RxDashboard } from "react-icons/rx";
+
 
 
 
@@ -42,6 +45,7 @@ const SuperSuperAdmin = () => {
     const [filteredCurrentUser, setFilteredCurrentUser] = useState('')
     const [openModalMoveToArchive, setOpenModalMoveToArchive] = useState(false);
     const [openModalStudentsTests, setOpenModalStudentsTests] = useState(false);
+    const [openModalDashboard, setOpenModalDashboard] = useState(false);
     const [user] = useCurrentUser();
 
 
@@ -114,9 +118,10 @@ const SuperSuperAdmin = () => {
             {openModalArchiveByCycle && <ArchiveByCycle setOpenModalArchiveByCycle={setOpenModalArchiveByCycle} />}
             {openModalMoveToArchive && <MoveToArchive setOpenModalMoveToArchive={setOpenModalMoveToArchive} />}
             {openModalStudentsTests && <StudentsTests setOpenModalStudentsTests={setOpenModalStudentsTests} />}
+            {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
-                    <p dir='ltr' className="flex items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
+                    <p dir='ltr' className="flex flex-col sm:flex-row items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
                     <div className='flex flex-col items-center'>
                         <div dir='ltr' className="flex flex-col sm:flex-row items-center ">
                             <button onClick={async () => {
@@ -135,7 +140,10 @@ const SuperSuperAdmin = () => {
                                 <BiEditAlt className='text-2xl' /><span>עריכה</span>
                             </button>
                         </div>
-                        <div>
+                        <div className='flex flex-col sm:flex-row items-center'>
+                            <button onClick={() => setOpenModalDashboard(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-green-500 font-bold flex items-center gap-2'>
+                                <span>דאשבורד</span> <RxDashboard  className='text-xl' />
+                            </button>
                             <button onClick={() => setOpenModalArchiveByCycle(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-gray-500 font-bold flex items-center gap-2'>
                                 <span>ארכיון</span> <GiArchiveRegister className='text-xl' />
                             </button>
