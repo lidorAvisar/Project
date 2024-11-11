@@ -8,6 +8,7 @@ import { getPracticalDriving } from '../firebase/firebase_config';
 import Greeting from './Greeting';
 import '../../public/יוסי.jpg'
 import '../../public/מתן.jpg'
+import '../../public/user.png'
 
 const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, user }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"];
@@ -184,7 +185,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                     {/* Profile Card */}
                     <div className='flex flex-col items-center  gap-10  bg-[#b9e6fe] rounded-lg shadow-lg'>
                         <div className="w-full col-span-1 lg:col-span-1 bg-gradient-to-tr from-indigo-500 via-sky-500 to-emerald-500 border border-white p-4 rounded-lg flex gap-4 items-center text-white shadow-lg transition-transform duration-300 hover:scale-105">
-                            <img className="h-20 w-20 rounded-2xl mb-2" src={user?.displayName==="מנהל מקצועי"?'יוסי.jpg':user?.displayName==="ממ״ג נהיגה"&&'מתן.jpg'} alt="Profile" />
+                            <img className="h-20 w-20 rounded-2xl mb-2" src={user?.displayName==="מנהל מקצועי"?'יוסי.jpg':user?.displayName==="ממ״ג נהיגה"?'מתן.jpg':'user.png'} alt="Profile" />
                             <div className="text-center font-bold text-lg">{user?.displayName}</div>
                         </div>
                         {/* Highlights Section */}

@@ -80,7 +80,7 @@ const PieChartComponent = ({ data, size = 250 }) => {
                 dominantBaseline="central"
                 className="fill-white font-bold"
               >
-                {slice.value > 0 ? slice.value : slice.text}
+                {slice.value > 0 ? slice.value : 0}
               </text>
             )}
           </g>
