@@ -12,6 +12,8 @@ import Greeting from '../components/Greeting';
 import ConstractorUserData from '../components/ConstractorUserData';
 import DailyDrivingStatus from '../components/DailyDrivingStatus';
 import { IoArrowDown } from 'react-icons/io5';
+import Dashboard from '../components/Dashboard';
+import { RxDashboard } from 'react-icons/rx';
 
 
 
@@ -25,6 +27,7 @@ const Contractor = () => {
     const [openModalDailyDrivingStatus, setOpenModalDailyDrivingStatus] = useState(false);
     const [userData, setUserData] = useState('');
     const [studentSearch, setStudentSearch] = useState('');
+    const [openModalDashboard, setOpenModalDashboard] = useState(false);
     const [user] = useCurrentUser();
 
 
@@ -69,10 +72,14 @@ const Contractor = () => {
             {openModalStudentData && <ConstractorUserData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
+            {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudents} filteredTeachers={filteredTeachers} user={user} />}
             <div className="flex justify-around items-center w-full pt-3">
                 <div className='flex items-center gap-3'>
                     <button onClick={() => { setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
                         <BiEditAlt className='text-2xl' /><span className='hidden sm:flex'>עריכה</span>
+                    </button>
+                    <button onClick={() => setOpenModalDashboard(true)} className='rounded-lg w-fit p-1.5 px-3 sm:p-2 sm:px-4 bg-green-500 text-white font-bold flex items-center gap-2'>
+                        <span className='hidden sm:flex'>דאשבורד</span> <RxDashboard className='text-xl' />
                     </button>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-4">

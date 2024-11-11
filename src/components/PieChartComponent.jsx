@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PieChartComponent = ({ data, size = 500 }) => {
+const PieChartComponent = ({ data, size = 250 }) => {
   const center = size / 2;
   const radius = size * 0.45;
   const textRadius = size * 0.22;
@@ -67,7 +67,7 @@ const PieChartComponent = ({ data, size = 500 }) => {
 
   return (
     <div className="flex flex-col items-center w-full">
-      <svg viewBox={`0 0 ${size} ${size}`} className="w-full sm:w-[120%]">
+      <svg width={`${size}`} height={`${size}`} viewBox={`0 0 ${size} ${size}`} className="w-auto h-auto">
         {slices.map((slice, index) => (
           <g key={index}>
             <path d={slice.pathData} fill={slice.color} />
@@ -75,10 +75,10 @@ const PieChartComponent = ({ data, size = 500 }) => {
               <text
                 x={slice.textPosition.x}
                 y={slice.textPosition.y}
-                fontSize="20"
+                fontSize="10"
                 textAnchor="middle"
                 dominantBaseline="central"
-                className="fill-white font-semibold"
+                className="fill-white font-bold"
               >
                 {slice.value > 0 ? slice.value : slice.text}
               </text>
@@ -87,35 +87,18 @@ const PieChartComponent = ({ data, size = 500 }) => {
         ))}
       </svg>
 
-      {/* Quantity Bars */}
-      {data.length > 0 && data.some((item) => item.value > 0) ? (
-        <div className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px]">
-          {data.map((item, index) => (
-            <div key={index} className="flex items-center my-2">
-              <div className="bg-gray-300 rounded-lg h-6 flex items-center w-full">
-                <div
-                  className="h-6 rounded-lg flex justify-center items-center"
-                  style={{
-                    width: `${(item.value / data.reduce((sum, i) => sum + i.value, 0)) * 100}%`,
-                    backgroundColor: item.color,
-                  }}
-                >
-                  <span className={`text-white font-semibold ${item.value < 5 && 'ps-3'}`}>
-                    {item.value}
-                  </span>
-                </div>
-              </div>
-              <span className="ml-3 text-gray-700 font-semibold" style={{ color: item.color }}>
-                {item.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center text-gray-500 font-semibold mt-4">
-          אין תוצאות
-        </div>
-      )}
+      {/* Legend with up to 8 colored squares */}
+      <div dir='rtl' className="grid grid-cols-3 sm:grid-cols-2 gap-2">
+        {data.slice(0, 8).map((item, index) => (
+          <div key={index} className="flex items-center">
+            <div
+              className="w-4 h-4 mr-2 rounded-sm"
+              style={{ backgroundColor: item.color }}
+            ></div>
+            <span className="text-gray-700 sm:font-semibold px-1">{item.name}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

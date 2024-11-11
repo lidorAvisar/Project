@@ -14,8 +14,6 @@ const Tests = ({ studentDetails, refetch, setOpenModalStudentData }) => {
         }
     });
 
-    const today = new Date().toISOString().split('T')[0];
-
     const { mutate: studentUpdateTests } = useMutation({
         mutationKey: ['users'],
         mutationFn: async ({ id, data }) => await updateAccount(id, data),
@@ -80,7 +78,6 @@ const Tests = ({ studentDetails, refetch, setOpenModalStudentData }) => {
                                             defaultValue={test.date}
                                             render={({ field }) => (
                                                 <input
-                                                    min={today}
                                                     type="date"
                                                     className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     {...field}

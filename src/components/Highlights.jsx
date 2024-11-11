@@ -24,9 +24,9 @@ const Highlights = ({ teacherMinutesReport, bestCycle }) => {
     const topTeacher = getTopTeacher(teacherMinutesReport);
 
     return (
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 p-4">
+        <div className="flex flex-col justify-evenly  gap-16 h-full w-full">
             {/* Top Teacher Card */}
-            <div dir='rtl' className="bg-blue-500 text-white flex flex-col sm:flex-row items-center sm:items-start justify-between p-4 rounded-lg shadow-lg w-full sm:w-1/2 transition-transform duration-300 hover:scale-105">
+            <div dir='rtl' className="bg-blue-500 text-white flex flex-col sm:flex-row items-center sm:items-start justify-between p-3 rounded-lg  w-full transition-transform duration-300 hover:scale-105">
                 <div className="flex items-center mb-4 sm:mb-0">
                     <FaChalkboardTeacher className="text-4xl ml-4" />
                     <div>
@@ -35,12 +35,12 @@ const Highlights = ({ teacherMinutesReport, bestCycle }) => {
                     </div>
                 </div>
                 <div>
-                    <p className="text-3xl font-bold">{topTeacher.hours} שעות</p>
+                    <p className="text-2xl font-bold">{topTeacher.hours} שעות</p>
                 </div>
             </div>
 
             {/* Best Cycle Card */}
-            <div dir='rtl' className="bg-green-500 text-white flex flex-col sm:flex-row items-center sm:items-start justify-between p-4 rounded-lg shadow-lg w-full sm:w-1/2 transition-transform duration-300 hover:scale-105">
+            <div dir='rtl' className="bg-green-500 text-white flex flex-col sm:flex-row items-center sm:items-start justify-between p-3 rounded-lg w-full transition-transform duration-300 hover:scale-105">
                 <div className="flex items-center mb-4 sm:mb-0">
                     <FaCrown className="text-4xl ml-4" />
                     <div>
@@ -49,7 +49,7 @@ const Highlights = ({ teacherMinutesReport, bestCycle }) => {
                     </div>
                 </div>
                 <div>
-                    <p className="text-3xl font-bold">{bestCycle.performance} ציון</p>
+                    <p className="text-2xl font-bold">{bestCycle.performance} ציון</p>
                 </div>
             </div>
         </div>
