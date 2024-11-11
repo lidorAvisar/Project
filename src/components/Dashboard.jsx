@@ -177,7 +177,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
             <div className='w-[100%] bg-[#e0ebf3] p-10 py-5 mb-3 rounded-lg h-full overflow-y-auto'>
                 <div className='flex items-center justify-between w-full py-3'>
                     <button onClick={() => setOpenModalDashboard(false)} className='bg-red-500 text-white p-1 px-10 rounded-md font-bold'>סגור</button>
-                    <p className='text-center underline font-bold text-2xl '>סטטוס הדכה בית ספר לנהיגה</p>
+                    <p className='text-center underline font-bold text-2xl '>סטטוס הדרכה בית ספר לנהיגה</p>
                     <p className='flex text-lg font-bold '>{user?.displayName} ,<Greeting /> </p>
                 </div>
                 <div className="w-full grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in ">

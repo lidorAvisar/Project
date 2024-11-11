@@ -11,7 +11,7 @@ const TeachersTableReport = ({ teacherMinutesReport }) => {
             {schools.map((school, index) => (
               <th
                 key={index}
-                className={`py-4 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-900 font-semibold border-b border-gray-300 text-center ${index === 0
+                className={`py-4 bg-gradient-to-tl from-blue-100 to-blue-200 text-blue-900 font-semibold border-b border-gray-300 text-center ${index === 0
                     ? "rounded-tl-lg"
                     : index === schools.length - 1
                       ? "rounded-tr-lg" 
