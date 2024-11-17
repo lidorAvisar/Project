@@ -112,6 +112,11 @@ const ConstractorUserData = ({ setOpenModalStudentData, studentDetails }) => {
                     <p className="text-xl font-bold mb-2 text-center py-5 underline">תוכנית למידה</p>
 
                     <div className="mb-4">
+                        <p className="block  text-lg font-bold text-gray-700 ">סוג הכשרה:</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.lineTraining || 'טרם'}</p>
+                    </div>
+
+                    <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">שיעורי חובה:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.mandatoryLessons === "yes" ? "כן" : "לא"}</p>
                     </div>

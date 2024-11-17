@@ -14,6 +14,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
     const [departmentToogle, setDepartmentToogle] = useState(false);
+    const [driverType, setDriverType] = useState(false);
     const [cycle, setCycle] = useState(false);
     const [schools, setSchools] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -52,6 +53,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setDepartmentsToogle(false);
                 setDepartmentToogle(false);
                 setSchools(true);
+                setDriverType(false);
                 setValue('departments', null);
                 setValue('cycle', null);
                 break;
@@ -60,6 +62,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setDepartmentsToogle(true);
                 setDepartmentToogle(false);
                 setSchools(false);
+                setDriverType(false);
                 setValue('departments', []);
                 setValue('cycle', null);
                 setValue('school', null);
@@ -69,6 +72,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setDepartmentsToogle(false);
                 setDepartmentToogle(true);
                 setSchools(false);
+                setDriverType(false);
                 setValue('departments', null);
                 setValue('cycle', null);
                 setValue('school', null);
@@ -78,6 +82,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setDepartmentsToogle(false);
                 setDepartmentToogle(false);
                 setSchools(false);
+                setDriverType(false);
                 setValue('departments', []);
                 setValue('cycle', null);
                 setValue('school', null);
@@ -86,6 +91,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setCycle(true);
                 setDepartmentsToogle(false);
                 setDepartmentToogle(true);
+                setDriverType(true);
                 setValue('departments', []);
                 break;
         }
@@ -164,7 +170,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                     </div>
                     <div className='space-y-3'>
                         <div className="flex items-center justify-between">
-                            <label htmlFor="password" className="block text-lg font-medium leading-6 text-gray-900">
+                            <label htmlFor="user" className="block text-lg font-medium leading-6 text-gray-900">
                                 מ"פ\מ"מ\מורי נהיגה\תלמיד:
                             </label>
                         </div>
@@ -182,7 +188,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                         {departmentsToogle &&
                             <div className='py-4'>
                                 <div className="flex items-center justify-between">
-                                    <label htmlFor="password" className="block text-lg font-medium leading-6 text-gray-900">
+                                    <label htmlFor="departments" className="block text-lg font-medium leading-6 text-gray-900">
                                         בחר מחלקה:
                                     </label>
                                 </div>
@@ -203,13 +209,14 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                             </div>}
                         {departmentToogle && <div>
                             <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="block text-lg font-medium leading-6 text-gray-900">
+                                <label htmlFor="department" className="block text-lg font-medium leading-6 text-gray-900">
                                     בחר מחלקה:
                                 </label>
                             </div>
                             <div className="mt-2">
                                 <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                     name="" id="department" {...register("departments", { required: true })}>
+                                        <option value="">בחר מחלקה .  .  .</option>
                                     {departments.map((item, i) => {
                                         return (
                                             <option key={i} className='font-bold'>{item}</option>
@@ -218,6 +225,24 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                                 </select>
                             </div>
                             {errors.department && <p className="text-red-500">בחר מחלקה</p>}
+                        </div>}
+                        {driverType && <div>
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="lineTraining" className="block text-lg font-medium leading-6 text-gray-900">
+                                    שם הכשרה:
+                                </label>
+                            </div>
+                            <div className="mt-2">
+                                <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                    name="" id="lineTraining" {...register("lineTraining", { required: true })}>
+                                    <option value="">בחר הכשרה . . .</option>
+                                    <option value='נהג בט"ש B'>נהג בט"ש B</option>
+                                    <option value='נהג בט"ש C1'>נהג בט"ש C1</option>
+                                    <option value='נהג ליין משא'>נהג ליין משא</option>
+                                    <option value='נהג משא יח"ש'>נהג משא יח"ש</option>
+                                </select>
+                            </div>
+                            {errors.lineTraining && <p className="text-red-500">בחר הכשרה</p>}
                         </div>}
                         <div>
                             <label htmlFor="userId" className="text-lg block font-medium leading-6 text-gray-900">

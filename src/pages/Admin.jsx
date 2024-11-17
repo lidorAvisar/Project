@@ -58,30 +58,74 @@ const Admin = () => {
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
 
             <div dir='rtl' className='w-full flex flex-col items-center'>
-                <p className='font-bold text-lg text-gray-500 py-2 flex flex-col sm:flex-row sm:gap-2'>
-                    <Greeting /> {currentUser.displayName}, מח' {currentUser.departments}
-                </p>
-                <div className='w-full flex flex-row items-center justify-around gap-3 pt-3'>
-                    <button onClick={() => {
-                        if (window.confirm("האם אתה בטוח")) {
-                            try {
-                                signOut(auth);
-                                window.location.replace('/');
-                            } catch (error) {
-                                alert("שגיאה");
-                            }
-                        }
-                    }} className='text-xl text-red-600 flex items-center gap-2'>
-                        <FaSignOutAlt className='mt-1' /><span className='hidden sm:block'>התנתק</span>
-                    </button>
-                    <div className='flex items-center gap-2'>
-                        <IoMdPersonAdd onClick={() => setOpenModalAddStudent(true)} className='text-4xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full p-1 cursor-pointer' />
+                <div className='w-full flex flex-col space-y-4'>
+                    <div className='flex justify-around'>
+                        <div className="flex items-center gap-1 font-bold text-lg text-gray-500 py-2">
+                            <Greeting /> {currentUser.displayName}, מח' {currentUser.departments}
+                        </div>
+                        <button
+                            onClick={() => {
+                                if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
+                                    try {
+                                        signOut(auth);
+                                        window.location.replace('/');
+                                    } catch (error) {
+                                        alert("שגיאה");
+                                    }
+                                }
+                            }}
+                            className="hidden sm:text-lg text-red-600 sm:flex items-center gap-1"
+                        >
+                            <FaSignOutAlt className="text-md sm:text-lg" />
+                            <span className="">התנתק</span>
+                        </button>
                     </div>
-                    <div className='flex gap-3'>
-                        <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
-                        <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+
+                    <div className="flex justify-around sm:justify-center">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setOpenModalAddStudent(true)}
+                                className="sm:text-base flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg px-2 sm:px-10 p-1 sm:p-2 cursor-pointer"
+                            >
+                                <IoMdPersonAdd className="text-white" />
+                                <span className="">הוסף תלמיד</span>
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => {
+                                if (window.confirm("האם אתה בטוח")) {
+                                    try {
+                                        signOut(auth);
+                                        window.location.replace('/');
+                                    } catch (error) {
+                                        alert("שגיאה");
+                                    }
+                                }
+                            }}
+                            className="sm:text-lg sm:hidden  text-red-600 flex items-center gap-1"
+                        >
+                            <FaSignOutAlt className="text-md sm:text-lg" />
+                            <span className="">התנתק</span>
+                        </button>
+                    </div>
+                    <div className="w-full flex items-center justify-center gap-3 pt-3">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+                            <button
+                                onClick={() => setOpenModalStudentsTable(true)}
+                                className="bg-slate-300 p-1 px-5 rounded-md font-bold"
+                            >
+                                סטטוס תלמידים
+                            </button>
+                            <button
+                                onClick={() => setOpenModalDailyDrivingStatus(true)}
+                                className="bg-slate-300 p-1 px-5 rounded-md font-bold"
+                            >
+                                סטטוס שיעורי נהיגה
+                            </button>
+                        </div>
                     </div>
                 </div>
+
                 <p className='font-bold text-xl lg:text-2xl py-5 pt-8 underline'>רשימת תלמידים</p>
                 <div className='flex items-center justify-around w-full'>
                     <input

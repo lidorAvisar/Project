@@ -15,6 +15,9 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
     const uniqueCycles = [...new Set(filteredStudents.map(student => student.cycle))];
     const [testByCycle, setTestByCycle] = useState('everything');
     const [theoriesByCycle, setTheoriesByCycle] = useState('everything');
+    const [monthFilter, setMonthFilter] = useState('everything'); // New state for month filter
+    const [teacherMinutesByMonth, setTeacherMinutesByMonth] = useState([]); // Separate state for month-specific data
+
 
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['practical_driving'],
@@ -57,6 +60,8 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
     const handleChangeTheoriesByCycle = (event) => {
         setTheoriesByCycle(event.target.value);
     };
+
+    const handleMonthChange = (e) => setMonthFilter(e.target.value);
 
     // Function to filter students by cycle and update test data
     const updateTestDataByCycle = () => {
@@ -120,32 +125,29 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
     };
 
     // function to calculate total driving minutes for each teacher
-    const calculateTotalMinutesForTeachers = () => {
+    const calculateMinutes = (month = 'everything') => {
         const teacherMinutesBySchool = schools.map(school => {
             const teachersInSchool = filteredTeachers.filter(teacher => teacher.school === school);
 
-            // For each teacher in this school, calculate the total driving minutes
             const teacherData = teachersInSchool.map(teacher => {
-                // Find all lessons where the teacher's uid matches
                 const totalMinutes = data?.reduce((sum, lesson) => {
-                    if (lesson.teacherUid === teacher.uid) {
-                        // Convert drivingMinutes to a number if it's not already
+                    const lessonMonth = new Date(lesson.date).getMonth();
+                    const selectedMonth = month !== 'everything' ? parseInt(month) : null;
+
+                    if (lesson.teacherUid === teacher.uid &&
+                        (month === 'everything' || lessonMonth === selectedMonth)) {
                         const minutes = Number(lesson.drivingMinutes) || 0;
                         return sum + minutes;
                     }
                     return sum;
                 }, 0);
 
-                // Convert total minutes to hours (e.g., 90 minutes becomes "1.5 hours")
                 const totalHours = (totalMinutes / 60).toFixed(0);
-
-                return { displayName: teacher.displayName, totalHours }; // Attach displayName and totalHours
+                return { displayName: teacher.displayName, totalHours };
             });
 
-            // Sort teachers in the current school by their total driving minutes (highest to lowest)
             teacherData.sort((a, b) => b.totalHours - a.totalHours);
-
-            return { school, teachers: teacherData }; // Return the school and its sorted teacher data
+            return { school, teachers: teacherData };
         });
 
         return teacherMinutesBySchool;
@@ -164,13 +166,22 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
         generateActiveStudentData();
     }, [filteredStudents]);
 
+    // useEffect for "everything" option (when no month filter is applied)
     useEffect(() => {
-        setTeacherMinutesReport(calculateTotalMinutesForTeachers());
-    }, [filteredTeachers, data]);
+        if (monthFilter === 'everything') {
+            setTeacherMinutesReport(calculateMinutes());
+        }
+    }, [filteredTeachers, data, monthFilter]);
+
+    // useEffect for specific month filtering (when monthFilter is set to a specific month)
+    useEffect(() => {
+        if (monthFilter !== 'everything') {
+            setTeacherMinutesByMonth(calculateMinutes(monthFilter));
+        }
+    }, [filteredTeachers, data, monthFilter]);
 
     if (isLoading) return <div className='text-center animate-bounce'>Loading . . .</div>
 
-    const topTeacher = { name: "משה כהן", hours: 120 };
     const bestCycle = { name: "מחזור זאב מחלקה 2", performance: 100 };
 
     return (
@@ -185,7 +196,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                     {/* Profile Card */}
                     <div className='flex flex-col items-center  gap-10  bg-[#b9e6fe] rounded-lg shadow-lg'>
                         <div className="w-full col-span-1 lg:col-span-1 bg-gradient-to-tr from-indigo-500 via-sky-500 to-emerald-500 border border-white p-4 rounded-lg flex gap-4 items-center text-white shadow-lg transition-transform duration-300 hover:scale-105">
-                            <img className="h-20 w-20 rounded-2xl mb-2" src={user?.displayName==="מנהל מקצועי"?'יוסי.jpg':user?.displayName==="ממ״ג נהיגה"?'מתן.jpg':'user.png'} alt="Profile" />
+                            <img className="h-20 w-20 rounded-2xl mb-2" src={user?.displayName === "מנהל מקצועי" ? 'יוסי.jpg' : user?.displayName === "ממ״ג נהיגה" ? 'מתן.jpg' : 'user.png'} alt="Profile" />
                             <div className="text-center font-bold text-lg">{user?.displayName}</div>
                         </div>
                         {/* Highlights Section */}
@@ -230,8 +241,22 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                     </div>
                 </div>
                 <div className='p-4 pt-10'>
-                    <p className='font-bold text-xl text-center p-1'>טבלת מורים</p>
-                    <TeachersTableReport teacherMinutesReport={teacherMinutesReport} />
+                    <div className='flex justify-around items-center w-full'>
+                        <div className="flex justify-center w-full">
+                            <select
+                                value={monthFilter}
+                                onChange={handleMonthChange}
+                                className="rounded-lg bg-white border border-gray-300 px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-[50%] mb-2 max-w-md"
+                            >
+                                <option value="everything">הכל</option>
+                                {Array.from({ length: 12 }, (_, i) => (
+                                    <option key={i} value={i}>{new Date(0, i).toLocaleString('he', { month: 'long' })}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <p className='font-bold text-xl text-center p-1 w-full'>טבלת מורים</p>
+                    </div>
+                    <TeachersTableReport teacherMinutesReport={monthFilter === 'everything' ? teacherMinutesReport : teacherMinutesByMonth} />
                 </div>
                 <div className='flex justify-center py-8'>
                     <button onClick={() => setOpenModalDashboard(false)} className='w-[50%] max-w-96 bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>

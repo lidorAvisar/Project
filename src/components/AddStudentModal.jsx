@@ -14,6 +14,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
     const [currentUser] = useCurrentUser();
     const [showPassword, setShowPassword] = useState(false);
     const [departmentsToogle, setDepartmentsToogle] = useState(true);
+    const [driverType, setDriverType] = useState(true);
     const [schools, setSchools] = useState(false);
 
     const { mutate: addUser, isLoading } = useMutation({
@@ -39,11 +40,13 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
         if (value === "מורה נהיגה") {
             setSchools(true);
             setDepartmentsToogle(false);
+            setDriverType(false);
             setValue('departments', null);
             setValue('cycle', null);
         }
         else {
             setDepartmentsToogle(true);
+            setDriverType(true);
             setValue('school', null)
         }
     };
@@ -143,7 +146,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                                     </label>
                                 </div>
                                 <div className="mt-2">
-                                    <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                    <select defaultValue={currentUser.departments} className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                         name="" id="department" {...register("departments", { required: true })}>
                                         <option className='font-bold'>{currentUser.departments}</option>
                                     </select>
@@ -151,6 +154,24 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
                                 {errors.department && <p className="text-red-500">בחר מחלקה</p>}
                             </div>
                         }
+                        {driverType && <div>
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="lineTraining" className="block text-lg font-medium leading-6 text-gray-900">
+                                    שם הכשרה:
+                                </label>
+                            </div>
+                            <div className="mt-2">
+                                <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                    name="" id="lineTraining" {...register("lineTraining", { required: true })}>
+                                    <option value="">בחר הכשרה . . .</option>
+                                    <option value='נהג בט"ש B'>נהג בט"ש B</option>
+                                    <option value='נהג בט"ש C1'>נהג בט"ש C1</option>
+                                    <option value='נהג ליין משא'>נהג ליין משא</option>
+                                    <option value='נהג משא יח"ש'>נהג משא יח"ש</option>
+                                </select>
+                            </div>
+                            {errors.lineTraining && <p className="text-red-500">בחר הכשרה</p>}
+                        </div>}
                         <div className="flex items-center justify-between">
                             <label htmlFor="userId" className="block text-lg font-medium leading-6 text-gray-900">
                                 ת.ז:

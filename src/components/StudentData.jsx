@@ -16,12 +16,19 @@ import { GiArchiveRegister } from "react-icons/gi";
 import StatusBar from './StatusBar';
 
 
+const driverType = [
+    'נהג בט"ש B',
+    'נהג בט"ש C1',
+    'נהג ליין משא',
+    'נהג משא יח"ש',
+]
 
 const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers }) => {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [nightDriving, setNightDriving] = useState(0);
+    const [typeCarForTest, setTypeCarForTest] = useState(false);
 
     const { data, isLoading: lessonsLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
@@ -129,7 +136,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                     </div>
                 </div>
                 <div dir='rtl' className='py-1'>
-                    <StatusBar studentId={studentDetails.uid} usersRefetch={usersRefetch} studentDetails={studentDetails}  />
+                    <StatusBar studentId={studentDetails.uid} usersRefetch={usersRefetch} studentDetails={studentDetails} />
                 </div>
                 <div className="flex flex-col items-center w-full">
                     <form onSubmit={handleSubmit(onSubmit)} dir='rtl' className="w-full bg-white rounded-lg overflow-hidden shadow-lg p-2 sm:p-6 mb-20 my-5 space-y-6 max-w-[900px]">
@@ -263,6 +270,22 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                         <div className='space-y-5'>
                             <h3 className="text-lg font-bold mb-2 text-right underline">תוכנית למידה</h3>
                             <div className="mb-4">
+                                <label htmlFor="lineTraining" className="block text-right text-sm font-medium text-gray-700">סוג הכשרה:</label>
+                                <select
+                                    defaultValue={studentDetails?.lineTraining || ''}
+                                    className="ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    id="lineTraining"
+                                    {...register("lineTraining", { required: true })}
+                                >
+                                    <option value="">בחר סוג הכשרה...</option>
+                                    {driverType.map((item, i) => (
+                                        <option key={i} value={item} className="font-bold">{item}</option>
+                                    ))}
+                                </select>
+                                {errors.lineTraining && <span className="text-red-500 text-sm">{errors.lineTraining.message}</span>}
+                            </div>
+
+                            <div className="mb-4">
                                 <label className="block text-right text-sm font-medium text-gray-700">שיעורי חובה:</label>
                                 <div className='flex gap-4'>
                                     <div>
@@ -288,7 +311,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 </div>
                                 {errors.mandatoryLessons && <span className="text-red-500 text-sm">{errors.mandatoryLessons.message}</span>}
                             </div>
-                          
+
                             <div className="mb-4">
                                 <label htmlFor="cargoSecuringScore" className="block text-right text-sm font-medium text-gray-700">מבחן קשירת מטענים:</label>
                                 <input
@@ -301,7 +324,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 />
                                 {errors.cargoSecuringScore && <span className="text-red-500 text-sm">{errors.cargoSecuringScore.message}</span>}
                             </div>
-                           
+
                             <div className="mb-4">
                                 <label htmlFor="hazardousMaterialsScore" className="block text-right text-sm font-medium text-gray-700">מבחן חומ"ס:</label>
                                 <input

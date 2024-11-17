@@ -7,7 +7,7 @@ const BarChartActiveStudents = ({ data, barColor = '#2196f3' }) => {
     const barWidth = chartWidth / data.length;
 
     return (
-        <div className="flex flex-col items-center p-6 w-full max-w-5xl mx-auto  rounded-lg shadow-lg">
+        <div className="flex flex-col items-center p-6 w-full max-w-5xl mx-auto  rounded-lg">
             <p className="font-bold text-lg sm:text-xl text-center mb-4 text-gray-800">תלמידים פעילים</p>
             <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} width="100%" height={chartHeight}>
                 {data.map((item, index) => (
