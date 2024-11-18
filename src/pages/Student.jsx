@@ -4,7 +4,7 @@ import { Loading } from '../components/Loading';
 import { useQuery } from 'react-query';
 import { auth, getPracticalDriving } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
-import { FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaSignOutAlt, FaTimes } from 'react-icons/fa';
 import Greeting from '../components/Greeting';
 import { IoArrowUndoOutline } from 'react-icons/io5';
 
@@ -16,6 +16,8 @@ const Student = () => {
     const [filteredLessons, setFilteredLessons] = useState([]);
     const [theoryTestPassed, setTheoryTestPassed] = useState(false);
     const [finalTestPassed, setFinalTestPassed] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
     const { data, isLoading, isError, error, refetch, status } = useQuery({
         queryKey: ['practical_driving'],
@@ -43,23 +45,13 @@ const Student = () => {
             const passedTheoryTests = currentUser.detailsTheoryTest?.some(test => test.mistakes <= 4);
             setTheoryTestPassed(passedTheoryTests);
 
-            // Check if final test was passed (score equals 100)
+            console.log(currentUser);
+
+            // Check if final test was passed
             const passedFinalTest = currentUser.tests?.map(test => test === 'Pass');
             setFinalTestPassed(passedFinalTest);
         }
     }, [data, currentUser]);
-
-    if (loading || isLoading) {
-        return <Loading />;
-    }
-
-    if (isError) {
-        return (
-            <div className='flex flex-col gap-5'>
-                <p>{error.message}</p>
-            </div>
-        );
-    }
 
     // Calculate progress percentage
     const calculateProgress = () => {
@@ -81,45 +73,99 @@ const Student = () => {
         return progress;
     };
 
-    // Determine pass/fail status based on progress
-    const getPassFailStatus = () => {
-        if (drivingMinutes >= totalRequiredMinutes && theoryTestPassed && finalTestPassed === "Pass") {
-            return 'עבר';
-        } else {
-            return 'נכשל';
+    const handleSignOut = () => {
+        if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
+            try {
+                signOut(auth);
+                window.location.replace('/');
+            } catch (error) {
+                alert("שגיאה");
+            }
         }
     };
 
+    if (loading || isLoading) {
+        return <Loading />;
+    }
+
+    if (isError) {
+        return (
+            <div className='flex flex-col gap-5'>
+                <p>{error.message}</p>
+            </div>
+        );
+    }
+
+
     return (
-        <div className="p-6 bg-gray-100 w-full min-h-screen">
-            <div dir='rtl' className=' flex items-center justify-around  p-1 py-3'>
-                <h1 className="text-lg font-bold"><Greeting /> {currentUser?.displayName}</h1>
-                <button onClick={() => {
-                    if (window.confirm("האם אתה בטוח")) {
-                        try {
-                            signOut(auth);
-                            window.location.replace('/');
-                        } catch (error) {
-                            alert("שגיאה")
-                        }
-                    }
-                }} className='sm:text-lg flex items-center gap-2  text-red-600'><FaSignOutAlt /><span className='text-lg'>התנתק</span>
-                </button>
+        <div className="p-3 sm:p-6 bg-gray-100 w-full min-h-screen">
+            <div className="w-full">
+                {/* Greeting Section */}
+                <div dir="rtl" className="flex items-center justify-between p-3">
+                    <h1 className="sm:text-lg font-bold">
+                        <Greeting />, {currentUser?.displayName}
+                    </h1>
+                    {/* Hamburger Button for Mobile */}
+                    <button
+                        className="sm:hidden text-gray-700 text-xl"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                        {isMenuOpen ? <FaTimes /> : <FaBars />}
+                    </button>
+                </div>
+
+                {/* Mobile Menu */}
+                {isMenuOpen && (
+                    <div dir="rtl" className="sm:hidden bg-gray-100 p-3 space-y-4">
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center gap-2 text-red-600 text-lg"
+                        >
+                            <FaSignOutAlt />
+                            <span>התנתק</span>
+                        </button>
+                        <a
+                            href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <button
+                                className="flex items-center gap-3 bg-blue-500 p-1 rounded-md text-white font-bold w-full"
+                            >
+                                לימודי תאוריה
+                                <IoArrowUndoOutline className="mx-auto h-5 w-auto" />
+                            </button>
+                        </a>
+                    </div>
+                )}
+
+                {/* Navbar for Tablets and Larger Screens */}
+                <nav dir="rtl" className="hidden sm:flex items-center justify-between p-3">
+                    <div className="flex items-center gap-4">
+                        <a
+                            href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 font-bold hover:underline"
+                        >
+                            לימודי תאוריה
+                        </a>
+                    </div>
+                    <button
+                        onClick={handleSignOut}
+                        className="flex items-center gap-2 text-red-600 text-lg"
+                    >
+                        <FaSignOutAlt />
+                        <span>התנתק</span>
+                    </button>
+                </nav>
             </div>
 
-            <div dir='rtl' className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-5">
+            <div dir='rtl' className="w-full sm:max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-10 my-4">
                 {/* Progress Bar */}
                 <div className="mb-6">
-                    <div className='flex justify-between items-center pt-3'>
-                        <h2 className="text-lg sm:text-xl font-semibold">ההתקדמות שלך</h2>
-                        <div className="flex flex-col items-center justify-center">
-                            <a href="https://mador-till-prod.github.io/lomda-cards-theory/src/" target="_blank" rel="noopener noreferrer">
-                                <button dir="rtl" className="flex items-center gap-3 bg-green-500 p-1 rounded-md text-white font-bold">
-                                    לימודי תאוריה
-                                    <IoArrowUndoOutline className="mx-auto h-5 w-auto" />
-                                </button>
-                            </a>
-                        </div>
+                    <div className='flex flex-col gap-2 sm:flex-row justify-between items-center pt-3'>
+                        <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
                     </div>
                     <div className="relative pt-10">
                         <div className="flex mb-2 items-center justify-between">
@@ -143,10 +189,10 @@ const Student = () => {
                 {/* Completed Tasks */}
                 <div className="mb-6">
                     <h2 className="text-xl font-bold mb-4 text-center">משימות שהושלמו</h2>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {/* Theory Sessions */}
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 underline">מפגשי תיאוריה</h3>
+                            <h3 className="text-lg font-semibold mb-2 underline">תיאוריה</h3>
                             <ul className="list-inside space-y-2">
                                 <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר מפגשי תאוריה: </span>{currentUser?.theorySessionsQuantity}</li>
                             </ul>
@@ -180,24 +226,12 @@ const Student = () => {
                         </div>
                         {/* Final Test */}
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 underline">מבחן נהיגה סופי</h3>
+                            <h3 className="text-lg font-semibold mb-2 underline">טסטים</h3>
                             <ul className="list-inside list-decimal space-y-5">
-                                {finalTestPassed ? (
-                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm">
-                                        <span className='font-bold'> התבצע בהצלחה! </span>
-                                    </li>
-                                ) : (
-                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm">
-                                        <span className='font-bold'> לא התבצע </span>
-                                    </li>
+                                {currentUser?.tests?.map(test =>
+                                    <li className='p-3 bg-gray-100 rounded-lg shadow-sm font-bold'>תאריך: {test.date} , {test.status === 'Pass' ? <span className='text-green-500'>עבר !</span> : <span className='text-red-500'>נכשל</span>}</li>
                                 )}
                             </ul>
-                            {finalTestPassed && <div className="text-lg font-semibold mb-2">
-                                הציון הסופי:
-                                <span className={`ml-2 ${getPassFailStatus() === 'Pass' ? 'text-green-600' : 'text-red-600'}`}>
-                                    {getPassFailStatus()}
-                                </span>
-                            </div>}
                         </div>
                     </div>
                 </div>

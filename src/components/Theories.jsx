@@ -48,7 +48,7 @@ const Theories = ({ studentDetails, setOpenModalStudentData, usersRefetch }) => 
 
 
     const onSubmit = async (data) => {
-        
+
         const studentUid = studentDetails.uid;
         const updatedData = {
             theorySessionsQuantity: theorySessionsCount,

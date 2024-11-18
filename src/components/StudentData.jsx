@@ -28,7 +28,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [nightDriving, setNightDriving] = useState(0);
-    const [typeCarForTest, setTypeCarForTest] = useState(false);
+    const [selectedDriverType, setSelectedDriverType] = useState("");
 
     const { data, isLoading: lessonsLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
@@ -107,6 +107,51 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
         updateNightDriving();
     }, [studentDetails, nightDriving]);
 
+    const testsByDriverType = {
+        "נהג בט\"ש B": ["hazardousMaterialsScore", "davidCarScore", "jeepCarScore"],
+        "נהג בט\"ש C1": [
+            "hazardousMaterialsScore",
+            "cargoSecuringScore",
+            "davidCarScore",
+            "jeepCarScore",
+            "hummerProtectedCarScore",
+            "tigerCarScore",
+            "saunaCarScore",
+        ],
+        "נהג ליין משא": [
+            "hazardousMaterialsScore",
+            "cargoSecuringScore",
+            "hummerCarScore",
+        ],
+        "נהג משא יח\"ש": ["hazardousMaterialsScore", "cargoSecuringScore"],
+    };
+
+    const renderTestField = (fieldId, label) => (
+        <div className="mb-4" key={fieldId}>
+            <label
+                htmlFor={fieldId}
+                className="block text-right text-sm font-medium text-gray-700"
+            >
+                {label}
+            </label>
+            <input
+                type="text"
+                id={fieldId}
+                defaultValue={studentDetails?.[fieldId] || ""}
+                {...register(fieldId)}
+                className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                placeholder="הכנס ציון"
+            />
+            {errors[fieldId] && (
+                <span className="text-red-500 text-sm">
+                    {errors[fieldId].message}
+                </span>
+            )}
+        </div>
+    );
+
+    // Get the list of tests to show based on selected driver type
+    const visibleTests = testsByDriverType[selectedDriverType] || [];
 
     if (isLoading) {
         return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
@@ -270,19 +315,27 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                         <div className='space-y-5'>
                             <h3 className="text-lg font-bold mb-2 text-right underline">תוכנית למידה</h3>
                             <div className="mb-4">
-                                <label htmlFor="lineTraining" className="block text-right text-sm font-medium text-gray-700">סוג הכשרה:</label>
+                                <label
+                                    htmlFor="lineTraining"
+                                    className="block text-right text-sm font-medium text-gray-700"
+                                >
+                                    סוג הכשרה:
+                                </label>
                                 <select
-                                    defaultValue={studentDetails?.lineTraining || ''}
-                                    className="ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     id="lineTraining"
+                                    defaultValue={studentDetails?.lineTraining || ''}
                                     {...register("lineTraining", { required: true })}
+                                    className="ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    onClick={(e) => setSelectedDriverType(e.target.value)}
+                                    onInput={(e) => setSelectedDriverType(e.target.value)}
                                 >
                                     <option value="">בחר סוג הכשרה...</option>
                                     {driverType.map((item, i) => (
-                                        <option key={i} value={item} className="font-bold">{item}</option>
+                                        <option key={i} value={item} className="font-bold">
+                                            {item}
+                                        </option>
                                     ))}
                                 </select>
-                                {errors.lineTraining && <span className="text-red-500 text-sm">{errors.lineTraining.message}</span>}
                             </div>
 
                             <div className="mb-4">
@@ -312,103 +365,19 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 {errors.mandatoryLessons && <span className="text-red-500 text-sm">{errors.mandatoryLessons.message}</span>}
                             </div>
 
-                            <div className="mb-4">
-                                <label htmlFor="cargoSecuringScore" className="block text-right text-sm font-medium text-gray-700">מבחן קשירת מטענים:</label>
-                                <input
-                                    type="text"
-                                    id="cargoSecuringScore"
-                                    defaultValue={studentDetails?.cargoSecuringScore || ""}
-                                    {...register('cargoSecuringScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.cargoSecuringScore && <span className="text-red-500 text-sm">{errors.cargoSecuringScore.message}</span>}
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="hazardousMaterialsScore" className="block text-right text-sm font-medium text-gray-700">מבחן חומ"ס:</label>
-                                <input
-                                    type="text"
-                                    id="hazardousMaterialsScore"
-                                    defaultValue={studentDetails?.hazardousMaterialsScore || ""}
-                                    {...register('hazardousMaterialsScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.hazardousMaterialsScore && <span className="text-red-500 text-sm">{errors.hazardousMaterialsScore.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="hummerCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן האמר:</label>
-                                <input
-                                    type="text"
-                                    id="hummerCarScore"
-                                    defaultValue={studentDetails?.hummerCarScore || ""}
-                                    {...register('hummerCarScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.hummerCarScore && <span className="text-red-500 text-sm">{errors.hummerCarScore.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="hummerProtectedCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן האמר ממוגן:</label>
-                                <input
-                                    type="text"
-                                    id="hummerProtectedCarScore"
-                                    defaultValue={studentDetails?.hummerProtectedCarScore || ""}
-                                    {...register('hummerProtectedCarScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.hummerProtectedCarScore && <span className="text-red-500 text-sm">{errors.hummerProtectedCarScore.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="davidCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן דויד:</label>
-                                <input
-                                    type="text"
-                                    id="davidCarScore"
-                                    defaultValue={studentDetails?.davidCarScore || ""}
-                                    {...register('davidCarScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.davidCarScore && <span className="text-red-500 text-sm">{errors.davidCarScore.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="tigerCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן טיגריס:</label>
-                                <input
-                                    type="text"
-                                    id="tigerCarScore"
-                                    defaultValue={studentDetails?.tigerCarScore || ""}
-                                    {...register('tigerCarScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.tigerCarScore && <span className="text-red-500 text-sm">{errors.tigerCarScore.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="jeepCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן ג'יפ:</label>
-                                <input
-                                    type="text"
-                                    id="jeepCarScore"
-                                    defaultValue={studentDetails?.jeepCarScore || ""}
-                                    {...register('jeepCarScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.jeepCarScore && <span className="text-red-500 text-sm">{errors.jeepCarScore.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="saunaCarScore" className="block text-right text-sm font-medium text-gray-700">מבחן סאונה:</label>
-                                <input
-                                    type="text"
-                                    id="saunaCarScore"
-                                    defaultValue={studentDetails?.saunaCarScore || ""}
-                                    {...register('saunaCarScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.saunaCarScore && <span className="text-red-500 text-sm">{errors.saunaCarScore.message}</span>}
-                            </div>
+                            {/* Render Test Fields Dynamically */}
+                            {visibleTests.map((fieldId) =>
+                                renderTestField(fieldId, {
+                                    hazardousMaterialsScore: "מבחן חומ\"ס",
+                                    cargoSecuringScore: "מבחן קשירת מטענים",
+                                    davidCarScore: "מבחן דויד",
+                                    jeepCarScore: "מבחן ג'יפ",
+                                    hummerCarScore: "מבחן האמר",
+                                    hummerProtectedCarScore: "מבחן האמר ממוגן",
+                                    saunaCarScore: "מבחן סאונה",
+                                    tigerCarScore: "מבחן טיגריס"
+                                }[fieldId])
+                            )}
                         </div>
                         {/* <div className='space-y-5'>
                             <h3 className="text-lg font-bold mb-2 text-right underline">סוג רכב</h3>
