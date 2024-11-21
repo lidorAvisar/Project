@@ -8,6 +8,7 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
     const [openModaltestsList, setOpenModalTestsList] = useState(false);
     const [test, setTest] = useState([]);
+    const [testName, setTestName] = useState("");
 
     const { register, handleSubmit, reset, control, setValue, watch, formState: { errors, isDirty } } = useForm({
         defaultValues: {
@@ -23,7 +24,12 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
     const watchQuestions = watch("questions");
 
-    const { data: tests, isLoading: loadingTest, error, refetch } = useQuery('studentsTests', getStudentsTests);
+    const { data: tests, isLoading: loadingTest, error, refetch } = useQuery('studentsTests', async () => {
+        const fetchedTests = await getStudentsTests();
+        // Sort by Hebrew alphabet
+        return fetchedTests.sort((a, b) => a.testName.localeCompare(b.testName, 'he'));
+    });
+
 
     const { mutate: addTestMutation, isLoading } = useMutation({
         mutationKey: ["students_tests"],
@@ -36,6 +42,8 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
     })
 
     const onSubmit = (data) => {
+        data.testName = testName;
+
         // Validation: Check if every question has a correct answer
         const allQuestionsHaveCorrectAnswer = data.questions.every((question, index) => {
             const hasCorrectAnswer = question.answers.some(answer => answer.isCorrect);
@@ -71,6 +79,7 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
     if (loadingTest) return <p>Loading...</p>;
     if (error) return <p>Error loading tests</p>;
+    console.log(testName);
 
     return (
         <div className="fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md">
@@ -102,7 +111,7 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
                                     }}
                                     className="p-2 px-14 bg-gray-400 text-white rounded-md shadow transition duration-200 text-lg"
                                 >
-                                    {`${test.vehicleType || 'לא ידוע'} - ${test.date || 'לא ידוע'}`}
+                                    {`${test.testName || 'לא ידוע'} - ${test.date || 'לא ידוע'}`}
                                 </button>
                             ))}
                         </div>
@@ -117,19 +126,29 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
                         {/* Vehicle Type Input */}
                         <div className="mb-6">
-                            <label className="block text-right text-lg font-semibold mb-2">סוג רכב</label>
-                            <input
+                            <label className="block text-right text-lg font-semibold mb-2">:מבחן על</label>
+                            <select
                                 dir="rtl"
-                                type="text"
-                                {...register("vehicleType", { required: true, maxLength: 50 })}
-                                className="w-full p-3 border border-gray-300 rounded-md text-lg"
-                                placeholder="הזן סוג רכב..."
-                            />
+                                {...register("vehicleType", { required: true })}
+                                className="w-full p-3 border border-gray-300 rounded-md text-lg bg-white"
+                                onClick={(e) => { const selectedOption = e.target.options[e.target.selectedIndex].text; { setTestName(selectedOption) } }}
+                                onInput={(e) => { const selectedOption = e.target.options[e.target.selectedIndex].text; { setTestName(selectedOption) } }}
+                            >
+                                <option className='text-base' value="">בחר סוג מבחן. . . </option>
+                                <option value="hazardousMaterialsScore">מבחן חומ"ס</option>
+                                <option value="cargoSecuringScore">מבחן קשירת מטענים</option>
+                                <option value="davidCarScore">מבחן דויד</option>
+                                <option value="jeepCarScore">מבחן ג'יפ</option>
+                                <option value="hummerCarScore">מבחן האמר</option>
+                                <option value="hummerProtectedCarScore">מבחן האמר ממוגן</option>
+                                <option value="saunaCarScore">מבחן סאונה</option>
+                                <option value="tigerCarScore">מבחן טיגריס</option>
+                            </select>
                         </div>
 
                         {/* Date Selection */}
                         <div className="mb-6">
-                            <label className="block text-right text-lg font-semibold mb-2">מועד</label>
+                            <label className="block text-right text-lg font-semibold mb-2">:מועד</label>
                             <select
                                 dir="rtl"
                                 className="w-full p-3 border border-gray-300 rounded-md text-lg"

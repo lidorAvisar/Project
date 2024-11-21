@@ -69,20 +69,28 @@ const StudentsTestsList = ({ setOpenModalTestsList, test, refetch }) => {
                     >
                         חזרה
                     </button>
-                    <p className="text-2xl font-bold text-right">מבחן {test.vehicleType} - {test.date}</p>
+                    <p className="text-2xl font-bold text-right">מבחן {test.testName} - {test.date}</p>
                 </div>
                 <div>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Vehicle Type Input */}
                         <div className="mb-6">
-                            <label className="block text-right text-lg font-semibold mb-2">סוג רכב</label>
-                            <input
+                            <label className="block text-right text-lg font-semibold mb-2">:מבחן על</label>
+                            <select
                                 dir="rtl"
-                                type="text"
-                                {...register("vehicleType", { required: true, maxLength: 50 })}
-                                className="w-full p-3 border border-gray-300 rounded-md text-lg"
-                                placeholder="הזן סוג רכב..."
-                            />
+                                {...register("vehicleType", { required: true })}
+                                className="w-full p-3 border border-gray-300 rounded-md text-lg bg-white"
+                            >
+                                <option value="" disabled hidden>בחר סוג מבחן</option>
+                                <option value="hazardousMaterialsScore">מבחן חומ"ס</option>
+                                <option value="cargoSecuringScore">מבחן קשירת מטענים</option>
+                                <option value="davidCarScore">מבחן דויד</option>
+                                <option value="jeepCarScore">מבחן ג'יפ</option>
+                                <option value="hummerCarScore">מבחן האמר</option>
+                                <option value="hummerProtectedCarScore">מבחן האמר ממוגן</option>
+                                <option value="saunaCarScore">מבחן סאונה</option>
+                                <option value="tigerCarScore">מבחן טיגריס</option>
+                            </select>
                         </div>
 
                         {/* Date Selection */}

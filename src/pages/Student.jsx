@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from '../components/Loading';
 import { useQuery } from 'react-query';
-import { auth, getPracticalDriving } from '../firebase/firebase_config';
+import { auth, getPracticalDriving, getStudentsTests } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
-import { FaBars, FaSignOutAlt, FaTimes } from 'react-icons/fa';
+import { FaBars, FaSignOutAlt, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import Greeting from '../components/Greeting';
 import { IoArrowUndoOutline } from 'react-icons/io5';
+import StudentExam from '../components/StudentExam';
 
 
 const Student = () => {
@@ -17,12 +18,55 @@ const Student = () => {
     const [theoryTestPassed, setTheoryTestPassed] = useState(false);
     const [finalTestPassed, setFinalTestPassed] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showAll, setShowAll] = useState(false);
+    const [filteredTests, setFilteredTests] = useState([]);
+    const [openTestModal, setOpenTestModal] = useState(false);
+    const [testName, setTestName] = useState("");
+
 
 
     const { data, isLoading, isError, error, refetch, status } = useQuery({
         queryKey: ['practical_driving'],
         queryFn: getPracticalDriving,
     });
+
+    const { data: tests, isLoading: loadingTest } = useQuery('studentsTests', async () => {
+        const fetchedTests = await getStudentsTests();
+        // Sort by Hebrew alphabet
+        return fetchedTests.sort((a, b) => a.testName.localeCompare(b.testName, 'he'));
+    });
+
+    const testsByDriverType = {
+        'נהג בט"ש B': ["hazardousMaterialsScore", "davidCarScore", "jeepCarScore"],
+        'נהג בט"ש C1': [
+            "hazardousMaterialsScore",
+            "cargoSecuringScore",
+            "davidCarScore",
+            "jeepCarScore",
+            "hummerProtectedCarScore",
+            "tigerCarScore",
+            "saunaCarScore",
+        ],
+        "נהג ליין משא": [
+            "hazardousMaterialsScore",
+            "cargoSecuringScore",
+            "hummerCarScore",
+        ],
+        'נהג משא יח"ש': ["hazardousMaterialsScore", "cargoSecuringScore"],
+    };
+
+    useEffect(() => {
+        if (!tests || !currentUser.lineTraining) return;
+
+        const allowedVehicleTypes = testsByDriverType[currentUser.lineTraining];
+
+        if (allowedVehicleTypes) {
+            const filtered = tests.filter(test =>
+                allowedVehicleTypes.includes(test.vehicleType)
+            );
+            setFilteredTests(filtered);
+        }
+    }, [tests, currentUser.lineTraining]);
 
     useEffect(() => {
         if (data && currentUser) {
@@ -84,7 +128,15 @@ const Student = () => {
         }
     };
 
-    if (loading || isLoading) {
+    // Toggle button handler
+    const toggleShowAll = () => {
+        setShowAll((prevShowAll) => !prevShowAll);
+    };
+
+    // Determine the lessons to display
+    const displayedLessons = showAll ? filteredLessons : filteredLessons.slice(0, 4);
+
+    if (loading || isLoading || loadingTest) {
         return <Loading />;
     }
 
@@ -96,27 +148,76 @@ const Student = () => {
         );
     }
 
-
     return (
-        <div className="p-3 sm:p-6 bg-gray-100 w-full min-h-screen">
-            <div className="w-full">
-                {/* Greeting Section */}
-                <div dir="rtl" className="flex items-center justify-between p-3">
-                    <h1 className="sm:text-lg font-bold">
-                        <Greeting />, {currentUser?.displayName}
-                    </h1>
-                    {/* Hamburger Button for Mobile */}
-                    <button
-                        className="sm:hidden text-gray-700 text-xl"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                        {isMenuOpen ? <FaTimes /> : <FaBars />}
-                    </button>
-                </div>
+        <div>
+            {openTestModal && <StudentExam testName={testName} filteredTests={filteredTests} setOpenTestModal={setOpenTestModal} />}
+            <div className="p-3 sm:p-6 bg-gray-100 w-full min-h-screen">
+                <div className="w-full">
+                    {/* Greeting Section */}
+                    <div dir="rtl" className="flex items-center justify-between p-3">
+                        <h1 className="sm:text-lg sm:flex sm:gap-1 font-bold">
+                            <Greeting /> {currentUser?.displayName}
+                        </h1>
+                        {/* Hamburger Button for Mobile */}
+                        <button
+                            className="sm:hidden text-gray-700 text-xl"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        >
+                            {isMenuOpen ? <FaTimes /> : <FaBars />}
+                        </button>
+                    </div>
 
-                {/* Mobile Menu */}
-                {isMenuOpen && (
-                    <div dir="rtl" className="sm:hidden bg-gray-100 p-3 space-y-4">
+                    {/* Mobile Menu */}
+                    {isMenuOpen && (
+                        <div dir="rtl" className="sm:hidden bg-white p-3 space-y-4 rounded-md flex flex-col items-center">
+                            <a
+                                href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <button
+                                    className="flex items-center gap-3 bg-blue-500 p-1 rounded-md text-white font-bold"
+                                >
+                                    לימודי תאוריה
+                                    <IoArrowUndoOutline className="mx-auto h-5 w-auto" />
+                                </button>
+                            </a>
+                            <div className='flex flex-col justify-center gap-3'>
+                                {Array.from(new Set(filteredTests.map(test => test.testName))).map((uniqueTestName, i) => (
+                                    <button
+                                        onClick={() => {
+                                            setTestName(uniqueTestName);
+                                            setOpenTestModal(true);
+                                        }}
+                                        key={i}
+                                        className='bg-gray-200 p-1 px-12 rounded-md font-bold'
+                                    >
+                                        מבחן {uniqueTestName}
+                                    </button>
+                                ))}
+                            </div>
+                            <button
+                                onClick={handleSignOut}
+                                className="flex items-center rounded-md px-7 text-white font-bold p-1 gap-3 bg-red-500"
+                            >
+                                <FaSignOutAlt />
+                                <span>התנתק</span>
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Navbar for Tablets and Larger Screens */}
+                    <nav dir="rtl" className="hidden sm:flex items-center justify-between p-3">
+                        <div className="flex items-center gap-4">
+                            <a
+                                href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 font-bold hover:underline"
+                            >
+                                לימודי תאוריה
+                            </a>
+                        </div>
                         <button
                             onClick={handleSignOut}
                             className="flex items-center gap-2 text-red-600 text-lg"
@@ -124,119 +225,110 @@ const Student = () => {
                             <FaSignOutAlt />
                             <span>התנתק</span>
                         </button>
-                        <a
-                            href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <button
-                                className="flex items-center gap-3 bg-blue-500 p-1 rounded-md text-white font-bold w-full"
-                            >
-                                לימודי תאוריה
-                                <IoArrowUndoOutline className="mx-auto h-5 w-auto" />
-                            </button>
-                        </a>
-                    </div>
-                )}
-
-                {/* Navbar for Tablets and Larger Screens */}
-                <nav dir="rtl" className="hidden sm:flex items-center justify-between p-3">
-                    <div className="flex items-center gap-4">
-                        <a
-                            href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 font-bold hover:underline"
-                        >
-                            לימודי תאוריה
-                        </a>
-                    </div>
-                    <button
-                        onClick={handleSignOut}
-                        className="flex items-center gap-2 text-red-600 text-lg"
-                    >
-                        <FaSignOutAlt />
-                        <span>התנתק</span>
-                    </button>
-                </nav>
-            </div>
-
-            <div dir='rtl' className="w-full sm:max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-10 my-4">
-                {/* Progress Bar */}
-                <div className="mb-6">
-                    <div className='flex flex-col gap-2 sm:flex-row justify-between items-center pt-3'>
-                        <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
-                    </div>
-                    <div className="relative pt-10">
-                        <div className="flex mb-2 items-center justify-between">
-                            <div className="text-right">
-                                <span className="text-xs font-semibold inline-block text-green-600">
-                                    התקדמות
-                                </span>
-                            </div>
-                            <div>
-                                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
-                                    {Math.round(calculateProgress())}%
-                                </span>
-                            </div>
-                        </div>
-                        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
-                            <div style={{ width: `${calculateProgress()}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
-                        </div>
-                    </div>
+                    </nav>
                 </div>
 
-                {/* Completed Tasks */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-bold mb-4 text-center">משימות שהושלמו</h2>
-                    <div className="space-y-6">
-                        {/* Theory Sessions */}
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2 underline">תיאוריה</h3>
-                            <ul className="list-inside space-y-2">
-                                <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר מפגשי תאוריה: </span>{currentUser?.theorySessionsQuantity}</li>
-                            </ul>
+                <div dir='rtl' className="w-full sm:max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-10 my-4">
+                    {/* Progress Bar */}
+                    <div className="mb-6">
+                        <div className='flex flex-col gap-2 sm:flex-row justify-between items-center pt-3'>
+                            <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
                         </div>
+                        <div className=" pt-10">
+                            <div className="flex mb-2 items-center justify-between">
+                                <div className="text-right">
+                                    <span className="text-xs font-semibold inline-block text-green-600">
+                                        התקדמות
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
+                                        {Math.round(calculateProgress())}%
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
+                                <div style={{ width: `${calculateProgress()}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                            </div>
+                        </div>
+                    </div>
 
-                        {/* Theory Tests */}
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2 underline">מבחני תיאוריה</h3>
-                            <ul className="list-disc list-inside space-y-5">
-                                {currentUser?.detailsTheoryTest?.map((test, index) => (
-                                    test.date ? (
-                                        <li key={index} className="p-3 flex flex-col items-center gap-2 sm:flex-row bg-gray-100 rounded-lg shadow-sm">
-                                            <span className='font-bold'>{index + 1}. תאריך מבחן:</span> {test.date}, <span className='font-bold'>מספר טעויות:</span> {test.mistakes}
+                    {/* Completed Tasks */}
+                    <div className="mb-6">
+                        <h2 className="text-xl font-bold mb-4 text-center">משימות שהושלמו</h2>
+                        <div className="space-y-6">
+                            {/* Theory Sessions */}
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2 underline">תיאוריה</h3>
+                                <ul className="list-inside space-y-2">
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר מפגשי תאוריה: </span>{currentUser?.theorySessionsQuantity}</li>
+                                </ul>
+                            </div>
+
+                            {/* Theory Tests */}
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2 underline">מבחני תיאוריה</h3>
+                                <ul className="list-disc list-inside space-y-5">
+                                    {currentUser?.detailsTheoryTest?.map((test, index) => (
+                                        test.date ? (
+                                            <li key={index} className="p-3 flex flex-col items-center gap-2 sm:flex-row bg-gray-100 rounded-lg shadow-sm">
+                                                <span className='font-bold'>{index + 1}. תאריך מבחן:</span> {test.date}, <span className='font-bold'>מספר טעויות: {test.mistakes}</span>
+                                            </li>
+                                        ) : null
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Practical Driving Lessons */}
+                            <div className="">
+                                <h3 className="text-lg font-semibold mb-4 underline text-center">נהיגה מעשית</h3>
+                                <ul className="list-inside list-decimal space-y-5 relative">
+                                    {displayedLessons.map((lesson, index) => (
+                                        <li
+                                            key={index}
+                                            className="p-3 bg-gray-100 rounded-lg shadow-sm transition-opacity duration-300"
+                                            style={{ opacity: showAll || index < 4 ? 1 : 0.5 }}
+                                        >
+                                            <span className="font-bold"> תאריך:</span> {lesson.date},
+                                            <span className="font-bold"> דקות נהיגה:</span> {lesson.drivingMinutes}
                                         </li>
-                                    ) : null
-                                ))}
-                            </ul>
-                        </div>
-
-
-                        {/* Practical Driving Lessons */}
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2 underline">נהיגה מעשית</h3>
-                            <ul className="list-inside list-decimal space-y-5">
-                                {filteredLessons.map((lesson, index) => (
-                                    <li key={index} className="p-3 bg-gray-100 rounded-lg shadow-sm">
-                                        <span className='font-bold'> תאריך:</span> {lesson.date}, <span className='font-bold'>דקות נהיגה:</span> {lesson.drivingMinutes}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        {/* Final Test */}
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2 underline">טסטים</h3>
-                            <ul className="list-inside list-decimal space-y-5">
-                                {currentUser?.tests?.map(test =>
-                                    <li className='p-3 bg-gray-100 rounded-lg shadow-sm font-bold'>תאריך: {test.date} , {test.status === 'Pass' ? <span className='text-green-500'>עבר !</span> : <span className='text-red-500'>נכשל</span>}</li>
-                                )}
-                            </ul>
+                                    ))}
+                                    {/* Button to toggle visibility */}
+                                    {filteredLessons.length > 4 && (
+                                        <button
+                                            onClick={toggleShowAll}
+                                            className="w-full text-blue-500 hover:text-blue-700 flex justify-center items-center space-x-2"
+                                        >
+                                            {showAll ? (
+                                                <>
+                                                    <FaChevronUp size={18} />
+                                                    <span>הצג פחות</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FaChevronDown size={18} />
+                                                    <span>הצג עוד</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
+                                </ul>
+                            </div>
+                            {/* Final Test */}
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2 underline">טסטים</h3>
+                                <ul className="list-inside list-decimal space-y-5">
+                                    {currentUser?.tests?.map(test =>
+                                        <li className='p-3 bg-gray-100 rounded-lg shadow-sm font-bold'>תאריך: {test.date} , {test.status === 'Pass' ? <span className='text-green-500'>עבר !</span> : <span className='text-red-500'>נכשל</span>}</li>
+                                    )}
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     );
 };
 

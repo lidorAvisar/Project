@@ -28,7 +28,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [nightDriving, setNightDriving] = useState(0);
-    const [selectedDriverType, setSelectedDriverType] = useState("");
+    const [selectedDriverType, setSelectedDriverType] = useState(studentDetails?.lineTraining || "");
 
     const { data, isLoading: lessonsLoading, isError, error } = useQuery({
         queryKey: ['practical_driving'],
@@ -108,8 +108,8 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
     }, [studentDetails, nightDriving]);
 
     const testsByDriverType = {
-        "נהג בט\"ש B": ["hazardousMaterialsScore", "davidCarScore", "jeepCarScore"],
-        "נהג בט\"ש C1": [
+        'נהג בט"ש B': ["hazardousMaterialsScore", "davidCarScore", "jeepCarScore"],
+        'נהג בט"ש C1': [
             "hazardousMaterialsScore",
             "cargoSecuringScore",
             "davidCarScore",
@@ -123,7 +123,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             "cargoSecuringScore",
             "hummerCarScore",
         ],
-        "נהג משא יח\"ש": ["hazardousMaterialsScore", "cargoSecuringScore"],
+        'נהג משא יח"ש': ["hazardousMaterialsScore", "cargoSecuringScore"],
     };
 
     const renderTestField = (fieldId, label) => (
@@ -368,7 +368,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                             {/* Render Test Fields Dynamically */}
                             {visibleTests.map((fieldId) =>
                                 renderTestField(fieldId, {
-                                    hazardousMaterialsScore: "מבחן חומ\"ס",
+                                    hazardousMaterialsScore: 'מבחן חומ"ס',
                                     cargoSecuringScore: "מבחן קשירת מטענים",
                                     davidCarScore: "מבחן דויד",
                                     jeepCarScore: "מבחן ג'יפ",
