@@ -3,6 +3,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, updatePassword
 import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { data } from "autoprefixer";
 
 const REQUESTS_LIMIT = 7;
 const TIME_WINDOW = 10 * 1000;
@@ -256,6 +257,30 @@ export const updateAccount = async (id, data) => {
     alert("שגיאה")
   }
 }
+
+// הוספה ועדכון בוחן לתלמיד
+export const createUserExam = async (uid, exam) => {
+  try {
+    const userDocRef = doc(db, "users", uid);
+    const userSnapshot = await getDoc(userDocRef);
+
+    if (!userSnapshot.exists()) {
+      // Create a new document if it doesn't exist
+      await setDoc(userDocRef, { studentExams: [exam] });
+    } else {
+      // Document exists, append the new exam to the `studentExams` array
+      const currentData = userSnapshot.data();
+      const existingExams = currentData.studentExams || [];
+      const updatedExams = [...existingExams, exam]; // Append the new exam
+
+      await updateDoc(userDocRef, { studentExams: updatedExams });
+    }
+  } catch (error) {
+    console.error("Error updating student exams:", error);
+    alert("שגיאה");
+  }
+};
+
 
 //מאזין לשינויים באוטנטיקציה
 export const onAuthStateChangedListener = async (callback) =>

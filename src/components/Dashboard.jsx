@@ -9,6 +9,7 @@ import Greeting from './Greeting';
 import '../../public/יוסי.jpg'
 import '../../public/מתן.jpg'
 import '../../public/user.png'
+import AveragesChart from './AveragesChart';
 
 const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, user }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"];
@@ -184,6 +185,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
 
     const bestCycle = { name: "מחזור זאב מחלקה 2", performance: 100 };
 
+
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center'>
             <div className='w-[100%] bg-[#e0ebf3] p-10 py-5 mb-3 rounded-lg h-full overflow-y-auto'>
@@ -211,7 +213,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                         <select
                             value={theoriesByCycle}
                             onChange={handleChangeTheoriesByCycle}
-                            className="rounded-lg bg-white border border-gray-300 px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full mb-2"
+                            className="rounded-lg bg-[#dff4ff] border border-gray-300 px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full mb-2"
                         >
                             <option value="everything">הכל</option>
                             {uniqueCycles.map((cycle, i) => (
@@ -225,7 +227,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                         <select
                             value={testByCycle}
                             onChange={handleChangeTestByCycle}
-                            className="rounded-lg bg-white border border-gray-300 px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full mb-2"
+                            className="rounded-lg bg-[#dff4ff] border border-gray-300 px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full mb-2"
                         >
                             <option value="everything">הכל</option>
                             {uniqueCycles.map((cycle, i) => (
@@ -238,6 +240,10 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                     {/* Bar Chart for Active Students */}
                     <div className="col-span-1 sm:col-span-1 lg:col-span-1 w-full rounded-lg shadow-xl bg-[#b9e6fe]">
                         <BarChartActiveStudents data={activeStudentData} />
+                    </div>
+                    {/* average exams with chart */}
+                    <div className='col-span-1 sm:col-span-2 lg:col-span-4'>
+                        <AveragesChart filteredStudents={filteredStudents} />
                     </div>
                 </div>
                 <div className='p-4 pt-10'>

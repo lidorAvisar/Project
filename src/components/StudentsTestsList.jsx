@@ -39,6 +39,19 @@ const StudentsTestsList = ({ setOpenModalTestsList, test, refetch }) => {
     }, [test, setValue]);
 
     const onSubmit = (data) => {
+        // Validation: Check if every question has a correct answer
+        const allQuestionsHaveCorrectAnswer = data.questions.every((question, index) => {
+            const hasCorrectAnswer = question.answers.some(answer => answer.isCorrect);
+            if (!hasCorrectAnswer) {
+                setValue(`questions.${index}.error`, true);  // Set an error for questions missing a correct answer
+            }
+            return hasCorrectAnswer;
+        });
+
+        if (!allQuestionsHaveCorrectAnswer) {
+            alert('חסר לך תשובה אנא סמן תשובה אחת נכונה!');
+            return;
+        }
         updateTestMutation(data);
     };
 

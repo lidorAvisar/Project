@@ -18,6 +18,7 @@ const Student = () => {
     const [theoryTestPassed, setTheoryTestPassed] = useState(false);
     const [finalTestPassed, setFinalTestPassed] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isTestListOpen, setIsTestListOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [filteredTests, setFilteredTests] = useState([]);
     const [openTestModal, setOpenTestModal] = useState(false);
@@ -89,8 +90,6 @@ const Student = () => {
             const passedTheoryTests = currentUser.detailsTheoryTest?.some(test => test.mistakes <= 4);
             setTheoryTestPassed(passedTheoryTests);
 
-            console.log(currentUser);
-
             // Check if final test was passed
             const passedFinalTest = currentUser.tests?.map(test => test === 'Pass');
             setFinalTestPassed(passedFinalTest);
@@ -148,11 +147,14 @@ const Student = () => {
         );
     }
 
+    console.log(currentUser);
+    
+
     return (
         <div>
-            {openTestModal && <StudentExam testName={testName} filteredTests={filteredTests} setOpenTestModal={setOpenTestModal} />}
+            {openTestModal && <StudentExam testName={testName} filteredTests={filteredTests} setOpenTestModal={setOpenTestModal} uid={currentUser.uid} />}
             <div className="p-3 sm:p-6 bg-gray-100 w-full min-h-screen">
-                <div className="w-full">
+                <div dir='rtl' className="w-full sm:flex justify-between">
                     {/* Greeting Section */}
                     <div dir="rtl" className="flex items-center justify-between p-3">
                         <h1 className="sm:text-lg sm:flex sm:gap-1 font-bold">
@@ -207,7 +209,37 @@ const Student = () => {
                     )}
 
                     {/* Navbar for Tablets and Larger Screens */}
-                    <nav dir="rtl" className="hidden sm:flex items-center justify-between p-3">
+                    <div className='hidden sm:flex items-center justify-between p-3 gap-6'>
+                        <div className="flex flex-col justify-center items-center relative">
+                            <p
+                                onClick={() => setIsTestListOpen(!isTestListOpen)}
+                                className="font-bold text-gray-500 cursor-pointer hover:underline text-center"
+                            >
+                                מבחנים
+                            </p>
+                            {isTestListOpen && (
+                                <div
+                                    className="absolute top-full flex flex-col gap-2 bg-white shadow-md p-2 rounded-md"
+                                    style={{ zIndex: 10 }}
+                                >
+                                    {Array.from(new Set(filteredTests.map(test => test.testName))).map((uniqueTestName, i) => (
+                                        <button
+                                            onClick={() => {
+                                                setTestName(uniqueTestName);
+                                                setOpenTestModal(true);
+                                                setIsTestListOpen(!isTestListOpen);
+                                            }}
+                                            key={i}
+                                            className="p-1 px-12 rounded-md font-bold bg-gray-200 hover:bg-gray-300"
+                                        >
+                                            {uniqueTestName}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Theory Study Link */}
                         <div className="flex items-center gap-4">
                             <a
                                 href="https://mador-till-prod.github.io/lomda-cards-theory/src/"
@@ -218,14 +250,16 @@ const Student = () => {
                                 לימודי תאוריה
                             </a>
                         </div>
+
+                        {/* Sign Out Button */}
                         <button
                             onClick={handleSignOut}
-                            className="flex items-center gap-2 text-red-600 text-lg"
+                            className="flex items-center gap-1 text-red-600 text-lg"
                         >
                             <FaSignOutAlt />
                             <span>התנתק</span>
                         </button>
-                    </nav>
+                    </div>
                 </div>
 
                 <div dir='rtl' className="w-full sm:max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-10 my-4">
@@ -235,39 +269,38 @@ const Student = () => {
                             <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
                         </div>
                         <div className=" pt-10">
-                            <div className="flex mb-2 items-center justify-between">
-                                <div className="text-right">
-                                    <span className="text-xs font-semibold inline-block text-green-600">
-                                        התקדמות
-                                    </span>
-                                </div>
-                                <div>
-                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200">
+                            <div className="overflow-hidden h-3.5 mb-4 text-xs flex rounded-xl bg-green-200">
+                                <div style={{ width: `${calculateProgress()}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
+                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600">
                                         {Math.round(calculateProgress())}%
                                     </span>
                                 </div>
-                            </div>
-                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
-                                <div style={{ width: `${calculateProgress()}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
                             </div>
                         </div>
                     </div>
 
                     {/* Completed Tasks */}
                     <div className="mb-6">
-                        <h2 className="text-xl font-bold mb-4 text-center">משימות שהושלמו</h2>
+                        <h2 className="text-xl font-bold mb-4 text-center underline">משימות שהושלמו</h2>
                         <div className="space-y-6">
+
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2 underline">בוחן</h3>
+                                <ul className="list-inside space-y-2">
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן ב:</span></li>
+                                </ul>
+                            </div>
                             {/* Theory Sessions */}
                             <div>
-                                <h3 className="text-lg font-semibold mb-2 underline">תיאוריה</h3>
+                                <h3 className="text-lg font-semibold mb-2 underline">תאוריה</h3>
                                 <ul className="list-inside space-y-2">
-                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר מפגשי תאוריה: </span>{currentUser?.theorySessionsQuantity}</li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר תאוריה: </span>{currentUser?.theorySessionsQuantity}</li>
                                 </ul>
                             </div>
 
                             {/* Theory Tests */}
                             <div>
-                                <h3 className="text-lg font-semibold mb-2 underline">מבחני תיאוריה</h3>
+                                <h3 className="text-lg font-semibold mb-2 underline">מבחני תאוריה</h3>
                                 <ul className="list-disc list-inside space-y-5">
                                     {currentUser?.detailsTheoryTest?.map((test, index) => (
                                         test.date ? (

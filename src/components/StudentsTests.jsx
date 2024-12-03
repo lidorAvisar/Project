@@ -79,7 +79,6 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
     if (loadingTest) return <p>Loading...</p>;
     if (error) return <p>Error loading tests</p>;
-    console.log(testName);
 
     return (
         <div className="fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md">

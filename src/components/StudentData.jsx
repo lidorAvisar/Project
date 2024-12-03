@@ -126,39 +126,52 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
         'נהג משא יח"ש': ["hazardousMaterialsScore", "cargoSecuringScore"],
     };
 
-    const renderTestField = (fieldId, label) => (
-        <div className="mb-4" key={fieldId}>
-            <label
-                htmlFor={fieldId}
-                className="block text-right text-sm font-medium text-gray-700"
-            >
-                {label}
-            </label>
-            <input
-                type="text"
-                id={fieldId}
-                defaultValue={studentDetails?.[fieldId] || ""}
-                {...register(fieldId)}
-                className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                placeholder="הכנס ציון"
-            />
-            {errors[fieldId] && (
-                <span className="text-red-500 text-sm">
-                    {errors[fieldId].message}
-                </span>
-            )}
-        </div>
-    );
-
-    // Get the list of tests to show based on selected driver type
+    // Get the visible tests based on the selected driver type
     const visibleTests = testsByDriverType[selectedDriverType] || [];
+
+    // Map for test labels and corresponding Firebase test names
+    const testLabelsMap = {
+        hazardousMaterialsScore: 'חומ"ס',
+        cargoSecuringScore: "קשירת מטענים",
+        davidCarScore: "דויד",
+        jeepCarScore: "ג'יפ",
+        hummerCarScore: "האמר",
+        hummerProtectedCarScore: "האמר ממוגן",
+        saunaCarScore: "סאונה",
+        tigerCarScore: "טיגריס"
+    };
+   
+
+    // Render the test fields
+    const renderTestDisplay = (fieldId, label) => {
+        const testDeadlines = studentDetails?.studentExams?.filter(
+            (exam) => exam.testName === label
+        ) || [];
+
+        return (
+            <div className="mb-4" key={fieldId}>
+                <h3 className="block text-right font-bold text-gray-700">
+                    {label}
+                </h3>
+                {testDeadlines.length > 0 ? (
+                    testDeadlines.map((test, index) => (
+                        <div key={index} className="mt-2 text-right">
+                            <p className="text-xs font-medium text-gray-500">{`מועד ${test.date}`}</p>
+                            <p className="text-sm text-gray-900">{`ציון: ${test.score || 'לא זמין'}`}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-xs text-gray-400">אין נתונים זמינים</p>
+                )}
+            </div>
+        );
+    };
 
     if (isLoading) {
         return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
             <Loading />
         </div>
     }
-
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
@@ -366,52 +379,12 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                             </div>
 
                             {/* Render Test Fields Dynamically */}
-                            {visibleTests.map((fieldId) =>
-                                renderTestField(fieldId, {
-                                    hazardousMaterialsScore: 'מבחן חומ"ס',
-                                    cargoSecuringScore: "מבחן קשירת מטענים",
-                                    davidCarScore: "מבחן דויד",
-                                    jeepCarScore: "מבחן ג'יפ",
-                                    hummerCarScore: "מבחן האמר",
-                                    hummerProtectedCarScore: "מבחן האמר ממוגן",
-                                    saunaCarScore: "מבחן סאונה",
-                                    tigerCarScore: "מבחן טיגריס"
-                                }[fieldId])
-                            )}
+                            <div>
+                                {visibleTests.map((fieldId) =>
+                                    renderTestDisplay(fieldId, testLabelsMap[fieldId])
+                                )}
+                            </div>
                         </div>
-                        {/* <div className='space-y-5'>
-                            <h3 className="text-lg font-bold mb-2 text-right underline">סוג רכב</h3>
-                            <div className="mb-4">
-                                <label htmlFor="carType" className="block text-right text-sm font-medium text-gray-700">סוג רכב:</label>
-                                <select
-                                    id="carType"
-                                    defaultValue={studentDetails?.carType || ""}
-                                    {...register('carType')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                >
-                                    <option className='font-thin' value="">בחר סוג רכב. . .</option>
-                                    <option className='font-bold' value="ג'יפ">ג'יפ</option>
-                                    <option className='font-bold' value="דוד">דוד</option>
-                                    <option className='font-bold' value="האמר">האמר</option>
-                                    <option className='font-bold' value="טיגריס">טיגריס</option>
-                                    <option className='font-bold' value="האמר ממוגן">האמר ממוגן</option>
-                                    <option className='font-bold' value="סאונה">סאונה</option>
-                                </select>
-                                {errors.carType && <span className="text-red-500 text-sm">{errors.carType.message}</span>}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="carTypeScore" className="block text-right text-sm font-medium text-gray-700">מבחן {studentDetails?.carType}:</label>
-                                <input
-                                    type="text"
-                                    id="carTypeScore"
-                                    defaultValue={studentDetails?.carTypeScore || ""}
-                                    {...register('carTypeScore')}
-                                    className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
-                                    placeholder="הכנס ציון"
-                                />
-                                {errors.carTypeScore && <span className="text-red-500 text-sm">{errors.carTypeScore.message}</span>}
-                            </div>
-                        </div> */}
                         <div className="flex justify-center">
                             <button type="submit" className="bg-green-500 text-white font-bold py-2 w-64 rounded-lg">
                                 עדכן
