@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery } from 'react-query';
-import { deleteLesson, getAccounts, getPracticalDriving, updateAccount, updateLesson } from '../firebase/firebase_config';
+import { useMutation } from 'react-query';
+import { deleteLesson, updateLesson } from '../firebase/firebase_config';
 import { Loading } from './Loading';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { BsTrash } from 'react-icons/bs';
@@ -12,50 +12,40 @@ const SHIFT_LIMITS = {
     'משמרת ערב': 150,
 };
 
-// state = `${Teacher} - ${School}`
-// const teacher = state.split('-')[0];
-// const school = state.split('-')[1];
 
-const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, studentShift, usersRefetch }) => {
+const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, studentShift, usersRefetch, filteredTeachers }) => {
+    const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
+    const [currentUser] = useCurrentUser();
     const today = new Date().toISOString().split('T')[0];
 
-    const [currentUser] = useCurrentUser();
-    const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
     const [filteredData, setFilteredData] = useState([]);
-    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(studentDetails?.totalDrivingMinutes ? studentDetails.totalDrivingMinutes : 0);
     const [isExpanded, setIsExpanded] = useState(false);
     const [completeMinutes, setCompleteMinutes] = useState(null);
-    const [deleteLoading, setDeleteLoading] = useState(false);
     const [isShiftOver, setIsShiftOver] = useState(false);
+    const [refresh, setRefresh] = useState(false)
 
-    const { data, isLoading, isError, error, refetch } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
+    // const { data: studentData, isLoading: teacherLoading } = useQuery({
+    //     queryKey: ['users'],
+    //     queryFn: getAccounts,
+    // });
 
-    const { data: studentData, isLoading: teacherLoading } = useQuery({
-        queryKey: ['users'],
-        queryFn: getAccounts,
-    });
-
-    const { mutateAsync: updateMutation, isLoading: loading } = useMutation({
-        mutationKey: ['practical_driving'],
-        mutationFn: async (formData) => {
-            return await updateLesson(formData.lessonId, formData.lessonData);
-        },
-    });
-
-    const { mutateAsync: updateStudentAccount, isLoading: accountLoading } = useMutation({
+    const { mutateAsync: updateStudentAccount, isLoading } = useMutation({
         mutationKey: ['users'],
-        mutationFn: async (totalMinutes) => {
-            return await updateAccount(studentDetails.uid, totalMinutes);
+        mutationFn: async (updateData) => {
+            return await updateLesson(studentDetails.uid, updateData);
         },
+        onSuccess: () => setRefresh(!refresh),
     });
 
-    const filteredTeachers = studentData
-        ?.filter(account => account.user === "מורה נהיגה")
-        .sort((a, b) => (a.displayName?.localeCompare(b.displayName || '', 'he')))
-        .sort((a, b) => (a.school?.localeCompare(b.school || '', 'he')));
+    const { mutateAsync: handleDeleteLesson, isLoading: deleteLoading } = useMutation({
+        mutationKey: ['users'],
+        mutationFn: async (lessonId) => {
+            return await deleteLesson(studentDetails.uid, lessonId);
+        },
+        onSuccess: async () => await usersRefetch(),
+        onSuccess: () => setRefresh(!refresh),
+    });
 
     const handleExpand = (index) => {
         setIsExpanded(index);
@@ -66,9 +56,8 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     };
 
     useEffect(() => {
-        if (data) {
-            let studentClasses = data
-                .filter(item => item.studentUid === (studentDetails ? studentDetails.uid : studentUid))
+        if (studentDetails?.practicalDriving) {
+            let studentClasses = studentDetails.practicalDriving
                 .sort((a, b) => {
                     // Sort by date in descending order
                     const dateComparison = new Date(b.date) - new Date(a.date);
@@ -82,15 +71,18 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     return shiftOrder.indexOf(a.shift) - shiftOrder.indexOf(b.shift);
                 });
 
+            // Additional filtering for "מורה נהיגה" based on shift and today's date
             if (currentUser.user === "מורה נהיגה") {
                 studentClasses = studentClasses.filter(item =>
-                    item.shift === (studentShift === 'morning' ? 'משמרת בוקר' : studentShift === 'noon' ? 'משמרת צהריים' : 'משמרת ערב')
+                    item.shift === (studentShift === 'morning' ? 'משמרת בוקר' :
+                        studentShift === 'noon' ? 'משמרת צהריים' : 'משמרת ערב')
                     && item.date === today
                 );
             }
-            // Map through studentClasses and add teacherUid to each object
+
+            // Map through studentClasses and add teacherUid
             const updatedStudentClasses = studentClasses.map(item => {
-                const teacher = filteredTeachers.find(teacher => teacher.uid === item.teacherUid);
+                const teacher = filteredTeachers?.find(teacher => teacher.uid === item.teacherUid);
                 return {
                     ...item,
                     date: item.date || '',
@@ -99,11 +91,13 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     teacher: item.teacher || '',
                     teacherUid: teacher ? teacher.uid : '',
                     shift: item.shift || '',
+                    uid: item.uid
                 };
             });
 
             setFilteredData(updatedStudentClasses);
 
+            // Update form values with setValue
             updatedStudentClasses.forEach((item, index) => {
                 setValue(`data[${index}].date`, item.date);
                 setValue(`data[${index}].drivingMinutes`, item.drivingMinutes);
@@ -111,9 +105,11 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                 setValue(`data[${index}].teacher`, item.teacher);
                 setValue(`data[${index}].teacherUid`, item.teacherUid);
                 setValue(`data[${index}].shift`, item.shift);
+                setValue(`data[${index}].uid`, item.uid);
             });
         }
-    }, [data, studentDetails, setValue, today, studentUid, currentUser, studentShift]);
+    }, [studentDetails, setValue, today, studentShift, currentUser, filteredTeachers]);
+
 
     useEffect(() => {
         if (studentDetails?.previousLicense && studentDetails.previousLicense !== "no") {
@@ -157,6 +153,21 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         // Cleanup interval on unmount
         return () => clearInterval(intervalId);
     }, [studentShift]);
+
+    useEffect(() => {
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
+                : [];
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            setTotalDrivingMinutes(totalMinutes);
+        }
+    }, [studentDetails]);
+
 
     const validateShiftLimits = (formData) => {
         let savedShiftMinutes = JSON.parse(localStorage.getItem('totalShiftMinutes')) || {};
@@ -207,37 +218,24 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     };
 
     const onSubmit = async (formData) => {
+        console.log(formData.data);
+
         if (currentUser.user === "מורה נהיגה") {
             const confirmation = window.confirm('האם אתה בטוח במספר הדקות?');
             if (!confirmation) {
                 return;
             }
-
             const errors = validateShiftLimits(formData);
             if (Object.keys(errors).length > 0) {
                 alert(JSON.stringify(errors, null, 2));
                 return;
             }
         }
-
         try {
-            for (let i = 0; i < filteredData.length; i++) {
-                const lessonData = formData.data[i];
-                const lessonId = filteredData[i].uid;
-                await updateMutation({ lessonId, lessonData });
-            }
+            await updateStudentAccount(formData.data);
 
-            const updatedData = await refetch();
-
-            if (updatedData.data && studentDetails) {
-                const totalMinutes = updatedData.data.reduce((total, item) => {
-                    if (item.studentUid === studentDetails.uid) {
-                        return total + (parseInt(item.drivingMinutes, 10) || 0);
-                    }
-                    return total;
-                }, 0);
-                await updateStudentAccount({ totalDrivingMinutes: totalMinutes });
-                await usersRefetch();
+            const updatedData = await usersRefetch();
+            if (updatedData.data) {
                 setOpenModalStudentData(false);
             }
         } catch (error) {
@@ -250,7 +248,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         updatedData[index][field] = value;
 
         if (field === 'teacher') {
-            const teacher = filteredTeachers.find(teacher => teacher.displayName === value);
+            const teacher = filteredTeachers?.find(teacher => teacher.displayName === value);
             updatedData[index].teacherUid = teacher ? teacher.uid : '';
             setValue(`data[${index}].teacherUid`, updatedData[index].teacherUid);
         }
@@ -260,45 +258,14 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     };
 
 
-    const handleDeleteLesson = async (lessonId) => {
-        setDeleteLoading(true);
-        try {
-            await deleteLesson(lessonId);
-            const updatedData = await refetch();
-
-            if (updatedData.data && studentDetails) {
-                const totalMinutes = updatedData.data.reduce((total, item) => {
-                    if (item.studentUid === studentDetails.uid) {
-                        return total + (parseInt(item.drivingMinutes, 10) || 0);
-                    }
-                    return total;
-                }, 0);
-
-                await updateStudentAccount({ totalDrivingMinutes: totalMinutes });
-                await usersRefetch();
-                setTotalDrivingMinutes(totalMinutes);
-                setDeleteLoading(false);
-            }
-        }
-        catch (error) {
-            setDeleteLoading(false);
-            console.log(error);
-            ;
-        }
-    };
-
     const isTeacher = currentUser?.user === "מורה נהיגה";
     const isAssistant = currentUser?.user === 'מ"מ' || currentUser?.user === 'מ"פ';
 
 
-    if (isLoading || teacherLoading) {
+    if (isLoading) {
         <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
             <Loading />
         </div>
-    }
-
-    if (isError) {
-        return <div>{error.message}</div>;
     }
 
     return (
@@ -406,6 +373,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                         </button>
                                     </div>
                                 )}
+
                             </div>
                         ))}
                     </div>
@@ -532,11 +500,12 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                     {deleteLoading && <p className='text-xl pt-2 text-center animate-pulse'>Delete . . . </p>}
                     <div className='p-2'>
                         <p className={`${totalDrivingMinutes >= completeMinutes ? 'bg-green-500 text-white' : 'bg-red-500 text-white'} w-fit text-lg font-bold p-1 rounded-md underline`}>
-                            {loading ? <span className='animate-ping'>. . . </span> : studentDetails?.totalDrivingMinutes ? studentDetails.totalDrivingMinutes : 0}<span> :סה"כ דקות נהיגה</span></p>
+                            {isLoading ? <span className='animate-ping'>. . . </span> : totalDrivingMinutes}<span> :סה"כ דקות נהיגה</span>
+                        </p>
                     </div>
                     <div className="text-center">
                         <button type="submit" className="bg-blue-500 text-white px-10 font-bold py-2 rounded w-[60%] max-w-[350px]">
-                            {loading ? <span className='animate-ping'>. . .</span> : ' עדכן'}
+                            {isLoading ? <span className='animate-ping'>. . .</span> : ' עדכן'}
                         </button>
                     </div>
                 </form> :

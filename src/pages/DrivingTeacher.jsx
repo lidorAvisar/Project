@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { signOut } from 'firebase/auth';
-import { auth, getAccounts, getPracticalDriving } from '../firebase/firebase_config';
+import { auth, getAccounts } from '../firebase/firebase_config';
 import { useQuery } from 'react-query';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from '../components/Loading';
@@ -30,27 +30,34 @@ const DrivingTeacher = () => {
         }
     }, []);
 
-
-
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
-
-    const { data: studentData, isLoading: studentLoading, refetch: usersRefetch } = useQuery({
+    const { data: allUsers, isLoading: studentLoading, refetch: usersRefetch } = useQuery({
         queryKey: ['users'],
         queryFn: getAccounts,
     });
 
-
     const day = new Date(today).toLocaleDateString('he-IL', { weekday: 'long' });
 
+    const filteredTeachers = useMemo(() => {
+        return allUsers
+            ?.filter(account => account.user === "מורה נהיגה")
+            .sort((a, b) => a.displayName.localeCompare(b.displayName, 'he'));
+    }, [allUsers]);
+
     useEffect(() => {
-        if (data && currentUser) {
-            const filteredClasses = data.filter(item =>
-                item.teacherUid === currentUser.uid && item.date === today
+        if (allUsers && currentUser) {
+            // Filter only students
+            const students = allUsers.filter(account => account.user === 'תלמידים');
+
+            // Get lessons for the current teacher and today's date
+            const filteredClasses = students.flatMap(student =>
+                (student.practicalDriving || []).filter(
+                    lesson =>
+                        lesson.teacherUid === currentUser.uid &&
+                        lesson.date === today
+                )
             );
 
+            // Categorize lessons by shift
             const categorizeByShift = (classes) => {
                 const shifts = {
                     morning: [],
@@ -73,23 +80,25 @@ const DrivingTeacher = () => {
 
             const categorizedClasses = categorizeByShift(filteredClasses);
 
+            // Update state with categorized lessons
             setTodayClasses({
                 morning: categorizedClasses.morning,
                 noon: categorizedClasses.noon,
                 evening: categorizedClasses.evening
             });
         }
-    }, [data, currentUser]);
+    }, [allUsers, currentUser, today]);
+
 
     useEffect(() => {
-        if (studentData && studentUid) {
-            const student = studentData.find(student => student.uid === studentUid);
+        if (allUsers && studentUid) {
+            const student = allUsers.find(student => student.uid === studentUid);
             setSelectedStudent(student);
         }
-    }, [studentData, studentUid]);
+    }, [allUsers, studentUid]);
 
 
-    if (loading || isLoading || studentLoading) {
+    if (loading || studentLoading) {
         return <Loading />;
     }
 
@@ -154,7 +163,7 @@ const DrivingTeacher = () => {
             </div>
             <hr className='w-[90%]  border-black' />
             {openModal && <div className='px-2 w-full max-w-[1000px]'>
-                <TeacherUserData studentDetails={selectedStudent} studentUid={studentUid} setOpenModalStudentData={setOpenModal} studentShift={studentShift} usersRefetch={usersRefetch} />
+                <TeacherUserData studentDetails={selectedStudent} studentUid={studentUid} setOpenModalStudentData={setOpenModal} studentShift={studentShift} usersRefetch={usersRefetch} filteredTeachers={filteredTeachers} />
             </div>}
         </div>
     );

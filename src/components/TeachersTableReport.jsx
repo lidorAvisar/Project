@@ -3,27 +3,29 @@ import React from 'react';
 const TeachersTableReport = ({ teacherMinutesReport }) => {
   const schools = ["שרייבר", "יובלי", "צבאי"];
 
-
   return (
-    <div className="overflow-x-auto flex justify-center ">
+    <div className="overflow-x-auto flex justify-center">
       <table className="w-full max-w-[1400px] bg-white border-collapse rounded-lg shadow-lg">
         <thead>
           <tr>
-            {schools.map((school, index) => (
-              <th
-                key={index}
-                className={`py-4 bg-gradient-to-tl from-blue-100 to-blue-200 text-blue-900 font-semibold border-b border-gray-300 text-center ${index === 0
-                  ? "rounded-tl-lg"
-                  : index === schools.length - 1
-                    ? "rounded-tr-lg"
-                    : ""
-                  }`}
-              >
-                {school}
-              </th>
-            ))}
+            {schools.map((school, index) => {
+              // Get the number of teachers for each school
+              const teacherCount = teacherMinutesReport[index]?.teachers?.length || 0;
+              return (
+                <th
+                  key={index}
+                  className={`py-4 bg-gradient-to-tl from-blue-100 to-blue-200 text-blue-900 font-semibold border-b border-gray-300 text-center ${index === 0
+                    ? "rounded-tl-lg"
+                    : index === schools.length - 1
+                      ? "rounded-tr-lg"
+                      : ""
+                    }`}
+                >
+                  {school} ({teacherCount})
+                </th>
+              );
+            })}
           </tr>
-
         </thead>
         <tbody>
           {Array.from({ length: Math.max(...teacherMinutesReport.map(school => school.teachers.length)) }).map((_, rowIndex) => (

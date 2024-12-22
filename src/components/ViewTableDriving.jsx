@@ -2,10 +2,23 @@ import React, { useEffect, useState } from 'react';
 
 const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
 
-    const filteredLessons = drivingLessons.filter(lesson => lesson.studentUid === studentDetails.uid);
-    const totalDriving = studentDetails?.totalDrivingMinutes ? studentDetails.totalDrivingMinutes : 0;
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
     const [completeMinutes, setCompleteMinutes] = useState(null);
 
+
+    useEffect(() => {
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
+                : [];
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            setTotalDrivingMinutes(totalMinutes);
+        }
+    }, [studentDetails]);
 
     useEffect(() => {
         if (studentDetails?.previousLicense && studentDetails.previousLicense !== "no") {
@@ -45,7 +58,7 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredLessons.map((lesson, index) => (
+                        {drivingLessons.map((lesson, index) => (
                             <tr key={lesson.id} className='border-b'>
                                 <td className='p-2 text-center'>{index + 1}</td>
                                 <td className='p-2 text-center'>{lesson.date}</td>
@@ -61,7 +74,7 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
 
             {/* Tabs for mobile */}
             <div dir='rtl' className='block sm:hidden'>
-                {filteredLessons.map((lesson, index) => (
+                {drivingLessons.map((lesson, index) => (
                     <div key={lesson.id} className='mb-4 p-4 border rounded-md shadow-md space-y-2'>
                         <p className='font-bold text-center underline'>שיעור {index + 1}</p>
                         <p><span className='font-bold'>תאריך:</span> {lesson.date}</p>
@@ -73,8 +86,8 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
                 ))}
             </div>
             <div className='p-2'>
-                <p className={`${totalDriving >= completeMinutes ? 'bg-green-500 text-white' : 'bg-red-500 text-white'} w-fit text-lg font-bold p-1 rounded-md underline`}>
-                    {studentDetails?.totalDrivingMinutes ? studentDetails.totalDrivingMinutes : 0}<span> :סה"כ דקות נהיגה</span></p>
+                <p className={`${totalDrivingMinutes >= completeMinutes ? 'bg-green-500 text-white' : 'bg-red-500 text-white'} w-fit text-lg font-bold p-1 rounded-md underline`}>
+                    {totalDrivingMinutes}<span> :סה"כ דקות נהיגה</span></p>
             </div>
         </div>
     );

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
 import TableDriving from './TableDriving';
-import { deleteAccount, deleteLessons, getPracticalDriving, storage, updateAccount } from '../firebase/firebase_config';
+import { deleteAccount, storage, updateAccount } from '../firebase/firebase_config';
 import Theories from './Theories';
 import Tests from './Tests';
 import { useMutation, useQuery } from 'react-query';
@@ -12,7 +12,6 @@ import { EditUserModal } from './EditUserModal';
 import AddFileStudent from './AddFileStudent';
 import { Loading } from './Loading';
 import { deleteObject, listAll, ref } from 'firebase/storage';
-import { GiArchiveRegister } from "react-icons/gi";
 import StatusBar from './StatusBar';
 
 
@@ -23,30 +22,37 @@ const driverType = [
     'נהג משא יח"ש',
 ]
 
-const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers }) => {
+const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers, filteredStudents }) => {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [nightDriving, setNightDriving] = useState(0);
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
     const [selectedDriverType, setSelectedDriverType] = useState(studentDetails?.lineTraining || "");
 
-    const { data, isLoading: lessonsLoading, isError, error } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
-
     useEffect(() => {
-        if (data && studentDetails) {
-            const totalNightDrivingMinutes = data.reduce((total, item) => {
-                if (item.studentUid === studentDetails.uid && item.shift === 'משמרת ערב') {
-                    return total + (parseInt(item.drivingMinutes, 10) || 0);
-                }
-                return total;
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
+                : [];
+
+            const nightLessons = practicalDriving.filter(
+                lesson => lesson.shift === 'משמרת ערב'
+            );
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
             }, 0);
 
+            setTotalDrivingMinutes(totalMinutes);
             setNightDriving(totalNightDrivingMinutes);
         }
-    }, [data, studentDetails, lessonsLoading]);
+    }, [studentDetails]);
+
 
     const deleteFiles = async (uid) => {
         const listRef = ref(storage, `students/${uid}`);
@@ -63,9 +69,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
     const { mutate: deleteMutation, isLoading } = useMutation({
         mutationKey: ['users'],
         mutationFn: async (id) => {
-            if (studentDetails.lessons) {
-                await deleteLessons(studentDetails.lessons)
-            }
             if (studentDetails.uid) {
                 await deleteFiles(studentDetails.uid);
             }
@@ -83,29 +86,13 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
         try {
             const studentUid = studentDetails.uid;
             await updateAccount(studentUid, data);
-            usersRefetch();
+            await usersRefetch();
             setOpenModalStudentData(false);
         }
         catch (error) {
             alert("שגיאה");
         }
     };
-
-    useEffect(() => {
-        const updateNightDriving = async () => {
-            if (!studentDetails.nightDriving || studentDetails.nightDriving !== nightDriving) {
-                try {
-                    await updateAccount(studentDetails.uid, { nightDriving });
-                }
-                catch (error) {
-                    console.log(error);
-                }
-
-            }
-        };
-
-        updateNightDriving();
-    }, [studentDetails, nightDriving]);
 
     const testsByDriverType = {
         'נהג בט"ש B': ["hazardousMaterialsScore", "davidCarScore", "jeepCarScore"],
@@ -140,7 +127,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
         saunaCarScore: "סאונה",
         tigerCarScore: "טיגריס"
     };
-   
+
 
     // Render the test fields
     const renderTestDisplay = (fieldId, label) => {
@@ -166,6 +153,8 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             </div>
         );
     };
+    console.log(studentDetails);
+
 
     if (isLoading) {
         return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
@@ -313,7 +302,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                             <div className="mb-4">
                                 <label htmlFor="totalDrivingMinutes" className="block text-right text-sm font-medium text-gray-700">סה"כ דקות שבוצעו:</label>
                                 <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md">
-                                    {studentDetails?.totalDrivingMinutes || "טרם"}
+                                    {totalDrivingMinutes}
                                 </p>
                             </div>
                             <div className="mb-4">
@@ -378,12 +367,38 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                 {errors.mandatoryLessons && <span className="text-red-500 text-sm">{errors.mandatoryLessons.message}</span>}
                             </div>
 
+                            {visibleTests.length > 0 && (
+                                <div className="mt-4">
+                                    <h3 className="text-right text-lg font-bold text-gray-700">
+                                        מבחנים
+                                    </h3>
+                                    {visibleTests.map((testKey, index) => (
+                                        <div key={index} className="mb-4">
+                                            <label
+                                                htmlFor={testKey}
+                                                className="block text-right text-sm font-medium text-gray-700"
+                                            >
+                                                {testLabelsMap[testKey]}
+                                            </label>
+                                            <input
+                                                defaultValue={studentDetails.testKey || ''}
+                                                id={testKey}
+                                                type="text"
+                                                className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                                placeholder="הזן ציון"
+                                                {...register(`${testKey}`)}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                             {/* Render Test Fields Dynamically */}
-                            <div>
+                            {/* <div>
                                 {visibleTests.map((fieldId) =>
                                     renderTestDisplay(fieldId, testLabelsMap[fieldId])
                                 )}
-                            </div>
+                            </div> */}
+
                         </div>
                         <div className="flex justify-center">
                             <button type="submit" className="bg-green-500 text-white font-bold py-2 w-64 rounded-lg">

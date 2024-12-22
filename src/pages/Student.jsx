@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from '../components/Loading';
 import { useQuery } from 'react-query';
-import { auth, getPracticalDriving, getStudentsTests } from '../firebase/firebase_config';
+import { auth, getAccounts, getPracticalDriving, getStudentsTests, updateAccount } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
 import { FaBars, FaSignOutAlt, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import Greeting from '../components/Greeting';
@@ -26,9 +26,17 @@ const Student = () => {
 
 
 
-    const { data, isLoading, isError, error, refetch, status } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
+    // const { data, isLoading, isError, error, refetch, status } = useQuery({
+    //     queryKey: ['practical_driving'],
+    //     queryFn: getPracticalDriving,
+    // });
+
+    const { data: allUsers } = useQuery({
+        queryKey: ['users'],
+        queryFn: async () => await getAccounts(),
+        onError() {
+            alert("שגיאה בעת משיכת הנתונים העדכניים")
+        }
     });
 
     const { data: tests, isLoading: loadingTest } = useQuery('studentsTests', async () => {
@@ -135,6 +143,46 @@ const Student = () => {
     // Determine the lessons to display
     const displayedLessons = showAll ? filteredLessons : filteredLessons.slice(0, 4);
 
+
+    // useEffect(() => {
+    //     if (data) {
+    //         const filteredUsers = data.filter(users => users.uid === user.uid);
+    //         const filterCurrentUser = filteredUsers.length > 0 ? filteredUsers[0] : null;
+    //         setFilteredCurrentUser(filterCurrentUser);
+    //     }
+    // }, [data, openEditModal]);
+
+    const assignPracticalDriving = async () => {
+        try {
+            // Iterate over all users to assign their practical driving lessons
+            for (const user of allUsers) {
+                // Filter driving lessons matching the user's UID
+                const practicalDrivingLessons = data.filter(
+                    lesson => lesson.studentUid === user.uid
+                );
+
+                // Prepare the data to update
+                const updateData = {
+                    practicalDriving: practicalDrivingLessons
+                };
+
+                // Call updateAccount to update the user in Firestore
+                await updateAccount(user.uid, updateData);
+
+                console.log(`Updated user: ${user.uid} with practicalDriving`, updateData);
+            }
+
+            console.log("All users updated successfully.");
+        } catch (error) {
+            console.error("Error updating users:", error);
+        }
+    };
+
+    useEffect(() => {
+        // assignPracticalDriving();
+    }, [data, allUsers]);
+
+
     if (loading || isLoading || loadingTest) {
         return <Loading />;
     }
@@ -147,8 +195,9 @@ const Student = () => {
         );
     }
 
+    console.log(data);
+    console.log(allUsers);
     console.log(currentUser);
-    
 
     return (
         <div>
@@ -271,7 +320,7 @@ const Student = () => {
                         <div className=" pt-10">
                             <div className="overflow-hidden h-3.5 mb-4 text-xs flex rounded-xl bg-green-200">
                                 <div style={{ width: `${calculateProgress()}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
-                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600">
+                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full">
                                         {Math.round(calculateProgress())}%
                                     </span>
                                 </div>

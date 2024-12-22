@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { getAccounts } from '../firebase/firebase_config';
 import { useCurrentUser } from '../firebase/useCurerntUser';
+import { Loading } from './Loading';
 
 const StatusTable = ({ setOpenModalStudentsTable }) => {
     const [currentUser] = useCurrentUser();
@@ -43,7 +44,36 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
         student.user === "תלמידים" &&
         (selectedDepartment.includes('everything') || selectedDepartment.includes(student.departments)) &&
         (selectedCycle === 'everything' || student.cycle === selectedCycle)
-    ); 
+    );
+
+    const calculateTotalDrivingMinutes = (student) => {
+        const practicalDriving = Array.isArray(student.practicalDriving)
+            ? student.practicalDriving
+            : [];
+
+        const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+            return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+        }, 0)
+        return totalMinutes;
+    }
+
+    const calculatenightDriving = (student) => {
+        const practicalDriving = Array.isArray(student.practicalDriving)
+            ? student.practicalDriving
+            : [];
+
+        const nightLessons = practicalDriving.filter(
+            lesson => lesson.shift === 'משמרת ערב'
+        );
+        const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
+            return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+        }, 0);
+        return totalNightDrivingMinutes;
+    }
+
+    if (isLoading) {
+        return <Loading />
+    }
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
@@ -115,22 +145,20 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                             <td className="py-3 px-4">{student.cycle}</td>
                                             <td className="py-3 px-4">{student.departments}</td>
                                             <td className="py-3 px-4">{student.userId}</td>
-                                            <td className={`py-3 px-4 text-white ${student.totalDrivingMinutes &&
-                                                student.nightDriving &&
-                                                student.detailsTheoryTest &&
+                                            <td className={`py-3 px-4 text-white ${student.detailsTheoryTest &&
                                                 student.detailsTheoryTest.length > 0 &&
                                                 student.detailsTheoryTest.slice(-1)[0].mistakes <= 4 &&
-                                                student.nightDriving >= 40
+                                                calculatenightDriving(student) >= 40
                                                 ? student.previousLicense === "no"
-                                                    ? student.totalDrivingMinutes >= 1280
+                                                    ? calculateTotalDrivingMinutes(student) >= 1280
                                                         ? 'bg-green-500'
                                                         : 'bg-orange-500'
-                                                    : student.totalDrivingMinutes >= 800
+                                                    : calculateTotalDrivingMinutes(student) >= 800
                                                         ? 'bg-green-500'
                                                         : 'bg-orange-500'
                                                 : 'bg-orange-500'
                                                 }`}>
-                                                {student.totalDrivingMinutes ? student.totalDrivingMinutes : 'טרם'}
+                                                {calculateTotalDrivingMinutes(student)}
                                             </td>
                                             <td className="py-3 px-4">
                                                 {student.tests && student.tests.length > 0 ? (student.tests.slice(-1)[0].status === "Pass" ?

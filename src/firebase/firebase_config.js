@@ -1,9 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, updatePassword, createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { data } from "autoprefixer";
+
 
 const REQUESTS_LIMIT = 7;
 const TIME_WINDOW = 10 * 1000;
@@ -32,8 +32,8 @@ export const functions = getFunctions();
 const changeUserPassword = httpsCallable(functions, "changeUserPassword")
 
 
-//אוטנטיקציה למשתמש: הירשמות או כניסה
-export const signUpWithEmailAndPassword = async (email, password) => {
+//אוטנטיקציה למשתמש כניסה
+export const signIn = async (email, password) => {
   const res = await signInWithEmailAndPassword(auth, email, password);
   return res;
 }
@@ -41,19 +41,25 @@ export const signUpWithEmailAndPassword = async (email, password) => {
 //בfireStore מייצר לך משתמש
 export const createUserDoc = async (data) => {
   const { uid, email, displayName, ...additional } = data;
-  const userDocRef = doc(db, "users", uid);
+  try {
+    const userDocRef = doc(db, "users", uid);
 
-  // Create the user document in Firestore
-  await setDoc(userDocRef, {
-    email,
-    uid,
-    displayName,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...additional,
-  });
+    // Create the user document in Firestore
+    await setDoc(userDocRef, {
+      email,
+      uid,
+      displayName,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...additional,
+    });
 
-  return userDocRef;
+    return userDocRef;
+  }
+  catch (error) {
+    console.log(error);
+
+  }
 };
 
 // העברת נתוני התלמיד לארכיון
@@ -71,11 +77,12 @@ export const archiveStudent = async (studentDetails) => {
   }
 };
 
+//לא משומש
+// export const addUserToAuth = async (email, password) => {
+//   return await createUserWithEmailAndPassword(auth, email, password);
+// }
 
-export const addUserToAuth = async (email, password) => {
-  return await createUserWithEmailAndPassword(auth, email, password);
-}
-
+//יצירת משתמש לאוטנטיקציה
 export const addUser = async (email, password) => {
   const apiKey = firebaseConfig.apiKey;
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`;
@@ -203,27 +210,6 @@ export const getArchiveAccounts = async () => {
   }
 }
 
-//משיג את השיעורי נהיגה
-export const getPracticalDriving = async () => {
-  try {
-    const queryObject = query(collection(db, "practical_driving"));
-    const practical_drivingDocs = await getDocs(queryObject);
-    if (practical_drivingDocs.empty) {
-      return [];
-    }
-
-    const drivingData = practical_drivingDocs.docs.map(doc => {
-      return doc.data();
-    })
-
-    return drivingData;
-  }
-
-  catch (error) {
-    alert("שגיאה")
-  }
-}
-
 
 //מחיקת משתמש
 export const deleteAccount = async (id) => {
@@ -238,19 +224,12 @@ export const deleteAccount = async (id) => {
   }
 }
 
-
 // עדכון נתוני המשתמש
 export const updateAccount = async (id, data) => {
 
   try {
     const userDocRef = doc(db, "users", id);
-    if (data.hasOwnProperty("lessonId")) {
-      const userDoc = await getDoc(userDocRef);
-      await updateDoc(userDocRef, { ...data, lessons: [...userDoc.data().lessons, data.lessonId] });
-    }
-    else {
-      await updateDoc(userDocRef, { ...data });
-    }
+    await updateDoc(userDocRef, { ...data });
     return userDocRef;
   }
   catch (error) {
@@ -287,59 +266,159 @@ export const onAuthStateChangedListener = async (callback) =>
   onAuthStateChanged(auth, callback);
 
 
-//הוספת שיעור נהיגה 
-export const addLesson = async (lessonId, data) => {
-  const lessonDocRef = doc(db, "practical_driving", lessonId);
-  const lessonSnapshot = await getDoc(lessonDocRef);
-
-  if (lessonSnapshot.exists()) {
-    throw new Error("Lesson already exists!");
-  }
-  await setDoc(lessonDocRef, { ...data, createdAt: Date.now(), updatedAt: Date.now(), uid: lessonId });
-  return lessonDocRef;
-}
-
-// עדכון שיעור הנהיגה
-export const updateLesson = async (lessonId, data) => {
+//משיג את השיעורי נהיגה
+export const getPracticalDriving = async () => {
   try {
-    const lessonDocRef = doc(db, "practical_driving", lessonId);
-    await updateDoc(lessonDocRef, { ...data });
-    return lessonDocRef
+    const queryObject = query(collection(db, "practical_driving"));
+    const practical_drivingDocs = await getDocs(queryObject);
+    if (practical_drivingDocs.empty) {
+      return [];
+    }
+
+    const drivingData = practical_drivingDocs.docs.map(doc => {
+      return doc.data();
+    })
+
+    return drivingData;
   }
+
   catch (error) {
     alert("שגיאה")
   }
 }
 
-//מחיקת שיעור נהיגה
-export const deleteLesson = async (lessonId) => {
-  const lessonDocRef = doc(db, "practical_driving", lessonId);
+//הוספת שיעור נהיגה 
+export const addLesson = async (userId, lessonData) => {
+  const userDocRef = doc(db, "users", userId);
+
   try {
-    await deleteDoc(lessonDocRef);
-    return lessonDocRef;
-  }
-  catch (err) {
-    throw err;
-  }
-}
-// מחיקת כל השיעורים של אותו תלמיד או מורה
-export const deleteLessons = async (lessonIdList) => {
-  if (!lessonIdList) {
-    throw new Error("Provide lesson Ids");
-  }
+    const userSnapshot = await getDoc(userDocRef);
 
-  for (const lessonId of lessonIdList) {
-    const lessonDocRef = doc(db, "practical_driving", lessonId);
-    try {
-      await deleteDoc(lessonDocRef);
-    } catch (err) {
-      throw err;
+    if (!userSnapshot.exists()) {
+      throw new Error("User not found!");
     }
+
+    const userData = userSnapshot.data();
+
+    // Ensure practicalDriving exists as an array
+    const existingLessons = Array.isArray(userData.practicalDriving)
+      ? userData.practicalDriving
+      : [];
+
+    // Generate a unique ID for the new lesson
+    const lessonId = crypto.randomUUID();
+
+    const newLesson = {
+      uid: lessonId,
+      ...lessonData,
+      createdAt: Date.now(),
+    };
+
+    // Add the new lesson to the practicalDriving array
+    const updatedLessons = [...existingLessons, newLesson];
+
+    // Update the user's document with the new array
+    await updateDoc(userDocRef, {
+      practicalDriving: updatedLessons,
+    });
+
+    return userDocRef;
+  } catch (error) {
+    throw new Error(`Failed to add lesson: ${error.message}`);
   }
+};
 
-  return { status: 200 };
-}
+// עדכון שיעורי הנהיגה
+export const updateLesson = async (userUid, updatedArray) => {
+  try {
+    const userDocRef = doc(db, "users", userUid);
 
+    // Fetch existing practicalDriving array from Firestore
+    const userDocSnap = await getDoc(userDocRef);
+    if (!userDocSnap.exists()) {
+      throw new Error("User document does not exist");
+    }
+
+    const currentArray = userDocSnap.data().practicalDriving || [];
+
+    // Create a map for easier comparison by uid
+    const updatedMap = new Map(updatedArray.map(item => [item.uid, item]));
+
+    // Merge the updates into the current array
+    const mergedArray = currentArray.map(item =>
+      updatedMap.has(item.uid) ? { ...item, ...updatedMap.get(item.uid) } : item
+    );
+    console.log(mergedArray);
+
+    //Write the merged array back to Firestore
+    await updateDoc(userDocRef, {
+      practicalDriving: mergedArray
+    });
+
+    return userDocRef;
+  }
+  catch (error) {
+    console.error("Error updating lessons:", error);
+    alert("שגיאה בעדכון השיעורים");
+  }
+};
+
+
+//מחיקת שיעור נהיגה
+export const deleteLesson = async (studentUid, lessonId) => {
+  const studentDocRef = doc(db, "users", studentUid);
+
+  try {
+    // Fetch the current student document
+    const studentSnapshot = await getDoc(studentDocRef);
+
+    if (!studentSnapshot.exists()) {
+      throw new Error("Student not found!");
+    }
+
+    const studentData = studentSnapshot.data();
+
+    // Check if practicalDriving array exists
+    const practicalDriving = Array.isArray(studentData.practicalDriving)
+      ? studentData.practicalDriving
+      : [];
+
+    // Filter out the lesson with the specified lessonId
+    const updatedPracticalDriving = practicalDriving.filter(
+      lesson => lesson.uid !== lessonId
+    );
+
+    // Update the student's document with the modified practicalDriving array
+    await updateDoc(studentDocRef, {
+      practicalDriving: updatedPracticalDriving,
+      updatedAt: Date.now(),
+    });
+
+    return studentDocRef;
+  }
+  catch (error) {
+    throw new Error(`Failed to delete lesson: ${error.message}`);
+  }
+};
+
+// מחיקת כל השיעורים של אותו תלמיד או מורה
+// export const deleteLessons = async (lessonIdList) => {
+//   if (!lessonIdList) {
+//     throw new Error("Provide lesson Ids");
+//   }
+
+//   for (const lessonId of lessonIdList) {
+//     const lessonDocRef = doc(db, "practical_driving", lessonId);
+//     try {
+//       await deleteDoc(lessonDocRef);
+//     } catch (err) {
+//       throw err;
+//     }
+//   }
+//   return { status: 200 };
+// }
+
+//שינוי סיסמא
 export async function changePassword(uid, newPassword) {
 
   if (!uid || !newPassword) {
@@ -368,7 +447,7 @@ export const getStudentsTests = async () => {
   }
 };
 
-//הוספת מבחן לתלמיד-האמר,דוד,וכ'ו
+//הוספת מבחן לרשימת המבחנים דויד,האמר וכו
 export const addStudentsTests = async (data) => {
   try {
     // Generate a new document reference with a specific ID
@@ -395,7 +474,7 @@ export const addStudentsTests = async (data) => {
   }
 }
 
-//עדכון למבחני תלמידים
+//עדכון רשימת המבחנים
 export const updateStudentsTests = async (data, uid) => {
   try {
     // Reference to the student's test document

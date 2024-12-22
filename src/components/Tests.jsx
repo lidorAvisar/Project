@@ -3,10 +3,14 @@ import { useForm, Controller } from 'react-hook-form';
 import { updateAccount } from '../firebase/firebase_config';
 import { useMutation } from 'react-query';
 
-const Tests = ({ studentDetails,usersRefetch, setOpenModalStudentData }) => {
+const Tests = ({ studentDetails, usersRefetch, setOpenModalStudentData }) => {
     const initialTests = studentDetails?.tests?.length > 0 ? studentDetails.tests : [{ id: 1, date: '', status: '' }];
     const [tests, setTests] = useState(initialTests);
     const [completeMinutes, setCompleteMinutes] = useState(null);
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
+    const [nightDriving, setNightDriving] = useState(0);
+
+
 
     const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
@@ -41,6 +45,29 @@ const Tests = ({ studentDetails,usersRefetch, setOpenModalStudentData }) => {
     };
 
     useEffect(() => {
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
+                : [];
+
+            const nightLessons = practicalDriving.filter(
+                lesson => lesson.shift === 'משמרת ערב'
+            );
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0);
+
+            setTotalDrivingMinutes(totalMinutes);
+            setNightDriving(totalNightDrivingMinutes);
+        }
+    }, [studentDetails]);
+
+    useEffect(() => {
         setValue('tests', tests);
     }, [tests, setValue]);
 
@@ -57,7 +84,7 @@ const Tests = ({ studentDetails,usersRefetch, setOpenModalStudentData }) => {
     return (
         <div className="bg-slate-200 w-full p-6 rounded-md shadow-lg">
             <p className="text-center font-bold text-2xl py-6 underline">טסטים</p>
-            {studentDetails?.totalDrivingMinutes && studentDetails?.totalDrivingMinutes >= completeMinutes && studentDetails.nightDriving && studentDetails.nightDriving >= 40 ? <form onSubmit={handleSubmit(onSubmit)}>
+            {totalDrivingMinutes >= completeMinutes && nightDriving >= 40 ? <form onSubmit={handleSubmit(onSubmit)}>
                 <div>
                     <table dir='rtl' className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
                         <thead>

@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "react-query";
 import { addUser, createUserDoc } from "./firebase_config";
-import { useCurrentUser } from "./useCurerntUser";
+// import { useCurrentUser } from "./useCurerntUser";
 
 
 export default function useCreateUser() {
     const queryClient = useQueryClient();
-    const [currentUser] = useCurrentUser();
+    // const [currentUser] = useCurrentUser();
 
     const handleRefetch = async () => {
         await queryClient.refetchQueries(['users']);
@@ -36,7 +36,7 @@ export default function useCreateUser() {
                 user: userData.user,
                 school: userData.school,
                 uid: uid,  // Ensure the UID is passed to createUserDoc,
-                lessons: [],
+                practicalDriving: [],
             });
         },
         onSuccess: () => handleRefetch(),

@@ -1,10 +1,38 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ViewFilesForContractor from './ViewFilesForContractor'
 import ViewTheoriesForConstractor from './ViewTheoriesForConstractor'
 import ViewTestsContractor from './ViewTestsContractor'
 import { TiArrowBack } from 'react-icons/ti'
 
 const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
+    const [nightDriving, setNightDriving] = useState(0);
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
+
+
+    useEffect(() => {
+        if (userData) {
+            const practicalDriving = Array.isArray(userData.practicalDriving)
+                ? userData.practicalDriving
+                : [];
+
+            const nightLessons = practicalDriving.filter(
+                lesson => lesson.shift === 'משמרת ערב'
+            );
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0);
+
+            setTotalDrivingMinutes(totalMinutes);
+            setNightDriving(totalNightDrivingMinutes);
+        }
+    }, [userData]);
+
+
     return (
         <div className='z-30 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 space-y-3 mb-5 rounded-lg h-[90%] overflow-y-auto'>
@@ -74,13 +102,13 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">סה"כ דקות שבוצעו:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.totalDrivingMinutes || "טרם"}
+                            {totalDrivingMinutes}
                         </p>
                     </div>
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">סה"כ דקות נהיגת לילה:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData.nightDriving || "טרם"}
+                            {nightDriving}
                         </p>
                     </div>
                 </div>

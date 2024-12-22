@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { GiArchiveRegister } from 'react-icons/gi'
 import { useMutation, useQuery } from 'react-query';
-import { archiveStudent, deleteAccount, deleteLessons, getAccounts } from '../firebase/firebase_config';
+import { archiveStudent, deleteAccount, getAccounts } from '../firebase/firebase_config';
 
 const MoveToArchive = ({ setOpenModalMoveToArchive }) => {
     const [selectedCycle, setSelectedCycle] = useState('');
@@ -39,10 +39,6 @@ const MoveToArchive = ({ setOpenModalMoveToArchive }) => {
     const { mutate: deleteMutation, isLoading: deleteLoading } = useMutation({
         mutationKey: ['users'],
         mutationFn: async (id) => {
-            const studentDetails = data.find(student => student.uid === id);
-            if (studentDetails.lessons) {
-                await deleteLessons(studentDetails.lessons);
-            }
             await deleteAccount(id);
         },
         onSuccess: () => {

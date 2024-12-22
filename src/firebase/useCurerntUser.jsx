@@ -18,13 +18,13 @@ export function authWatch() {
         })
     }, []);
 
-    return [user, setUser, loading];
+    return [user, loading];
 }
 
 export default function UserProvider({ children }) {
-    const [user, setUser, loading] = authWatch();
+    const [user, loading] = authWatch();
     return <UserContext.Provider
-        value={[user, setUser, loading]}>
+        value={[user, loading]}>
         {children}
     </UserContext.Provider>
 }

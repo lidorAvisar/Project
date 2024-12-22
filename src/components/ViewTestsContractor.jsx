@@ -3,6 +3,31 @@ import React, { useEffect, useState } from 'react'
 const ViewTestsContractor = ({ studentDetails }) => {
     const tests = studentDetails?.tests?.length > 0 ? studentDetails.tests : [];
     const [completeMinutes, setCompleteMinutes] = useState(null);
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
+    const [nightDriving, setNightDriving] = useState(0);
+
+    useEffect(() => {
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
+                : [];
+
+            const nightLessons = practicalDriving.filter(
+                lesson => lesson.shift === 'משמרת ערב'
+            );
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0);
+
+            setTotalDrivingMinutes(totalMinutes);
+            setNightDriving(totalNightDrivingMinutes);
+        }
+    }, [studentDetails]);
 
     useEffect(() => {
         if (studentDetails?.previousLicense !== "no") {
@@ -16,7 +41,7 @@ const ViewTestsContractor = ({ studentDetails }) => {
     return (
         <div className="bg-slate-200 w-full p-6 rounded-md shadow-lg">
             <p className="text-center font-bold text-2xl py-6 underline">תצוגת טסטים</p>
-            {tests.length > 0 && studentDetails.totalDrivingMinutes && studentDetails.totalDrivingMinutes >= completeMinutes && studentDetails.nightDriving && studentDetails.nightDriving >= 40 ? (
+            {tests.length > 0 && totalDrivingMinutes >= completeMinutes && nightDriving >= 40 ? (
                 <div>
                     <table dir='rtl' className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
                         <thead>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GiSteeringWheel } from "react-icons/gi";
 import { LuEye } from "react-icons/lu";
 import { useForm } from "react-hook-form";
-import { signUpWithEmailAndPassword } from "../firebase/firebase_config";
+import { signIn } from "../firebase/firebase_config";
 import { IoArrowUndoOutline } from "react-icons/io5";
 import SignaturePad from "../components/SignaturePad";
 
@@ -39,7 +39,7 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            await signUpWithEmailAndPassword(data.email, data.password)
+            await signIn(data.email, data.password)
             reset();
         }
         catch (error) {

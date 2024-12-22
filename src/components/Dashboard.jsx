@@ -3,8 +3,6 @@ import PieChartComponent from './PieChartComponent';
 import BarChartActiveStudents from './BarChartActiveStudents';
 import Highlights from './Highlights';
 import TeachersTableReport from './TeachersTableReport';
-import { useQuery } from 'react-query';
-import { getPracticalDriving } from '../firebase/firebase_config';
 import Greeting from './Greeting';
 import '../../public/יוסי.jpg'
 import '../../public/מתן.jpg'
@@ -19,11 +17,6 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
     const [monthFilter, setMonthFilter] = useState('everything'); // New state for month filter
     const [teacherMinutesByMonth, setTeacherMinutesByMonth] = useState([]); // Separate state for month-specific data
 
-
-    const { data, isLoading, isError, error, refetch } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
 
     const [testData, setTestData] = useState([
         { name: 'טסט-1', value: 0, color: '#00C49F' },
@@ -131,22 +124,30 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
             const teachersInSchool = filteredTeachers.filter(teacher => teacher.school === school);
 
             const teacherData = teachersInSchool.map(teacher => {
-                const totalMinutes = data?.reduce((sum, lesson) => {
-                    const lessonMonth = new Date(lesson.date).getMonth();
-                    const selectedMonth = month !== 'everything' ? parseInt(month) : null;
+                // Calculate total driving minutes for each teacher
+                const totalMinutes = filteredStudents.reduce((sum, student) => {
+                    const drivingLessons = student.practicalDriving || [];
+                    const lessonsForTeacher = drivingLessons.filter(lesson => {
+                        const lessonMonth = new Date(lesson.date).getMonth();
+                        const selectedMonth = month !== 'everything' ? parseInt(month) : null;
 
-                    if (lesson.teacherUid === teacher.uid &&
-                        (month === 'everything' || lessonMonth === selectedMonth)) {
-                        const minutes = Number(lesson.drivingMinutes) || 0;
-                        return sum + minutes;
-                    }
-                    return sum;
+                        return lesson.teacherUid === teacher.uid &&
+                            (month === 'everything' || lessonMonth === selectedMonth);
+                    });
+
+                    // Add up the driving minutes for the selected lessons
+                    const minutesForTeacher = lessonsForTeacher.reduce((lessonSum, lesson) => {
+                        return lessonSum + (Number(lesson.drivingMinutes) || 0);
+                    }, 0);
+
+                    return sum + minutesForTeacher;
                 }, 0);
 
                 const totalHours = (totalMinutes / 60).toFixed(0);
                 return { displayName: teacher.displayName, totalHours };
             });
 
+            // Sort teachers by totalHours
             teacherData.sort((a, b) => b.totalHours - a.totalHours);
             return { school, teachers: teacherData };
         });
@@ -172,19 +173,16 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
         if (monthFilter === 'everything') {
             setTeacherMinutesReport(calculateMinutes());
         }
-    }, [filteredTeachers, data, monthFilter]);
+    }, [filteredTeachers, filteredStudents, monthFilter]);
 
     // useEffect for specific month filtering (when monthFilter is set to a specific month)
     useEffect(() => {
         if (monthFilter !== 'everything') {
             setTeacherMinutesByMonth(calculateMinutes(monthFilter));
         }
-    }, [filteredTeachers, data, monthFilter]);
-
-    if (isLoading) return <div className='text-center animate-bounce'>Loading . . .</div>
+    }, [filteredTeachers, filteredStudents, monthFilter]);
 
     const bestCycle = { name: "מחזור זאב מחלקה 2", performance: 100 };
-
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center'>
@@ -273,249 +271,3 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
 }
 
 export default Dashboard;
-
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-
-// const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, user, practicalDrivingData }) => {
-//     const schools = ["שרייבר", "יובלי", "צבאי"];
-//     const uniqueCycles = [...new Set(filteredStudents.map(student => student.cycle))];
-//     const [testByCycle, setTestByCycle] = useState('everything');
-//     const [theoriesByCycle, setTheoriesByCycle] = useState('everything');
-
-//     const [testData, setTestData] = useState([
-//         { name: 'טסט-1', value: 0, color: '#00C49F' },
-//         { name: 'טסט-2', value: 0, color: '#0088FE' },
-//         { name: 'טסט-3', value: 0, color: '#FFBB28' },
-//         { name: 'טסט-4', value: 0, color: '#FF8042' }
-//     ]);
-
-//     const [theoriesData, setTheoriesData] = useState([
-//         { name: 'תאוריה-1', value: 0, color: '#00C49F' },
-//         { name: 'תאוריה-2', value: 0, color: '#0088FE' },
-//         { name: 'תאוריה-3', value: 0, color: '#FFBB28' },
-//         { name: 'תאוריה-4', value: 0, color: '#FF8042' }
-//     ]);
-
-//     const [activeStudentData, setActiveStudentData] = useState(
-//         Array.from({ length: 12 }, (_, index) => ({ name: `${index + 1}`, value: 0 }))
-//     );
-
-//     const [teacherMinutesReport, setTeacherMinutesReport] = useState([]);
-
-//     useEffect(() => {
-//         const updateTestData = () => {
-//             const filteredTests = filteredStudents.filter(student =>
-//                 testByCycle === 'everything' || student.cycle === testByCycle
-//             );
-
-//             const testCounts = Array(4).fill(0);
-//             filteredTests.forEach(student => {
-//                 student.tests?.forEach(test => {
-//                     if (test.status === 'Pass' && test.id >= 1 && test.id <= 4) {
-//                         testCounts[test.id - 1] += 1;
-//                     }
-//                 });
-//             });
-
-//             setTestData(prevData => prevData.map((test, index) => ({
-//                 ...test,
-//                 value: testCounts[index],
-//             })));
-//         };
-
-//         const updateTheoriesData = () => {
-//             const filteredTheories = filteredStudents.filter(student =>
-//                 theoriesByCycle === 'everything' || student.cycle === theoriesByCycle
-//             );
-
-//             const theoryCounts = Array(4).fill(0);
-//             filteredTheories.forEach(student => {
-//                 student.detailsTheoryTest?.forEach(theory => {
-//                     if (theory.testNumber >= 1 && theory.testNumber <= 4) {
-//                         theoryCounts[theory.testNumber - 1] += 1;
-//                     }
-//                 });
-//             });
-
-//             setTheoriesData(prevData => prevData.map((theory, index) => ({
-//                 ...theory,
-//                 value: theoryCounts[index],
-//             })));
-//         };
-
-//         updateTestData();
-//         updateTheoriesData();
-//     }, [testByCycle, theoriesByCycle, filteredStudents]);
-
-//     useEffect(() => {
-//         const generateActiveStudentData = () => {
-//             const studentCounts = Array(12).fill(0);
-//             filteredStudents.forEach(student => {
-//                 if (student.newStatus === "active" || !student.hasOwnProperty("newStatus")) {
-//                     const studentNumber = parseInt(student.departments);
-//                     if (studentNumber >= 1 && studentNumber <= 12) {
-//                         studentCounts[studentNumber - 1] += 1;
-//                     }
-//                 }
-//             });
-//             setActiveStudentData(prevData => prevData.map((item, index) => ({
-//                 ...item,
-//                 value: studentCounts[index],
-//             })));
-//         };
-
-//         generateActiveStudentData();
-//     }, [filteredStudents]);
-
-//     useEffect(() => {
-//         const calculateTotalMinutesForTeachers = () => {
-//             return schools.map(school => {
-//                 const teachersInSchool = filteredTeachers.filter(teacher => teacher.school === school);
-//                 const teacherData = teachersInSchool.map(teacher => {
-//                     const totalMinutes = practicalDrivingData?.reduce((sum, lesson) => {
-//                         if (lesson.teacherUid === teacher.uid) {
-//                             return sum + (Number(lesson.drivingMinutes) || 0);
-//                         }
-//                         return sum;
-//                     }, 0);
-//                     const totalHours = (totalMinutes / 60).toFixed(0);
-//                     return { displayName: teacher.displayName, totalHours };
-//                 });
-//                 teacherData.sort((a, b) => b.totalHours - a.totalHours);
-//                 return { school, teachers: teacherData };
-//             });
-//         };
-
-//         setTeacherMinutesReport(calculateTotalMinutesForTeachers());
-//     }, [filteredTeachers, practicalDrivingData]);
-
-//     return (
-//         <div className="fixed inset-0 h-screen w-full overflow-y-auto bg-gray-100 p-4">
-//             <div className="max-w-7xl mx-auto space-y-4">
-//                 {/* Header */}
-//                 <div className="bg-white rounded-lg p-4 flex items-center justify-between">
-//                     <button onClick={() => setOpenModalDashboard(false)} className="bg-red-500 text-white px-4 py-2 rounded">
-//                         סגור
-//                     </button>
-//                     <h1 className="text-xl font-bold">דשבורד בית ספר לנהיגה</h1>
-//                     <div className="flex items-center gap-2">
-//                         <span className="font-bold">{user?.displayName}</span>
-//                         <img src="/api/placeholder/40/40" alt="Profile" className="h-10 w-10 rounded-full" />
-//                     </div>
-//                 </div>
-
-//                 {/* Main Content Grid */}
-//                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//                     {/* Charts Section */}
-//                     <div className="bg-white rounded-lg p-4">
-//                         <h2 className="text-lg font-bold mb-2">תאוריות</h2>
-//                         <select
-//                             value={theoriesByCycle}
-//                             onChange={(e) => setTheoriesByCycle(e.target.value)}
-//                             className="w-full mb-2 p-2 rounded border"
-//                         >
-//                             <option value="everything">הכל</option>
-//                             {uniqueCycles.map((cycle, i) => (
-//                                 <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
-//                             ))}
-//                         </select>
-//                         <div className="h-64">
-//                             <ResponsiveContainer width="100%" height="100%">
-//                                 <PieChart>
-//                                     <Pie
-//                                         data={theoriesData}
-//                                         dataKey="value"
-//                                         nameKey="name"
-//                                         cx="50%"
-//                                         cy="50%"
-//                                         outerRadius={80}
-//                                         label
-//                                     >
-//                                         {theoriesData.map((entry, index) => (
-//                                             <Cell key={`cell-${index}`} fill={entry.color} />
-//                                         ))}
-//                                     </Pie>
-//                                 </PieChart>
-//                             </ResponsiveContainer>
-//                         </div>
-//                     </div>
-
-//                     <div className="bg-white rounded-lg p-4">
-//                         <h2 className="text-lg font-bold mb-2">טסטים</h2>
-//                         <select
-//                             value={testByCycle}
-//                             onChange={(e) => setTestByCycle(e.target.value)}
-//                             className="w-full mb-2 p-2 rounded border"
-//                         >
-//                             <option value="everything">הכל</option>
-//                             {uniqueCycles.map((cycle, i) => (
-//                                 <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
-//                             ))}
-//                         </select>
-//                         <div className="h-64">
-//                             <ResponsiveContainer width="100%" height="100%">
-//                                 <PieChart>
-//                                     <Pie
-//                                         data={testData}
-//                                         dataKey="value"
-//                                         nameKey="name"
-//                                         cx="50%"
-//                                         cy="50%"
-//                                         outerRadius={80}
-//                                         label
-//                                     >
-//                                         {testData.map((entry, index) => (
-//                                             <Cell key={`cell-${index}`} fill={entry.color} />
-//                                         ))}
-//                                     </Pie>
-//                                 </PieChart>
-//                             </ResponsiveContainer>
-//                         </div>
-//                     </div>
-
-//                     {/* Active Students Bar Chart */}
-//                     <div className="bg-white rounded-lg p-4 col-span-1 md:col-span-2 lg:col-span-1">
-//                         <h2 className="text-lg font-bold mb-2">תלמידים פעילים לפי מחלקה</h2>
-//                         <div className="h-64">
-//                             <ResponsiveContainer width="100%" height="100%">
-//                                 <BarChart data={activeStudentData}>
-//                                     <CartesianGrid strokeDasharray="3 3" />
-//                                     <XAxis dataKey="name" />
-//                                     <YAxis />
-//                                     <Tooltip />
-//                                     <Bar dataKey="value" fill="#8884d8" />
-//                                 </BarChart>
-//                             </ResponsiveContainer>
-//                         </div>
-//                     </div>
-//                 </div>
-
-//                 {/* Teachers Table */}
-//                 <div className="bg-white rounded-lg p-4">
-//                     <h2 className="text-lg font-bold mb-4">טבלת מורים</h2>
-//                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//                         {teacherMinutesReport.map((school, index) => (
-//                             <div key={index} className="border rounded p-2">
-//                                 <h3 className="font-bold mb-2">{school.school}</h3>
-//                                 <div className="space-y-2">
-//                                     {school.teachers.map((teacher, tIndex) => (
-//                                         <div key={tIndex} className="flex justify-between">
-//                                             <span>{teacher.displayName}</span>
-//                                             <span>{teacher.totalHours} שעות</span>
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             </div>
-//                         ))}
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default Dashboard;

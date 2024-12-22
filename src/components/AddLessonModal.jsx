@@ -1,40 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { addLesson, getPracticalDriving, updateAccount } from '../firebase/firebase_config';
+import { useMutation, useQueryClient } from 'react-query';
+import { addLesson } from '../firebase/firebase_config';
 import { Loading } from './Loading';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { IoArrowDown } from 'react-icons/io5';
 
-const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData }) => {
+const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData, filteredStudents, refetch }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"]
 
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const [expandedSchool, setExpandedSchool] = useState(null);
     const [currentUser] = useCurrentUser();
     const queryClient = useQueryClient();
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const [teacherUid, setTeacherUid] = useState(null);
 
-    const [teacherUid, setTeacherUid] = useState();
-
-    const { data: allLessons, isLoading, isError, error } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
 
     const { mutate: addLessonMutation, isLoading: loading, error: err } = useMutation({
-        mutationKey: ["practical_driving"],
+        mutationKey: ["users"],
         mutationFn: async (lessonData) => {
-            const { lessonId, data } = lessonData;
-            return await addLesson(lessonId, data)
+            return await addLesson(studentDetails.uid, lessonData)
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries(['practical_driving']);
+        onSuccess: async () => {
+            await refetch();
             { currentUser.user === "מנהל" || currentUser.user === 'מ"פ' && setOpenModalStudentData(false); }
             setOpenModalAddLesson(false);
         }
     });
 
     const onSubmit = async (data) => {
+
+        if (teacherUid === null) {
+            alert('יש לבחור מורה');
+            return;
+        }
+
         data.other = data.other || "";
         data.studentUid = studentDetails.uid;
         data.teacherUid = teacherUid;
@@ -42,10 +42,13 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         data.drivingMinutes = null;
 
         // Check if the student is already assigned for this shift on this day
-        const existingLesson = allLessons?.find(lesson =>
-            lesson.studentUid === data.studentUid &&
-            lesson.date === data.date &&
-            lesson.shift === data.shift
+        const existingLesson = filteredStudents.some(student =>
+            Array.isArray(student.practicalDriving) &&
+            student.practicalDriving.some(lesson =>
+                lesson.studentUid === data.studentUid &&
+                lesson.date === data.date &&
+                lesson.shift === data.shift
+            )
         );
 
         if (existingLesson) {
@@ -53,11 +56,10 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             return;
         }
 
+        console.log(data);
+
         try {
-            const lessonId = crypto.randomUUID();
-            const lessonData = { lessonId, data }
-            addLessonMutation(lessonData);
-            updateAccount(studentDetails.uid, { lessonId })
+            addLessonMutation(data);
 
         } catch (error) {
             alert("לא נוסף השיעור");
@@ -77,15 +79,18 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
         setTeacherUid(selectedTeacher.uid);
     };
 
-    if (isLoading || loading) {
+    if (loading) {
         return <div className='fixed flex justify-center z-50 w-full h-full pb-40 backdrop-blur-md'>
             <Loading />
         </div>
     }
 
+    console.log(teacherUid);
+    
+
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='w-[90%] h-[94%] sm:w-96 bg-slate-100 p-4 py-8 rounded-lg overflow-y-auto'>
+            <div className='w-[90%] h-[94%] md:w-[50%] bg-slate-200 p-4 py-8 rounded-lg overflow-y-auto'>
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <p className='text-center font-bold text-lg underline'>{studentDetails.displayName}</p>
                     <form dir='rtl' className="space-y-6 py-5" onSubmit={handleSubmit(onSubmit)}>
@@ -98,7 +103,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
                                     <div key={index} className='mb-5 w-[95%] max-w-[1000px]'>
                                         {/* School Row */}
                                         <div
-                                            className='flex flex-col justify-center gap-2 items-center w-full cursor-pointer bg-gray-200 p-1 rounded-md shadow-md'
+                                            className='flex flex-col justify-center gap-2 items-center w-full cursor-pointer bg-gray-300 p-1 rounded-md shadow-md'
                                             onClick={() => handleToggleSchool(school)}
                                         >
                                             <span className='text-lg font-bold'>{school} {getTeachersCount(school)}</span>

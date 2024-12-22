@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BiEditAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa6";
 import RegisterModal from '../components/RegisterModal';
 import { useMutation, useQuery } from 'react-query';
-import { getAccounts, deleteAccount, auth, deleteLessons } from '../firebase/firebase_config';
+import { getAccounts, deleteAccount, auth } from '../firebase/firebase_config';
 import { EditUserModal } from '../components/EditUserModal';
 import { Loading } from '../components/Loading';
 import { useCurrentUser } from '../firebase/useCurerntUser';
@@ -23,8 +23,6 @@ import { IoArrowDown } from "react-icons/io5";
 import StudentsTests from '../components/StudentsTests';
 import Dashboard from '../components/Dashboard';
 import { RxDashboard } from "react-icons/rx";
-
-
 
 
 
@@ -52,14 +50,12 @@ const SuperSuperAdmin = () => {
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
-
-        onError(e) {
+        onError() {
             alert("שגיאה בעת משיכת הנתונים העדכניים")
         }
     });
 
-
-    const { mutate: deleteAdmin } = useMutation({
+    const { mutate: deleteAdmin, isLoading: deleteUserLoading } = useMutation({
         mutationKey: ['users'],
         mutationFn: async (id) => {
             await deleteAccount(id)
@@ -79,15 +75,23 @@ const SuperSuperAdmin = () => {
         setStudentSearch(e.target.value);
     };
 
-    const filteredStudents = data?.filter(account =>
-        account.user === "תלמידים" &&
-        account.displayName.toLowerCase().includes(studentSearch.toLowerCase())
-    ).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+    const filteredStudents = useMemo(() => {
+        return data
+            ?.filter(account => account.user === "תלמידים")
+            .sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+    }, [data]);
 
-    const filteredTeachers = data
-        ?.filter(account => account.user === "מורה נהיגה")
-        .sort((a, b) => a.displayName.localeCompare(b.displayName, 'he'));
+    const filteredTeachers = useMemo(() => {
+        return data
+            ?.filter(account => account.user === "מורה נהיגה")
+            .sort((a, b) => a.displayName.localeCompare(b.displayName, 'he'));
+    }, [data]);
 
+    const searchedStudents = useMemo(() => {
+        return filteredStudents?.filter(student =>
+            student.displayName.toLowerCase().includes(studentSearch.toLowerCase())
+        );
+    }, [filteredStudents, studentSearch]);
 
     useEffect(() => {
         if (data) {
@@ -98,7 +102,7 @@ const SuperSuperAdmin = () => {
     }, [data, openEditModal]);
 
 
-    if (isLoading) return <Loading />
+    if (isLoading || deleteUserLoading) return <Loading />
 
     if (isError) {
         return <div>{error}</div>
@@ -111,10 +115,10 @@ const SuperSuperAdmin = () => {
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
-            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
+            {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} filteredTeachers={filteredTeachers} filteredStudents={filteredStudents} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
-            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
-            {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} filteredStudents={filteredStudents} />}
+            {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} filteredStudents={filteredStudents} />}
             {openModalArchiveByCycle && <ArchiveByCycle setOpenModalArchiveByCycle={setOpenModalArchiveByCycle} />}
             {openModalMoveToArchive && <MoveToArchive setOpenModalMoveToArchive={setOpenModalMoveToArchive} />}
             {openModalStudentsTests && <StudentsTests setOpenModalStudentsTests={setOpenModalStudentsTests} />}
@@ -170,7 +174,7 @@ const SuperSuperAdmin = () => {
                             <td className="text-center text-[14px] py-4 whitespace-nowrap flex justify-center text-xl gap-3 "><BiEditAlt onClick={() => {
                                 setCurrentEditUser(account)
                                 setOpenEditModal(true)
-                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח?") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
+                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח? כל הנתונים של המשתמש ימחקו!") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
                             </td>
                         </tr>
                     ))}
@@ -193,7 +197,7 @@ const SuperSuperAdmin = () => {
                             <td className="text-center text-[14px] py-4 whitespace-nowrap flex justify-center text-xl gap-3 "><BiEditAlt onClick={() => {
                                 setCurrentEditUser(account)
                                 setOpenEditModal(true)
-                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח?") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
+                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח? כל הנתונים של המשתמש ימחקו!") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
                             </td>
                         </tr>
                     ))}
@@ -216,7 +220,7 @@ const SuperSuperAdmin = () => {
                             <td className="text-center text-[14px] py-4 whitespace-nowrap flex justify-center text-xl gap-3 "><BiEditAlt onClick={() => {
                                 setCurrentEditUser(account)
                                 setOpenEditModal(true)
-                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח?") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
+                            }} className='text-blue-400 cursor-pointer' /> <BsTrash onClick={() => window.confirm("האם אתה בטוח? כל הנתונים של המשתמש ימחקו!") && deleteAdmin(account.uid)} className='text-red-500 cursor-pointer' />
                             </td>
                         </tr>
                     ))}
@@ -256,7 +260,7 @@ const SuperSuperAdmin = () => {
                                                     setOpenEditModal(true);
                                                 }} className='text-blue-400 cursor-pointer' />
                                                 <BsTrash onClick={async () => {
-                                                    window.confirm("האם אתה בטוח?") && deleteAdmin(account.uid);
+                                                    window.confirm("האם אתה בטוח? כל הנתונים של המשתמש ימחקו!") && deleteAdmin(account.uid);
                                                 }} className='text-red-500 cursor-pointer' />
                                             </td>
                                         </tr>
@@ -304,7 +308,7 @@ const SuperSuperAdmin = () => {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredStudents?.map(account => (
+                    {searchedStudents?.map(account => (
                         <tr onClick={() => { setOpenModalStudentData(true), setUserData(account) }} className={`cursor-pointer ${account.newStatus && account.newStatus === "expelled" ? 'bg-red-300' : account.newStatus === "finished successfully" ? 'bg-green-300' : 'hover:bg-gray-200'}`} key={account.uid}>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.displayName}</td>
                             <td className="text-center text-[14px] py-4 whitespace-nowrap">{account.userId}</td>

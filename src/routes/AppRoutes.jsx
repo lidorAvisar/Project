@@ -14,7 +14,7 @@ import Contractor from '../pages/Contractor';
 
 
 const AppRoutes = () => {
-    const [currentUser, _, loading] = useCurrentUser();
+    const [currentUser, loading] = useCurrentUser();
     const navigate = useNavigate();
 
 

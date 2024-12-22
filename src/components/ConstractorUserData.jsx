@@ -1,40 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import { TiArrowBack } from 'react-icons/ti'
-import { useQuery } from 'react-query';
-import { getPracticalDriving } from '../firebase/firebase_config';
-import { Loading } from './Loading';
 import ViewFilesForContractor from './ViewFilesForContractor';
 import ViewTheoriesForConstractor from './ViewTheoriesForConstractor';
 import ViewTableDriving from './ViewTableDriving';
 import ViewTestsContractor from './ViewTestsContractor';
 
 const ConstractorUserData = ({ setOpenModalStudentData, studentDetails }) => {
+    console.log(studentDetails);
 
     const [nightDriving, setNightDriving] = useState(0);
-
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ['practical_driving'],
-        queryFn: getPracticalDriving,
-    });
+    const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
 
     useEffect(() => {
-        if (data && studentDetails) {
-            const totalNightDrivingMinutes = data.reduce((total, item) => {
-                if (item.studentUid === studentDetails.uid && item.shift === 'משמרת ערב') {
-                    return total + (parseInt(item.drivingMinutes, 10) || 0);
-                }
-                return total;
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
+                : [];
+
+            const nightLessons = practicalDriving.filter(
+                lesson => lesson.shift === 'משמרת ערב'
+            );
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
+            const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
             }, 0);
 
+            setTotalDrivingMinutes(totalMinutes);
             setNightDriving(totalNightDrivingMinutes);
         }
-    }, [data, studentDetails, isLoading]);
-
-    if (isLoading) {
-        return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>
-            <Loading />
-        </div>
-    }
+    }, [studentDetails]);
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
@@ -97,7 +95,7 @@ const ConstractorUserData = ({ setOpenModalStudentData, studentDetails }) => {
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">סה"כ דקות שבוצעו:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {studentDetails?.totalDrivingMinutes || "טרם"}
+                            {totalDrivingMinutes}
                         </p>
                     </div>
                     <div className="mb-4">
@@ -168,7 +166,7 @@ const ConstractorUserData = ({ setOpenModalStudentData, studentDetails }) => {
 
                 <ViewFilesForContractor studentDetails={studentDetails} />
                 <ViewTheoriesForConstractor studentDetails={studentDetails} />
-                <ViewTableDriving studentDetails={studentDetails} drivingLessons={data} />
+                <ViewTableDriving studentDetails={studentDetails} drivingLessons={studentDetails.practicalDriving || []} />
                 <ViewTestsContractor studentDetails={studentDetails} />
                 <div className='flex justify-center'>
                     <button

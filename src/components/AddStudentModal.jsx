@@ -21,7 +21,7 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
         mutationKey: ["users"],
         mutationFn: (data) => createUser(data),
         onSuccess: () => {
-            refetch();
+            // refetch();
             setOpenModalAddStudent(false);
         }
     });
