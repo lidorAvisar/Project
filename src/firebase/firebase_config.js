@@ -267,25 +267,25 @@ export const onAuthStateChangedListener = async (callback) =>
 
 
 //משיג את השיעורי נהיגה
-export const getPracticalDriving = async () => {
-  try {
-    const queryObject = query(collection(db, "practical_driving"));
-    const practical_drivingDocs = await getDocs(queryObject);
-    if (practical_drivingDocs.empty) {
-      return [];
-    }
+// export const getPracticalDriving = async () => {
+//   try {
+//     const queryObject = query(collection(db, "practical_driving"));
+//     const practical_drivingDocs = await getDocs(queryObject);
+//     if (practical_drivingDocs.empty) {
+//       return [];
+//     }
 
-    const drivingData = practical_drivingDocs.docs.map(doc => {
-      return doc.data();
-    })
+//     const drivingData = practical_drivingDocs.docs.map(doc => {
+//       return doc.data();
+//     })
 
-    return drivingData;
-  }
+//     return drivingData;
+//   }
 
-  catch (error) {
-    alert("שגיאה")
-  }
-}
+//   catch (error) {
+//     alert("שגיאה")
+//   }
+// }
 
 //הוספת שיעור נהיגה 
 export const addLesson = async (userId, lessonData) => {
