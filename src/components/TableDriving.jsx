@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { deleteLesson, updateLesson } from '../firebase/firebase_config';
 import { Loading } from './Loading';
 import { useCurrentUser } from '../firebase/useCurerntUser';
@@ -25,6 +25,8 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     const [isShiftOver, setIsShiftOver] = useState(false);
     const [refresh, setRefresh] = useState(false)
 
+    const queryClient = useQueryClient();
+
     // const { data: studentData, isLoading: teacherLoading } = useQuery({
     //     queryKey: ['users'],
     //     queryFn: getAccounts,
@@ -35,7 +37,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         mutationFn: async (updateData) => {
             return await updateLesson(studentDetails.uid, updateData);
         },
-        onSuccess: () => setRefresh(!refresh),
     });
 
     const { mutateAsync: handleDeleteLesson, isLoading: deleteLoading } = useMutation({
@@ -43,8 +44,10 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         mutationFn: async (lessonId) => {
             return await deleteLesson(studentDetails.uid, lessonId);
         },
-        onSuccess: async () => await usersRefetch(),
-        onSuccess: () => setRefresh(!refresh),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(['users']);
+            setOpenModalStudentData(false);
+        }
     });
 
     const handleExpand = (index) => {
