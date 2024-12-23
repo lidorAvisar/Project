@@ -240,6 +240,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
             }
         } catch (error) {
             console.error("An error occurred while updating lessons:", error);
+            alert(error)
         }
     };
 
@@ -321,7 +322,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                     <label className="block text-gray-700 text-sm font-bold mb-1">ד'ק נהיגה</label>
                                     <input
                                         min={0}
-                                        readOnly={isAssistant || currentUser?.user === "מורה נהיגה" && isShiftOver}
+                                        readOnly={currentUser?.user === "מורה נהיגה" && isShiftOver}
                                         type="number"
                                         placeholder='הכנס דקות'
                                         value={item.drivingMinutes}
@@ -431,7 +432,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                                 {...register(`data[${index}].drivingMinutes`, isTeacher && { required: true })}
                                                 onChange={(e) => handleSetData(index, 'drivingMinutes', e.target.value)}
                                                 className={`w-full border p-2 rounded ${errors.data?.[index]?.drivingMinutes ? 'border-red-500' : 'border-gray-300'}`}
-                                                readOnly={isAssistant || currentUser?.user === "מורה נהיגה" && isShiftOver}
+                                                readOnly={currentUser?.user === "מורה נהיגה" && isShiftOver}
                                             /> <br />
                                             {errors.data?.[index]?.drivingMinutes && <span className="text-white text-xs">חובה*</span>}
                                         </td>

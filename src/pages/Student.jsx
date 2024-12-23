@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCurrentUser } from '../firebase/useCurerntUser';
 import { Loading } from '../components/Loading';
 import { useQuery } from 'react-query';
-import { auth, getAccounts, getPracticalDriving, getStudentsTests, updateAccount } from '../firebase/firebase_config';
+import { auth, getAccounts, getStudentsTests, updateAccount } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
 import { FaBars, FaSignOutAlt, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import Greeting from '../components/Greeting';
