@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
-import { createUserExam } from '../firebase/firebase_config';
+import { createUserExam } from '../../firebase/firebase_config';
 import Cookies from 'js-cookie'; // Import js-cookie
 
 const StudentExam = ({ filteredTests, testName, setOpenTestModal, uid }) => {

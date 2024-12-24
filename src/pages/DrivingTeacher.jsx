@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
+import { useQuery } from 'react-query';
 import { signOut } from 'firebase/auth';
 import { auth, getAccounts } from '../firebase/firebase_config';
-import { useQuery } from 'react-query';
 import { useCurrentUser } from '../firebase/useCurerntUser';
-import { Loading } from '../components/Loading';
-import Greeting from '../components/Greeting';
-import TeacherUserData from '../components/TeacherUserData';
+import { Loading } from '../components/other/Loading';
+import Greeting from '../components/other/Greeting';
+import TeacherUserData from '../components/teacher/TeacherUserData';
 
 const DrivingTeacher = () => {
     const today = new Date().toISOString().split('T')[0];

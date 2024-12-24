@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
-import TableDriving from './TableDriving';
-import { deleteAccount, storage, updateAccount } from '../firebase/firebase_config';
-import Theories from './Theories';
-import Tests from './Tests';
-import { useMutation, useQuery } from 'react-query';
 import { BsTrash } from 'react-icons/bs';
 import { BiEditAlt } from 'react-icons/bi';
-import { EditUserModal } from './EditUserModal';
-import AddFileStudent from './AddFileStudent';
-import { Loading } from './Loading';
+import { useMutation, useQuery } from 'react-query';
+import { deleteAccount, storage, updateAccount } from '../../firebase/firebase_config';
 import { deleteObject, listAll, ref } from 'firebase/storage';
-import StatusBar from './StatusBar';
+import TableDriving from '../student/TableDriving';
+import Theories from '../student/Theories';
+import Tests from '../student/Tests';
+import { EditUserModal } from '../other/EditUserModal';
+import AddFileStudent from '../student/AddFileStudent';
+import { Loading } from '../other/Loading';
+import StatusBar from '../statuses/StatusBar';
 
 
 const driverType = [

@@ -1,6 +1,6 @@
 import React from 'react'
-import '../../public/Hatal.png'
-import '../../public/זרוע_היבשה.png'
+import '../../../public/Hatal.png'
+import '../../../public/זרוע_היבשה.png'
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();

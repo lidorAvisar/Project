@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import useCreateUser from '../firebase/useCreateUser';
+import useCreateUser from '../../firebase/useCreateUser';
 import { useForm } from 'react-hook-form';
 import { LuEye } from "react-icons/lu";
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { Loading } from './Loading';
+import { useCurrentUser } from '../../firebase/useCurerntUser';
+import { Loading } from '../other/Loading';
 import { useMutation } from 'react-query';
 
 

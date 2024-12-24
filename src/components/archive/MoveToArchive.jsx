@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { GiArchiveRegister } from 'react-icons/gi'
 import { useMutation, useQuery } from 'react-query';
-import { archiveStudent, deleteAccount, getAccounts } from '../firebase/firebase_config';
+import { archiveStudent, deleteAccount, getAccounts } from '../../firebase/firebase_config';
 
 const MoveToArchive = ({ setOpenModalMoveToArchive }) => {
     const [selectedCycle, setSelectedCycle] = useState('');
-    const [isProcessing, setIsProcessing] = useState(false); // For loading UI
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const { data, isLoading: isUsersLoading, refetch: usersRefetch } = useQuery({
         queryKey: ['users'],

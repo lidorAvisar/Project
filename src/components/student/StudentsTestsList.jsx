@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { useMutation, useQuery } from 'react-query';
-import { addStudentsTests, getStudentsTests } from '../firebase/firebase_config';
-import StudentsTestsList from './StudentsTestsList';
+import React, { useEffect } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form';
+import { useMutation } from 'react-query';
+import { updateStudentsTests } from '../../firebase/firebase_config';
 
-const StudentsTests = ({ setOpenModalStudentsTests }) => {
+const StudentsTestsList = ({ setOpenModalTestsList, test, refetch }) => {
 
-    const [openModaltestsList, setOpenModalTestsList] = useState(false);
-    const [test, setTest] = useState([]);
-    const [testName, setTestName] = useState("");
-
-    const { register, handleSubmit, reset, control, setValue, watch, formState: { errors, isDirty } } = useForm({
+    const { register, handleSubmit, control, setValue, watch, formState: { errors, isDirty } } = useForm({
         defaultValues: {
-            vehicleType: '',
-            questions: [{ questionText: '', answers: [{ text: '', isCorrect: false }] }]
+            vehicleType: test?.vehicleType || '',
+            date: test?.date || '',
+            questions: test?.questions || [{ questionText: '', answers: [{ text: '', isCorrect: false }] }]
         }
     });
 
@@ -24,26 +20,25 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
     const watchQuestions = watch("questions");
 
-    const { data: tests, isLoading: loadingTest, error, refetch } = useQuery('studentsTests', async () => {
-        const fetchedTests = await getStudentsTests();
-        // Sort by Hebrew alphabet
-        return fetchedTests.sort((a, b) => a.testName.localeCompare(b.testName, 'he'));
+    const { mutate: updateTestMutation, isLoading } = useMutation({
+        mutationKey: ["students_tests"],
+        mutationFn: async (data) => await updateStudentsTests(data, test.uid),
+        onSuccess: async () => {
+            await refetch();
+            alert("Test updated successfully!");
+            setOpenModalTestsList(false);
+        },
     });
 
-
-    const { mutate: addTestMutation, isLoading } = useMutation({
-        mutationKey: ["students_tests"],
-        mutationFn: async (data) => await addStudentsTests(data),
-        onSuccess: () => {
-            alert("Test added successfully!");
-            setOpenModalStudentsTests(false);
-            reset();
-        },
-    })
+    useEffect(() => {
+        if (test) {
+            setValue("vehicleType", test.vehicleType);
+            setValue("date", test.date);
+            setValue("questions", test.questions);
+        }
+    }, [test, setValue]);
 
     const onSubmit = (data) => {
-        data.testName = testName;
-
         // Validation: Check if every question has a correct answer
         const allQuestionsHaveCorrectAnswer = data.questions.every((question, index) => {
             const hasCorrectAnswer = question.answers.some(answer => answer.isCorrect);
@@ -54,10 +49,10 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
         });
 
         if (!allQuestionsHaveCorrectAnswer) {
-            alert('אנא סמן תשובה אחת נכונה!');
+            alert('חסר לך תשובה אנא סמן תשובה אחת נכונה!');
             return;
         }
-        addTestMutation(data);
+        updateTestMutation(data);
     };
 
     useEffect(() => {
@@ -76,53 +71,21 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
         };
     }, [isDirty]);
 
-
-    if (loadingTest) return <p>Loading...</p>;
-    if (error) return <p>Error loading tests</p>;
-
     return (
         <div className="fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md">
-            <div className="w-full max-w-[1200px] bg-slate-100 p-1 rounded-lg h-[92%] overflow-y-auto shadow-lg">
-                {openModaltestsList && <StudentsTestsList setOpenModalTestsList={setOpenModalTestsList} test={test} refetch={refetch} />}
+            <div className="w-full max-w-[1200px] bg-slate-100 p-6 rounded-lg h-[92%] overflow-y-auto shadow-lg">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-5 p-2">
+                <div className="flex justify-between items-center mb-5">
                     <button
-                        onClick={() => setOpenModalStudentsTests(false)}
-                        className="bg-red-500 text-white px-5 py-2 rounded-md font-bold"
+                        onClick={() => setOpenModalTestsList(false)}
+                        className="bg-green-500 text-white px-5 py-2 rounded-md font-bold"
                     >
-                        סגור
+                        חזרה
                     </button>
-                    <p className="text-2xl font-bold text-right">מבחני תלמידים</p>
-                    <div></div>
+                    <p className="text-2xl font-bold text-right">מבחן {test.testName} - {test.date}</p>
                 </div>
-
-                {/* Tests List Section */}
-                <section className="mb-8 p-5 bg-white rounded-md shadow-sm border">
-                    <p dir="rtl" className="text-xl font-bold underline text-right mb-4">רשימת מבחנים:</p>
-                    <div className='flex justify-center'>
-                        <div dir='rtl' className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {tests?.map(test => (
-                                <button
-                                    key={test.uid}
-                                    onClick={() => {
-                                        setTest(test); // Set the selected test
-                                        setOpenModalTestsList(true); // Open the modal
-                                    }}
-                                    className="p-2 px-14 bg-gray-400 text-white rounded-md shadow transition duration-200 text-lg"
-                                >
-                                    {`${test.testName || 'לא ידוע'} - ${test.date || 'לא ידוע'}`}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                </section>
-
-                {/* Add New Test Section */}
-                <section className="p-6 bg-white rounded-md shadow-sm border">
-                    <p className="text-xl font-bold underline text-right mb-6">:הוספת מבחן</p>
+                <div>
                     <form onSubmit={handleSubmit(onSubmit)}>
-
                         {/* Vehicle Type Input */}
                         <div className="mb-6">
                             <label className="block text-right text-lg font-semibold mb-2">:מבחן על</label>
@@ -130,10 +93,8 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
                                 dir="rtl"
                                 {...register("vehicleType", { required: true })}
                                 className="w-full p-3 border border-gray-300 rounded-md text-lg bg-white"
-                                onClick={(e) => { const selectedOption = e.target.options[e.target.selectedIndex].text; { setTestName(selectedOption) } }}
-                                onInput={(e) => { const selectedOption = e.target.options[e.target.selectedIndex].text; { setTestName(selectedOption) } }}
                             >
-                                <option className='text-base' value="">בחר סוג מבחן. . . </option>
+                                <option value="" disabled hidden>בחר סוג מבחן</option>
                                 <option value="hazardousMaterialsScore">מבחן חומ"ס</option>
                                 <option value="cargoSecuringScore">מבחן קשירת מטענים</option>
                                 <option value="davidCarScore">מבחן דויד</option>
@@ -147,7 +108,7 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
                         {/* Date Selection */}
                         <div className="mb-6">
-                            <label className="block text-right text-lg font-semibold mb-2">:מועד</label>
+                            <label className="block text-right text-lg font-semibold mb-2">מועד</label>
                             <select
                                 dir="rtl"
                                 className="w-full p-3 border border-gray-300 rounded-md text-lg"
@@ -247,24 +208,23 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className="w-full mt-6 py-2 bg-blue-600 text-white rounded-md font-bold "
+                            className="w-full mt-6 py-2 bg-blue-600 text-white rounded-md font-bold"
                         >
                             <span className={`${isLoading && 'animate-pulse'}`}>{isLoading ? 'Loading . . .' : 'שמור'}</span>
                         </button>
                     </form>
-                    <div className='w-full pt-5 mb-6'>
+                    <div className="flex justify-center py-4 items-center mb-5 w-full">
                         <button
-                            onClick={() => setOpenModalStudentsTests(false)}
+                            onClick={() => setOpenModalTestsList(false)}
                             className="bg-red-500 w-full text-white px-5 py-2 rounded-md font-bold"
                         >
                             סגור
                         </button>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
+    )
+}
 
-    );
-};
-
-export default StudentsTests;
+export default StudentsTestsList

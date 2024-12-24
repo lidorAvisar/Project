@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
-import { addLesson } from '../firebase/firebase_config';
-import { Loading } from './Loading';
-import { useCurrentUser } from '../firebase/useCurerntUser';
 import { IoArrowDown } from 'react-icons/io5';
+import { addLesson } from '../../firebase/firebase_config';
+import { useCurrentUser } from '../../firebase/useCurerntUser';
+import { Loading } from '../other/Loading';
 
 const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData, filteredStudents, refetch }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"]

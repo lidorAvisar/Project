@@ -1,8 +1,8 @@
 import React from 'react'
-import '../../public/Atal_-_logo.png'
-import '../../public/בית ספר ללוגיסטיקה.png'
-import '../../public/תג_חיל_הלוגיסטיקה2.png'
-import '../../public/Hatal.png'
+import '../../../public/Atal_-_logo.png'
+import '../../../public/בית ספר ללוגיסטיקה.png'
+import '../../../public/תג_חיל_הלוגיסטיקה2.png'
+import '../../../public/Hatal.png'
 
 const Navbar = () => {
     return (

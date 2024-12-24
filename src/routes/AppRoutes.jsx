@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Layout from './Layout';
+import { useCurrentUser } from '../firebase/useCurerntUser';
 import Login from '../pages/Login';
 import SuperAdmin from '../pages/SuperAdmin';
 import Admin from '../pages/Admin';
 import DrivingTeacher from '../pages/DrivingTeacher';
-import Error404 from '../components/Error404';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { Loading } from '../components/Loading';
 import Student from '../pages/Student';
 import SuperSuperAdmin from '../pages/SuperSuperAdmin';
 import Contractor from '../pages/Contractor';
+import Error404 from '../components/other/Error404';
+import { Loading } from '../components/other/Loading';
 
 
 const AppRoutes = () => {

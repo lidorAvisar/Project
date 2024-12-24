@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { getAccounts } from '../firebase/firebase_config';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { Loading } from './Loading';
+import { getAccounts } from '../../firebase/firebase_config';
+import { useCurrentUser } from '../../firebase/useCurerntUser';
+import { Loading } from '../other/Loading';
 
 const StatusTable = ({ setOpenModalStudentsTable }) => {
     const [currentUser] = useCurrentUser();

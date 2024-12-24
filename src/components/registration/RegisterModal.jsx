@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LuEye } from "react-icons/lu";
-import useCreateUser from '../firebase/useCreateUser';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { Loading } from './Loading';
+import useCreateUser from '../../firebase/useCreateUser';
+import { useCurrentUser } from '../../firebase/useCurerntUser';
+import { Loading } from '../other/Loading';
 
 export const departments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 

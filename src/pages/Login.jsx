@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { GiSteeringWheel } from "react-icons/gi";
 import { LuEye } from "react-icons/lu";
 import { useForm } from "react-hook-form";
-import { signIn } from "../firebase/firebase_config";
 import { IoArrowUndoOutline } from "react-icons/io5";
-import SignaturePad from "../components/SignaturePad";
+import { signIn } from "../firebase/firebase_config";
+import SignaturePad from "../components/other/SignaturePad";
 
 
 const Login = () => {

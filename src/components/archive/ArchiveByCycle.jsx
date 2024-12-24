@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { getArchiveAccounts } from '../firebase/firebase_config';
-import Archives from './Archives';
+import { getArchiveAccounts } from '../../firebase/firebase_config';
+import Archives from '../archive/Archives';
 
 const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
     const [filteredDataByCycle, setFilteredDataByCycle] = useState([]);

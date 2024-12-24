@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { updateAccount } from '../firebase/firebase_config';
 import { useForm, Controller } from 'react-hook-form';
+import { updateAccount } from '../../firebase/firebase_config';
 
 const theoryList = [1, 2, 3, 4, 5, 6, 7, 8];
 

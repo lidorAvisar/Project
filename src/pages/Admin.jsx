@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { GoChecklist } from "react-icons/go";
 import { MdOutlineAddToPhotos } from "react-icons/md";
 import { IoMdPersonAdd } from "react-icons/io";
-import AddStudentModal from '../components/AddStudentModal';
-import AddLessonModal from '../components/AddLessonModal';
-import { Loading } from '../components/Loading';
 import { useQuery } from 'react-query';
-import { auth, getAccounts } from '../firebase/firebase_config';
 import { FaSignOutAlt } from "react-icons/fa";
+import { auth, getAccounts } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
-import StudentData from '../components/StudentData';
 import { useCurrentUser } from '../firebase/useCurerntUser';
-import StatusTable from '../components/StatusTable';
-import Greeting from '../components/Greeting';
-import DailyDrivingStatus from '../components/DailyDrivingStatus';
+import AddStudentModal from '../components/student/AddStudentModal';
+import AddLessonModal from '../components/student/AddLessonModal';
+import { Loading } from '../components/other/Loading';
+import StudentData from '../components/student/StudentData';
+import StatusTable from '../components/statuses/StatusTable';
+import Greeting from '../components/other/Greeting';
+import DailyDrivingStatus from '../components/statuses/DailyDrivingStatus';
 
 const Admin = () => {
     const [currentUser, _, loading] = useCurrentUser();

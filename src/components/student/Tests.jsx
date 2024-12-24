@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { updateAccount } from '../firebase/firebase_config';
 import { useMutation } from 'react-query';
+import { updateAccount } from '../../firebase/firebase_config';
+
 
 const Tests = ({ studentDetails, usersRefetch, setOpenModalStudentData }) => {
     const initialTests = studentDetails?.tests?.length > 0 ? studentDetails.tests : [{ id: 1, date: '', status: '' }];

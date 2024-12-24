@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
-import { updateAccount } from "../firebase/firebase_config";
-import { departments } from "./RegisterModal";
-import { useState } from "react";
-import UpdatePasswordAdmin from "./UpdatePasswordAdmin";
+import { updateAccount } from "../../firebase/firebase_config";
+import { departments } from "../registration/RegisterModal";
+import UpdatePasswordAdmin from "../other/UpdatePasswordAdmin";
 
 
 export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch }) {
@@ -40,7 +40,7 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
         }
         reset();
     };
-    
+
 
     return <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
         {openModalPassword && <UpdatePasswordAdmin setOpenModalPassword={setOpenModalPassword} user={user} />}

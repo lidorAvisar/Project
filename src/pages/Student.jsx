@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { Loading } from '../components/Loading';
+import { IoArrowUndoOutline } from 'react-icons/io5';
 import { useQuery } from 'react-query';
+import { FaBars, FaSignOutAlt, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { useCurrentUser } from '../firebase/useCurerntUser';
 import { auth, getAccounts, getStudentsTests, updateAccount } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
-import { FaBars, FaSignOutAlt, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import Greeting from '../components/Greeting';
-import { IoArrowUndoOutline } from 'react-icons/io5';
-import StudentExam from '../components/StudentExam';
+import { Loading } from '../components/other/Loading';
+import Greeting from '../components/other/Greeting';
+import StudentExam from '../components/student/StudentExam';
 
 
 const Student = () => {

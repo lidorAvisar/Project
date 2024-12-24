@@ -2,7 +2,7 @@ import React from 'react';
 import { FaTruck } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useCurrentUser } from '../firebase/useCurerntUser';
+import { useCurrentUser } from '../../firebase/useCurerntUser';
 
 const Error404 = () => {
     const { currentUser } = useCurrentUser();

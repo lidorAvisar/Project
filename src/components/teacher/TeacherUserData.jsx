@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import ViewFilesForContractor from './ViewFilesForContractor'
-import ViewTheoriesForConstractor from './ViewTheoriesForConstractor'
-import ViewTestsContractor from './ViewTestsContractor'
-import { TiArrowBack } from 'react-icons/ti'
+import { Loading } from '../other/Loading';
+import { TiArrowBack } from 'react-icons/ti';
+import ViewFilesForContractor from '../constractor/ViewFilesForContractor';
+import ViewTheoriesForConstractor from '../constractor/ViewTheoriesForConstractor';
+import ViewTestsContractor from '../constractor/ViewTestsContractor';
+import TableDriving from '../student/TableDriving';
 
-const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
+const TeacherUserData = ({ studentDetails, studentUid, setOpenModalStudentData, studentShift, usersRefetch, filteredTeachers }) => {
+
     const [nightDriving, setNightDriving] = useState(0);
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
 
 
     useEffect(() => {
-        if (userData) {
-            const practicalDriving = Array.isArray(userData.practicalDriving)
-                ? userData.practicalDriving
+        if (studentDetails) {
+            const practicalDriving = Array.isArray(studentDetails.practicalDriving)
+                ? studentDetails.practicalDriving
                 : [];
 
             const nightLessons = practicalDriving.filter(
@@ -30,14 +33,13 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
             setTotalDrivingMinutes(totalMinutes);
             setNightDriving(totalNightDrivingMinutes);
         }
-    }, [userData]);
-
+    }, [studentDetails]);
 
     return (
-        <div className='z-30 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
+        <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 space-y-3 mb-5 rounded-lg h-[90%] overflow-y-auto'>
                 <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
-                    <p className='font-bold  text-xl'>{userData.displayName}</p>
+                    <p className='font-bold  text-xl'>{studentDetails?.displayName}</p>
                     <div className='flex gap-3'>
                         <button onClick={() => setOpenModalStudentData(false)} className='bg-green-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold w-fit flex items-center shadow-lg'>
                             <TiArrowBack className='text-2xl' /><span className='hidden sm:flex'>חזור</span>
@@ -49,38 +51,38 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">שם מלא:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.displayName || "לא זמין"}
+                            {studentDetails?.displayName || "לא זמין"}
                         </p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">ת.ז:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.userId || "לא זמין"}
+                            {studentDetails?.userId || "לא זמין"}
                         </p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">מחזור:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.cycle || "לא זמין"}
+                            {studentDetails?.cycle || "לא זמין"}
                         </p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block text-lg font-bold text-gray-700 ">שפה:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.language || "לא זמין"}
+                            {studentDetails?.language || "לא זמין"}
                         </p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">אם יש רשיון קודם:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.previousLicense === "B"
-                                ? "B"
-                                : userData?.previousLicense === "motorcycle"
-                                    ? "אופנוע"
+                            {studentDetails?.previousLicense === "B Manual"
+                                ? "B ידני"
+                                : studentDetails?.previousLicense === "B Auto"
+                                    ? "B אוטומט"
                                     : "לא"}
                         </p>
                     </div>
@@ -88,17 +90,9 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">משקפיים:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.glasses === "yes" ? "כן" : "לא"}
+                            {studentDetails?.glasses === "yes" ? "כן" : "לא"}
                         </p>
                     </div>
-
-                    <div className="mb-4">
-                        <p className="block  text-lg font-bold text-gray-700 ">טופס 115:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.form115 === "yes" ? "כן" : "לא"}
-                        </p>
-                    </div>
-
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">סה"כ דקות שבוצעו:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
@@ -115,40 +109,44 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
 
                 <div dir='rtl' className='space-y-5'>
                     <p className="text-xl font-bold mb-2 text-center py-5 underline">תוכנית למידה</p>
+                    <div className="mb-4">
+                        <p className="block  text-lg font-bold text-gray-700 ">סוג הכשרה:</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.lineTraining || 'טרם'}</p>
+                    </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">שיעורי חובה:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.mandatoryLessons === "yes" ? "כן" : "לא"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.mandatoryLessons === "yes" ? "כן" : "לא"}</p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">קשירת מטענים:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.cargoSecuring === "yes" ? "כן" : "לא"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.cargoSecuring === "yes" ? "כן" : "לא"}</p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">מבחן קשירת מטענים:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.cargoSecuringScore || "לא זמין"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.cargoSecuringScore || "לא זמין"}</p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">חומרים מסוכנים:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.HazardousMaterials === "yes" ? "כן" : "לא"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.HazardousMaterials === "yes" ? "כן" : "לא"}</p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">מבחן חומ"ס:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.hazardousMaterialsScore || "לא זמין"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.hazardousMaterialsScore || "לא זמין"}</p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">מסמכי הרכב:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.vehicleDocuments === "yes" ? "כן" : "לא"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.vehicleDocuments === "yes" ? "כן" : "לא"}</p>
                     </div>
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700 ">לומדת בטיחות:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.safetyModule === "yes" ? "כן" : "לא"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.safetyModule === "yes" ? "כן" : "לא"}</p>
                     </div>
                 </div>
 
@@ -157,18 +155,19 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
 
                     <div className="mb-4">
                         <p className="block  text-lg font-bold text-gray-700">סוג רכב:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.carType || "לא נבחר סוג רכב"}</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.carType || "לא נבחר סוג רכב"}</p>
                     </div>
 
                     <div className="mb-4">
-                        <p className="block  text-lg font-bold text-gray-700">מבחן {userData?.carType || "רכב"}:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{userData?.carTypeScore || "לא זמין"}</p>
+                        <p className="block  text-lg font-bold text-gray-700">מבחן {studentDetails?.carType || "רכב"}:</p>
+                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">{studentDetails?.carTypeScore || "לא זמין"}</p>
                     </div>
                 </div>
 
-                <ViewFilesForContractor userData={userData} />
-                <ViewTheoriesForConstractor userData={userData} />
-                <ViewTestsContractor userData={userData} />
+                <ViewFilesForContractor studentDetails={studentDetails} />
+                <ViewTheoriesForConstractor studentDetails={studentDetails} />
+                <TableDriving studentDetails={studentDetails} studentUid={studentUid} studentShift={studentShift} usersRefetch={usersRefetch} setOpenModalStudentData={setOpenModalStudentData} filteredTeachers={filteredTeachers} />
+                <ViewTestsContractor studentDetails={studentDetails} />
                 <div className='flex justify-center'>
                     <button
                         onClick={() => setOpenModalStudentData(false)}
@@ -182,4 +181,4 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
     )
 }
 
-export default StudentDataArchive
+export default TeacherUserData

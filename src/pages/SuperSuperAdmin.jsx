@@ -1,28 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 import { BiEditAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa6";
-import RegisterModal from '../components/RegisterModal';
-import { useMutation, useQuery } from 'react-query';
-import { getAccounts, deleteAccount, auth } from '../firebase/firebase_config';
-import { EditUserModal } from '../components/EditUserModal';
-import { Loading } from '../components/Loading';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { signOut } from 'firebase/auth';
-import StudentData from '../components/StudentData';
-import StatusTable from '../components/StatusTable';
-import Greeting from '../components/Greeting';
-import { MdOutlineAddToPhotos } from 'react-icons/md';
-import AddLessonModal from '../components/AddLessonModal';
-import DailyDrivingStatus from '../components/DailyDrivingStatus';
-import { GiArchiveRegister } from 'react-icons/gi';
-import ArchiveByCycle from '../components/ArchiveByCycle';
-import MoveToArchive from '../components/MoveToArchive';
-import { IoArrowDown } from "react-icons/io5";
-import StudentsTests from '../components/StudentsTests';
-import Dashboard from '../components/Dashboard';
 import { RxDashboard } from "react-icons/rx";
+import { GiArchiveRegister } from 'react-icons/gi';
+import { MdOutlineAddToPhotos } from 'react-icons/md';
+import { IoArrowDown } from "react-icons/io5";
+import { getAccounts, deleteAccount, auth } from '../firebase/firebase_config';
+import { signOut } from 'firebase/auth';
+import { useCurrentUser } from '../firebase/useCurerntUser';
+import RegisterModal from '../components/registration/RegisterModal';
+import { EditUserModal } from '../components/other/EditUserModal';
+import { Loading } from '../components/other/Loading';
+import StudentData from '../components/student/StudentData';
+import StatusTable from '../components/statuses/StatusTable';
+import Greeting from '../components/other/Greeting';
+import AddLessonModal from '../components/student/AddLessonModal';
+import DailyDrivingStatus from '../components/statuses/DailyDrivingStatus';
+import ArchiveByCycle from '../components/archive/ArchiveByCycle';
+import MoveToArchive from '../components/archive/MoveToArchive';
+import StudentsTests from '../components/student/StudentsTests';
+import Dashboard from '../components/dashboard/Dashboard';
 
 
 

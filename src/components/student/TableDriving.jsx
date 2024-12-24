@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
-import { deleteLesson, updateLesson } from '../firebase/firebase_config';
-import { Loading } from './Loading';
-import { useCurrentUser } from '../firebase/useCurerntUser';
 import { BsTrash } from 'react-icons/bs';
+import { useMutation, useQueryClient } from 'react-query';
+import { deleteLesson, updateLesson } from '../../firebase/firebase_config';
+import { Loading } from '../other/Loading';
+import { useCurrentUser } from '../../firebase/useCurerntUser';
 
 const SHIFT_LIMITS = {
     'משמרת בוקר': 240,
@@ -221,7 +221,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     };
 
     const onSubmit = async (formData) => {
-        console.log(formData.data);
 
         if (currentUser.user === "מורה נהיגה") {
             const confirmation = window.confirm('האם אתה בטוח במספר הדקות?');

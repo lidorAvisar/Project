@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { updateAccount } from '../firebase/firebase_config';
+import { updateAccount } from '../../firebase/firebase_config';
 
 
 const StatusBar = ({ studentId, usersRefetch, studentDetails }) => {

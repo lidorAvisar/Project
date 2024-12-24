@@ -3,20 +3,20 @@ import { BiEditAlt } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { FaSignOutAlt } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa6";
-import RegisterModal from '../components/RegisterModal';
 import { useMutation, useQuery } from 'react-query';
-import { getAccounts, deleteAccount, auth } from '../firebase/firebase_config';
-import { EditUserModal } from '../components/EditUserModal';
-import { Loading } from '../components/Loading';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { signOut } from 'firebase/auth';
-import StudentData from '../components/StudentData';
-import StatusTable from '../components/StatusTable';
-import Greeting from '../components/Greeting';
 import { MdOutlineAddToPhotos } from 'react-icons/md';
-import AddLessonModal from '../components/AddLessonModal';
-import DailyDrivingStatus from '../components/DailyDrivingStatus';
 import { IoArrowDown } from 'react-icons/io5';
+import { signOut } from 'firebase/auth';
+import { getAccounts, deleteAccount, auth } from '../firebase/firebase_config';
+import { useCurrentUser } from '../firebase/useCurerntUser';
+import RegisterModal from '../components/registration/RegisterModal';
+import { EditUserModal } from '../components/other/EditUserModal';
+import { Loading } from '../components/other/Loading';
+import StudentData from '../components/student/StudentData';
+import StatusTable from '../components/statuses/StatusTable';
+import Greeting from '../components/other/Greeting';
+import AddLessonModal from '../components/student/AddLessonModal';
+import DailyDrivingStatus from '../components/statuses/DailyDrivingStatus';
 
 
 const SuperAdmin = () => {

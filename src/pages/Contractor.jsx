@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { BiEditAlt } from "react-icons/bi";
 import { FaSignOutAlt } from "react-icons/fa";
 import { useQuery } from 'react-query';
-import { getAccounts, auth } from '../firebase/firebase_config';
-import { EditUserModal } from '../components/EditUserModal';
-import { Loading } from '../components/Loading';
-import { useCurrentUser } from '../firebase/useCurerntUser';
-import { signOut } from 'firebase/auth';
-import StatusTable from '../components/StatusTable';
-import Greeting from '../components/Greeting';
-import ConstractorUserData from '../components/ConstractorUserData';
-import DailyDrivingStatus from '../components/DailyDrivingStatus';
 import { IoArrowDown } from 'react-icons/io5';
-import Dashboard from '../components/Dashboard';
 import { RxDashboard } from 'react-icons/rx';
+import { getAccounts, auth } from '../firebase/firebase_config';
+import { signOut } from 'firebase/auth';
+import { useCurrentUser } from '../firebase/useCurerntUser';
+import { EditUserModal } from '../components/other/EditUserModal';
+import { Loading } from '../components/other/Loading';
+import StatusTable from '../components/statuses/StatusTable';
+import Greeting from '../components/other/Greeting';
+import ConstractorUserData from '../components/constractor/ConstractorUserData';
+import DailyDrivingStatus from '../components/statuses/DailyDrivingStatus';
+import Dashboard from '../components/dashboard/Dashboard';
 
 
 

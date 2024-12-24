@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery } from 'react-query';
-import { getStudentsTests } from '../firebase/firebase_config';
+import { getStudentsTests } from '../../firebase/firebase_config';
 
 
 const AveragesChart = ({ filteredStudents }) => {

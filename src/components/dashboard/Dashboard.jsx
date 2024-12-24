@@ -3,11 +3,11 @@ import PieChartComponent from './PieChartComponent';
 import BarChartActiveStudents from './BarChartActiveStudents';
 import Highlights from './Highlights';
 import TeachersTableReport from './TeachersTableReport';
-import Greeting from './Greeting';
-import '../../public/יוסי.jpg'
-import '../../public/מתן.jpg'
-import '../../public/user.png'
+import Greeting from '../other/Greeting';
 import AveragesChart from './AveragesChart';
+import '../../../public/יוסי.jpg'
+import '../../../public/מתן.jpg'
+import '../../../public/user.png'
 
 const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, user }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"];

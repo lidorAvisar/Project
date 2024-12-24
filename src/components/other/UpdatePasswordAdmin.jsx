@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { LuEye } from 'react-icons/lu';
-import { changePassword } from '../firebase/firebase_config';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { changePassword } from '../../firebase/firebase_config';
 
 const ChangePasswordModal = ({ setOpenModalPassword, user }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
