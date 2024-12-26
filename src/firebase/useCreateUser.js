@@ -1,11 +1,9 @@
 import { useMutation, useQueryClient } from "react-query";
 import { addUser, createUserDoc } from "./firebase_config";
-// import { useCurrentUser } from "./useCurerntUser";
 
 
 export default function useCreateUser() {
     const queryClient = useQueryClient();
-    // const [currentUser] = useCurrentUser();
 
     const handleRefetch = async () => {
         await queryClient.refetchQueries(['users']);

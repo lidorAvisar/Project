@@ -112,9 +112,9 @@ export const addUser = async (email, password) => {
   }
   catch (error) {
     if (error.message === "EMAIL_EXISTS") {
-      alert("האימייל הזה כבר קיים במערכת.");
+      alert("המשתמש לא נוצר כי האימייל הזה כבר קיים במערכת.");
     } else {
-      alert("שגיאה ביצירת המשתמש.");
+      alert(" אנא נסה שוב,שגיאה ביצירת המשתמש.");
     }
   }
 };

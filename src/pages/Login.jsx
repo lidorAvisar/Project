@@ -11,6 +11,7 @@ const Login = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [err, setErr] = useState('');
+    const [loading, setLoading] = useState(false);
 
 
 
@@ -38,12 +39,16 @@ const Login = () => {
     };
 
     const onSubmit = async (data) => {
+        setLoading(true);
         try {
             await signIn(data.email, data.password)
             reset();
         }
         catch (error) {
             setErr(translateError(error));
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -108,7 +113,7 @@ const Login = () => {
                         <button
                             type="submit"
                             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            התחברות
+                            {loading ? 'טוען . . .' : 'התחברות'}
                         </button>
                     </div>
                 </form>

@@ -65,6 +65,10 @@ const Contractor = () => {
             student.displayName.includes(studentSearch)
         );
 
+    const filteredStudentsForDashboard = data.filter(account =>
+        account.user === 'תלמידים'
+    );
+
 
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
@@ -72,7 +76,7 @@ const Contractor = () => {
             {openModalStudentData && <ConstractorUserData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
-            {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudents} filteredTeachers={filteredTeachers} user={user} />}
+            {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudentsForDashboard} filteredTeachers={filteredTeachers} user={user} />}
             <div className="flex justify-around items-center w-full pt-3">
                 <div className='flex items-center gap-3'>
                     <button onClick={() => { setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>

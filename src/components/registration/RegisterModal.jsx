@@ -25,7 +25,6 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const onSubmit = (data) => {
         setLoading(true);
-        console.log(data);
 
         try {
             if (departmentsToogle) {
@@ -37,12 +36,12 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setLoading(false);
                 setOpenRegisterModal(false);
             }, 3000);
+            reset();
         }
         catch (err) {
             setLoading(false);
             alert("שגיאה המשתמש לא נוצר")
         }
-        reset();
     };
 
 
@@ -153,6 +152,7 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                         </div>
                         <div className="mt-2 relative">
                             <input
+                                maxLength={30}
                                 minLength={6}
                                 id="password"
                                 type={showPassword ? "text" : "password"}

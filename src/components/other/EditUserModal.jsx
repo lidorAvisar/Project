@@ -4,9 +4,11 @@ import { useMutation, useQueryClient } from "react-query";
 import { updateAccount } from "../../firebase/firebase_config";
 import { departments } from "../registration/RegisterModal";
 import UpdatePasswordAdmin from "../other/UpdatePasswordAdmin";
+import { useCurrentUser } from "../../firebase/useCurerntUser";
 
 
 export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch }) {
+    const [currentUser] = useCurrentUser();
 
     const queryClient = useQueryClient();
     const [openModalPassword, setOpenModalPassword] = useState(false);
@@ -23,7 +25,6 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
         mutationFn: async (data) => await updateAccount(data.uid, data),
         onSuccess: () => {
             queryClient.invalidateQueries(["users"]);
-            refetch();
             setTimeout(() => {
                 setOpenEditModal(false);
             }, 1000);
@@ -47,7 +48,7 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
         <div className='w-[90%] sm:w-96 bg-slate-100 p-4 py-8 rounded-lg'>
             <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
                 <p className="text-center text-xl font-bold underline">{user.user}</p>
-                <form dir='rtl' className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                <form dir='rtl' className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
                     <div>
                         <label htmlFor="displayName" className="text-lg block font-medium leading-6 text-gray-900">
                             שם מלא:
@@ -89,7 +90,7 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
                             </div>
                             <div className="mt-2">
                                 <select
-                                    className='ps-1 h-[120px] font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                    className='ps-1 h-[95px] font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                                     id="departments"
                                     {...register("departments", { required: true, maxLength: 3 })}
                                     multiple
@@ -160,9 +161,28 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
                         </div>
                         {errors.userId && <p className="text-red-500">ת"ז זה אינו חוקי</p>}
                     </div>
+                    {currentUser.user === 'מנהל' && (user.user === 'מ"פ' || user.user === 'מ"מ') && (
+                        <div>
+                            <label htmlFor="user" className="text-lg block font-medium leading-6 text-gray-900">
+                                הרשאות:
+                            </label>
+                            <select
+                                className="ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                name="user"
+                                id="user"
+                                {...register("user", { required: true })}
+                            >
+                                <option value="">בחר הרשאה . . .</option>
+                                <option className="font-bold" value="מנהל">מנהל</option>
+                                <option className="font-bold" value='מ"פ'>מ"פ</option>
+                                <option className="font-bold" value='מ"מ'>מ"מ</option>
+                            </select>
+                            {errors.user && <p className="text-red-500">הרשאה אינה חוקית</p>}
+                        </div>
+                    )}
                     {user.user === "מורה נהיגה" &&
                         <div>
-                            <label htmlFor="school" className="text-lg block font-medium leading-6 text-gray-900">
+                            <label htmlFor="user" className="text-lg block font-medium leading-6 text-gray-900">
                                 בית ספר:
                             </label>
                             <select className='ps-1 font-bold block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
@@ -196,6 +216,6 @@ export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch 
                     }
                 </form>
             </div>
-        </div>
-    </div>
+        </div >
+    </div >
 }

@@ -121,7 +121,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                 {filteredList.length > 0 ? (
                     <div className="overflow-x-auto py-5 ">
                         <table dir='rtl' className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-                            <thead>
+                            <thead className="sticky top-0 bg-gray-800 z-10">
                                 <tr className="bg-gray-800 text-white text-right">
                                     <th className="w-10 py-3 ps-3 px-4 uppercase font-semibold text-sm">#</th>
                                     <th className="w-2/12 py-3 px-4 uppercase font-semibold text-sm">שם</th>

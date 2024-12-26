@@ -126,8 +126,8 @@ const SuperSuperAdmin = () => {
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">
                 <div className='w-full px-5 flex items-center justify-between'>
                     <p dir='ltr' className="flex flex-col sm:flex-row items-center gap-1 sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName}  <span className=" text-gray-500 font-bold"><Greeting /></span> </p>
-                    <div className='flex flex-col items-center'>
-                        <div dir='ltr' className="flex flex-col sm:flex-row items-center ">
+                    <div className='flex flex-col items-center gap-2 py-2'>
+                        <div dir='ltr' className="flex items-center gap-2">
                             <button onClick={async () => {
                                 if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
                                     try {
@@ -138,18 +138,18 @@ const SuperSuperAdmin = () => {
                                         alert("שגיאה")
                                     }
                                 }
-                            }} className='flex items-center gap-2 text-red-500'><FaSignOutAlt className='mt-1' /><p className='font-bold'>התנתק</p>
+                            }} className='bg-red-500 p-1 px-5 rounded-md flex items-center gap-2 text-white'><FaSignOutAlt className='mt-1' /><p className='font-bold hidden sm:block'>התנתק</p>
                             </button>
-                            <button dir='ltr' onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className=' rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-blue-500 font-bold flex items-center w-fit gap-2'>
-                                <BiEditAlt className='text-2xl' /><span>עריכה</span>
+                            <button dir='ltr' onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className='bg-blue-500 rounded-md p-1 px-4 sm:px-5  text-white font-bold flex items-center w-fit gap-2'>
+                                <BiEditAlt className='text-xl' /><span className='hidden sm:block'>עריכה</span>
                             </button>
                         </div>
-                        <div className='flex flex-col sm:flex-row items-center'>
-                            <button onClick={() => setOpenModalDashboard(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-green-500 font-bold flex items-center gap-2'>
-                                <span>דאשבורד</span> <RxDashboard className='text-xl' />
+                        <div className='flex items-center gap-2.5'>
+                            <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 rounded-md w-fit p-1 px-4 sm:px-2.5 text-white  font-bold flex items-center gap-2'>
+                                <span className='hidden sm:block'>דאשבורד</span> <RxDashboard className='text-xl' />
                             </button>
-                            <button onClick={() => setOpenModalArchiveByCycle(true)} className='rounded-lg w-fit p-1 px-2 sm:px-3 text-gray-500 font-bold flex items-center gap-2'>
-                                <span>ארכיון</span> <GiArchiveRegister className='text-xl' />
+                            <button onClick={() => setOpenModalArchiveByCycle(true)} className='bg-gray-500 rounded-md w-fit p-1 px-4 text-white font-bold flex items-center gap-2'>
+                                <span className='hidden sm:block'>ארכיון</span> <GiArchiveRegister className='text-xl' />
                             </button>
                         </div>
                     </div>
@@ -271,24 +271,45 @@ const SuperSuperAdmin = () => {
                     )}
                 </div>
             ))}
-            <div className='w-full flex items-center justify-around gap-3 py-5'>
-                <div className='flex flex-col gap-3'>
-                    <div className='flex gap-3'>
-                        <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
-                        <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
-                    </div>
-                    <div className='flex justify-center gap-3'>
-                        <button onClick={() => setOpenModalMoveToArchive(true)} className='bg-slate-300 rounded-lg w-fit p-1 px-2 sm:px-3 font-bold flex items-center gap-2'>
-                            <GiArchiveRegister className='text-xl' /> <span>העבר לארכיון</span>
+            <div className="w-[98%] sm:w-[95%] max-w-[1500px] gap-5 p-5 ">
+                <p className="text-center py-2 font-bold text-2xl text-gray-800">
+                    רשימת תלמידים
+                </p>
+                <div dir='rtl' className="w-full flex flex-col sm:flex-row items-center sm:justify-between gap-5 ">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                            onClick={() => setOpenModalStudentsTable(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium transition-colors"
+                        >
+                            סטטוס תלמידים
                         </button>
-                        <button onClick={() => setOpenModalStudentsTests(true)} className='bg-slate-300 rounded-lg w-fit p-1 px-2 sm:px-3 font-bold flex items-center gap-2'>
+                        <button
+                            onClick={() => setOpenModalDailyDrivingStatus(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium transition-colors"
+                        >
+                            סטטוס שיעורי נהיגה
+                        </button>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                            onClick={() => setOpenModalStudentsTests(true)}
+                            className="bg-green-500 hover:bg-green-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+                        >
                             <span>מבחני תלמידים</span>
+                        </button>
+                        <button
+                            onClick={() => setOpenModalMoveToArchive(true)}
+                            className="bg-green-500 hover:bg-green-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium flex justify-center items-center gap-2 transition-colors"
+                        >
+                            <GiArchiveRegister className="text-xl" />
+                            <span>העבר לארכיון</span>
                         </button>
                     </div>
                 </div>
-                <p className='text-center font-bold text-xl py-5'>רשימת תלמידים</p>
             </div>
-            <div className='flex items-center justify-around w-full py-2'>
+
+            <div className='flex flex-col sm:flex-row items-center justify-around w-full py-2 gap-4'>
+                <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
                 <input dir='rtl'
                     onChange={handleSearchChange}
                     value={studentSearch}
@@ -296,7 +317,6 @@ const SuperSuperAdmin = () => {
                     placeholder='חפש תלמיד . . .'
                     type="search"
                 />
-                <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
             </div>
             <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md mb-20">
                 <thead className="bg-gray-50">

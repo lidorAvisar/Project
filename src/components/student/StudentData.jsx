@@ -153,8 +153,6 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             </div>
         );
     };
-    console.log(studentDetails);
-
 
     if (isLoading) {
         return <div className='fixed flex justify-center z-50 w-full h-full  backdrop-blur-md'>

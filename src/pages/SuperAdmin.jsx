@@ -17,6 +17,8 @@ import StatusTable from '../components/statuses/StatusTable';
 import Greeting from '../components/other/Greeting';
 import AddLessonModal from '../components/student/AddLessonModal';
 import DailyDrivingStatus from '../components/statuses/DailyDrivingStatus';
+import Dashboard from '../components/dashboard/Dashboard';
+import { RxDashboard } from 'react-icons/rx';
 
 
 const SuperAdmin = () => {
@@ -33,6 +35,7 @@ const SuperAdmin = () => {
     const [studentSearch, setStudentSearch] = useState('');
     const [openModalAddLesson, setOpenModalAddLesson] = useState(false);
     const [filteredCurrentUser, setFilteredCurrentUser] = useState('')
+    const [openModalDashboard, setOpenModalDashboard] = useState(false);
     const [user] = useCurrentUser();
 
 
@@ -89,25 +92,33 @@ const SuperAdmin = () => {
         account.user === 'תלמידים' && user?.departments?.includes(account.departments)
     );
 
+    const filteredStudentsForDashboard = data.filter(account =>
+        account.user === 'תלמידים'
+    );
+
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
-            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} filteredStudents={filteredStudents} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} filteredStudents={filteredStudents} />}
-            <div className="flex justify-around items-center w-full pt-3">
-                <div className='flex items-center gap-3'>
-                    <button onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
-                        <BiEditAlt className='text-2xl' /><span className='hidden sm:flex'>עריכה</span>
+            {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudentsForDashboard} filteredTeachers={filteredTeachers} user={user} />}
+            <div className="flex justify-around items-center gap-4 w-full pt-3">
+                <div className='flex sm:flex-col lg:flex-row items-center gap-3'>
+                    <button onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-11 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
+                        <BiEditAlt className='text-xl' /><span className='hidden sm:flex'>עריכה</span>
                     </button>
                     <button onClick={() => setOpenRegisterModal(true)} className="flex items-center gap-2  text-center rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-300" >
                         <FaUserPlus className=" text-lg" /> <span className="hidden sm:inline">הוסף משתמש</span>
                     </button>
+                    <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-9 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
+                        <span className="hidden sm:inline">דאשבורד</span> <RxDashboard className='text-xl' />
+                    </button>
                 </div>
-                <div className="flex items-center gap-2 sm:gap-4">
-                    <p className="text-lg sm:text-xl font-bold text-gray-800"> {filteredCurrentUser?.displayName} </p> <span className="hidden sm:block text-gray-500 pt-1 font-bold"><Greeting /></span>
+                <div className="flex items-center gap-5 sm:gap-3">
+                    <p className="flex items-center gap-2 sm:text-lg font-bold text-gray-800"> {filteredCurrentUser?.displayName }  <span className="hidden sm:flex text-gray-500 font-bold"> , <Greeting /></span></p>
                     <button onClick={async () => {
                         if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
                             try {
@@ -118,7 +129,7 @@ const SuperAdmin = () => {
                                 alert("שגיאה")
                             }
                         }
-                    }} className='text-lg sm:text-xl sm:pt-1 text-red-600'> <FaSignOutAlt />
+                    }} className='text-lg sm:text-xl  text-red-600'> <FaSignOutAlt />
                     </button>
                 </div>
             </div>
@@ -193,22 +204,34 @@ const SuperAdmin = () => {
                     )}
                 </div>
             ))}
-            <div className='w-full flex items-center justify-around gap-3'>
-                <div className='flex gap-3'>
-                    <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
-                    <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+            <div className='w-full space-y-3'>
+                <div className='w-full flex flex-col items-center justify-around gap-3'>
+                    <p className='text-center font-bold text-xl py-4'>רשימת תלמידים</p>
+                    <div className="flex flex-col sm:flex-row gap-8">
+                        <button
+                            onClick={() => setOpenModalStudentsTable(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium transition-colors"
+                        >
+                            סטטוס תלמידים
+                        </button>
+                        <button
+                            onClick={() => setOpenModalDailyDrivingStatus(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium transition-colors"
+                        >
+                            סטטוס שיעורי נהיגה
+                        </button>
+                    </div>
                 </div>
-                <p className='text-center font-bold text-xl py-5'>רשימת תלמידים</p>
-            </div>
-            <div className='flex items-center justify-around w-full py-2'>
-                <input dir='rtl'
-                    onChange={handleSearchChange}
-                    value={studentSearch}
-                    className="ps-2 pe-2 block w-[50%] max-w-[320px] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    placeholder='חפש תלמיד . . .'
-                    type="search"
-                />
-                <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
+                <div className='flex flex-col sm:flex-row items-center justify-around w-full py-2 gap-4'>
+                    <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
+                    <input dir='rtl'
+                        onChange={handleSearchChange}
+                        value={studentSearch}
+                        className="ps-2 pe-2 block w-[50%] max-w-[320px] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        placeholder='חפש תלמיד . . .'
+                        type="search"
+                    />
+                </div>
             </div>
             <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md mb-20">
                 <thead className="bg-gray-50">
