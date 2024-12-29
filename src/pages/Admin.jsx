@@ -4,6 +4,7 @@ import { MdOutlineAddToPhotos } from "react-icons/md";
 import { IoMdPersonAdd } from "react-icons/io";
 import { useQuery } from 'react-query';
 import { FaSignOutAlt } from "react-icons/fa";
+import { RxDashboard } from 'react-icons/rx';
 import { auth, getAccounts } from '../firebase/firebase_config';
 import { signOut } from 'firebase/auth';
 import { useCurrentUser } from '../firebase/useCurerntUser';
@@ -15,7 +16,6 @@ import StatusTable from '../components/statuses/StatusTable';
 import Greeting from '../components/other/Greeting';
 import DailyDrivingStatus from '../components/statuses/DailyDrivingStatus';
 import Dashboard from '../components/dashboard/Dashboard';
-import { RxDashboard } from 'react-icons/rx';
 
 const Admin = () => {
     const [currentUser] = useCurrentUser();
@@ -57,14 +57,14 @@ const Admin = () => {
         return <div>{error}</div>
     }
 
-    
+
     return (
         <div className='space-y-5 mb-16 flex flex-col items-center md:px-16'>
             {openModalAddStudent && <AddStudentModal setOpenModalAddStudent={setOpenModalAddStudent} openModalAddStudent={openModalAddStudent} refetch={refetch} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={studentDetails} filteredTeachers={filteredTeachers} refetch={refetch} filteredStudents={filteredStudents} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={studentDetails} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} filteredStudents={filteredStudents} />}
-            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} filteredStudents={filteredStudentsForDashboard} />}
             {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudentsForDashboard} filteredTeachers={filteredTeachers} user={currentUser} />}
 
             <div dir='rtl' className='w-full flex flex-col items-center'>
@@ -95,10 +95,10 @@ const Admin = () => {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setOpenModalAddStudent(true)}
-                                className="sm:text-base w-72 flex justify-center font-medium py-2 items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg px-2 sm:px-10 p-1 sm:p-2 cursor-pointer"
+                                className="sm:text-base w-72 flex justify-center font-medium py-2 items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-l text-white rounded-lg px-2 sm:px-10 p-1 sm:p-2 cursor-pointer"
                             >
                                 <IoMdPersonAdd className="text-white" />
-                                הוספת תלמיד
+                                הוספת מורה/תלמיד
                             </button>
                         </div>
                     </div>
@@ -116,7 +116,7 @@ const Admin = () => {
                             >
                                 סטטוס שיעורי נהיגה
                             </button>
-                            <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 w-72 sm:w-auto rounded-lg p-1.5 py-2 px-3 sm:p-2 sm:px-9 text-white font-bold flex justify-center items-center gap-2 shadow-lg'>
+                            <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 hover:bg-green-600 w-72 sm:w-auto rounded-lg p-1.5 py-2 px-3 sm:p-2 sm:px-9 text-white font-bold flex justify-center items-center gap-2 shadow-lg'>
                                 <span className="sm:inline">דאשבורד</span> <RxDashboard className='text-xl' />
                             </button>
                         </div>

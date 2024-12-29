@@ -110,7 +110,7 @@ const SuperAdmin = () => {
                     <button onClick={() => { setCurrentEditUser(filteredCurrentUser), setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-11 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
                         <BiEditAlt className='text-xl' /><span className='hidden sm:flex'>עריכה</span>
                     </button>
-                    <button onClick={() => setOpenRegisterModal(true)} className="flex items-center gap-2  text-center rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-300" >
+                    <button onClick={() => setOpenRegisterModal(true)} className="flex items-center gap-2  text-center rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-l px-4 py-2 font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-300" >
                         <FaUserPlus className=" text-lg" /> <span className="hidden sm:inline">הוסף משתמש</span>
                     </button>
                     <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-9 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>

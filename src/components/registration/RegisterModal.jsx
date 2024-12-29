@@ -108,7 +108,15 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md py-10'>
             <div className='w-[90%] sm:w-[85%] max-w-[600px] bg-slate-100  py-10 p-5 rounded-lg h-[96%] mt-14 mb-20 space-y-10 overflow-y-auto'>
-                <p className='text-center font-bold text-lg'>משתמש חדש</p>
+                <div className='flex justify-between items-center'>
+                    <button
+                        onClick={() => setOpenRegisterModal(false)}
+                        type="button"
+                        className="flex w-24 justify-center rounded-md bg-red-500 px-3 py-1 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                        סגור
+                    </button>
+                    <p className='text-center font-bold text-xl'>משתמש חדש</p>
+                </div>
                 <form dir='rtl' className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                     <div>
                         <label htmlFor="displayName" className="text-lg block font-medium leading-6 text-gray-900">

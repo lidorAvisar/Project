@@ -7,7 +7,7 @@ import { Loading } from '../other/Loading';
 import { useMutation } from 'react-query';
 
 
-const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
+const AddStudentModal = ({ setOpenModalAddStudent }) => {
     const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm();
     const { createUser } = useCreateUser();
 
@@ -21,7 +21,6 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
         mutationKey: ["users"],
         mutationFn: (data) => createUser(data),
         onSuccess: () => {
-            // refetch();
             setOpenModalAddStudent(false);
         }
     });
@@ -60,9 +59,17 @@ const AddStudentModal = ({ setOpenModalAddStudent, refetch }) => {
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='w-[90%] sm:w-96 bg-slate-100 p-4 py-5 mb-3 rounded-lg h-[650px] overflow-y-auto'>
-                <div className=" sm:mx-auto sm:w-full sm:max-w-sm">
-                    <p className='text-center font-bold text-xl underline py-2'>יצירת תלמיד / מורה</p>
+            <div className='w-[90%] sm:w-[70%] max-w-[500px] bg-slate-100 p-4 py-5 mb-3 rounded-lg h-[650px] overflow-y-auto'>
+                <div className=" sm:mx-auto sm:w-full sm:max-w-sm p-2 space-y-3">
+                    <div className='flex justify-between items-center'>
+                        <button
+                            onClick={() => setOpenModalAddStudent(false)}
+                            type="button"
+                            className="flex w-20 justify-center rounded-md bg-red-500 px-3 py-1 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                            סגור
+                        </button>
+                        <p className='text-center font-bold text-lg underline py-2'>יצירת מורה / תלמיד</p>
+                    </div>
                     <form dir='rtl' className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
                         <div>
                             <label htmlFor="displayName" className="block text-lg font-medium leading-6 text-gray-900">

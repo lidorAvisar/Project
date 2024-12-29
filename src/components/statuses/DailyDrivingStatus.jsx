@@ -8,15 +8,15 @@ const shiftMap = {
 
 const DailyDrivingStatus = ({ setOpenModalDailyDrivingStatus, filteredStudents }) => {
     const today = new Date().toISOString().split('T')[0];
-
-    const todayLessons = filteredStudents.flatMap(student =>
+    
+    const todayLessons = filteredStudents?.flatMap(student =>
         Array.isArray(student.practicalDriving)
             ? student.practicalDriving.filter(lesson => lesson.date === today)
             : []
     );
 
     // Group lessons by teacher and shift
-    const groupedLessons = todayLessons.reduce((acc, lesson) => {
+    const groupedLessons = todayLessons?.reduce((acc, lesson) => {
         const { teacher, shift, student, drivingMinutes } = lesson || {};
 
         if (!teacher || !shift || !student) return acc;
