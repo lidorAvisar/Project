@@ -60,17 +60,27 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
         addTestMutation(data);
     };
 
+    const handleClose = () => {
+        if (isDirty) {
+            const confirmClose = window.confirm(
+                "האם אתה בטוח לצאת? אם לא שמרת הנתונים לא ישמרו."
+            );
+            if (!confirmClose) return;
+        }
+
+        setOpenModalStudentsTests(false);
+    };
+
     useEffect(() => {
         const handleBeforeUnload = (event) => {
             if (isDirty) {
                 event.preventDefault();
-                event.returnValue = ''; // Required for Chrome to show the confirmation dialog
+                event.returnValue = '';
             }
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
 
-        // Cleanup the event listener on component unmount
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
@@ -87,7 +97,7 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-5 p-2">
                     <button
-                        onClick={() => setOpenModalStudentsTests(false)}
+                        onClick={() => handleClose()}
                         className="bg-red-500 text-white px-5 py-2 rounded-md font-bold"
                     >
                         סגור
@@ -234,28 +244,28 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
                                 )}
                             </div>
                         ))}
+                        <div className='flex flex-col items-center justify-center'>
+                            <button
+                                type="button"
+                                onClick={() => addQuestion({ questionText: '', answers: [{ text: '', isCorrect: false }] })}
+                                className="w-full sm:w-[50%] max-w-[500px] mt-6 py-2 bg-green-600 text-white rounded-md font-bold"
+                            >
+                                הוסף שאלה
+                            </button>
 
-                        {/* Add Question Button */}
-                        <button
-                            type="button"
-                            onClick={() => addQuestion({ questionText: '', answers: [{ text: '', isCorrect: false }] })}
-                            className="w-full mt-6 py-2 bg-green-600 text-white rounded-md font-bold"
-                        >
-                            הוסף שאלה
-                        </button>
 
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className="w-full mt-6 py-2 bg-blue-600 text-white rounded-md font-bold "
-                        >
-                            <span className={`${isLoading && 'animate-pulse'}`}>{isLoading ? 'Loading . . .' : 'שמור'}</span>
-                        </button>
+                            <button
+                                type="submit"
+                                className="w-full sm:w-[50%] max-w-[500px] mt-6 py-2 bg-blue-600 text-white rounded-md font-bold "
+                            >
+                                <span className={`${isLoading && 'animate-pulse'}`}>{isLoading ? 'Loading . . .' : 'שמור'}</span>
+                            </button>
+                        </div>
                     </form>
-                    <div className='w-full pt-5 mb-6'>
+                    <div className='flex justify-center pt-5 mb-6'>
                         <button
-                            onClick={() => setOpenModalStudentsTests(false)}
-                            className="bg-red-500 w-full text-white px-5 py-2 rounded-md font-bold"
+                            onClick={() => handleClose()}
+                            className="bg-red-500 w-full sm:w-[50%] max-w-[500px] text-white px-5 py-2 rounded-md font-bold"
                         >
                             סגור
                         </button>

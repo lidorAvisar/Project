@@ -47,7 +47,7 @@ const Admin = () => {
     const filteredTeachers = data?.filter(account =>
         account.user === "מורה נהיגה").sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
-    const filteredStudentsForDashboard = data.filter(account =>
+    const filteredStudentsForDashboard = data?.filter(account =>
         account.user === 'תלמידים'
     );
 

@@ -196,27 +196,27 @@ const StudentsTestsList = ({ setOpenModalTestsList, test, refetch }) => {
                             </div>
                         ))}
 
-                        {/* Add Question Button */}
-                        <button
-                            type="button"
-                            onClick={() => addQuestion({ questionText: '', answers: [{ text: '', isCorrect: false }] })}
-                            className="w-full mt-6 py-2 bg-green-600 text-white rounded-md font-bold"
-                        >
-                            הוסף שאלה
-                        </button>
+                        <div className='flex flex-col items-center justify-center'>
+                            <button
+                                type="button"
+                                onClick={() => addQuestion({ questionText: '', answers: [{ text: '', isCorrect: false }] })}
+                                className="w-full sm:w-[50%] max-w-[500px] mt-6 py-2 bg-green-600 text-white rounded-md font-bold"
+                            >
+                                הוסף שאלה
+                            </button>
 
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className="w-full mt-6 py-2 bg-blue-600 text-white rounded-md font-bold"
-                        >
-                            <span className={`${isLoading && 'animate-pulse'}`}>{isLoading ? 'Loading . . .' : 'שמור'}</span>
-                        </button>
+                            <button
+                                type="submit"
+                                className="w-full sm:w-[50%] max-w-[500px] mt-6 py-2 bg-blue-600 text-white rounded-md font-bold"
+                            >
+                                <span className={`${isLoading && 'animate-pulse'}`}>{isLoading ? 'Loading . . .' : 'שמור'}</span>
+                            </button>
+                        </div>
                     </form>
-                    <div className="flex justify-center py-4 items-center mb-5 w-full">
+                    <div className="flex justify-center py-4 items-center mb-5">
                         <button
                             onClick={() => setOpenModalTestsList(false)}
-                            className="bg-red-500 w-full text-white px-5 py-2 rounded-md font-bold"
+                            className="bg-red-500 w-full sm:w-[50%] max-w-[500px] text-white px-5 py-2 rounded-md font-bold"
                         >
                             סגור
                         </button>

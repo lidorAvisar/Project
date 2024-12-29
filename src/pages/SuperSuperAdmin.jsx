@@ -29,7 +29,6 @@ import Dashboard from '../components/dashboard/Dashboard';
 const SuperSuperAdmin = () => {
     const schools = ["שרייבר", "יובלי", "צבאי"]
     const [expandedSchool, setExpandedSchool] = useState(null);
-
     const [openRegisterModal, setOpenRegisterModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
@@ -95,7 +94,7 @@ const SuperSuperAdmin = () => {
 
     useEffect(() => {
         if (data) {
-            const filteredUsers = data.filter(users => users.uid === user.uid);
+            const filteredUsers = data?.filter(users => users.uid === user.uid);
             const filterCurrentUser = filteredUsers.length > 0 ? filteredUsers[0] : null;
             setFilteredCurrentUser(filterCurrentUser);
         }
