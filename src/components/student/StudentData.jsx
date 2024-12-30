@@ -79,13 +79,14 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             setOpenModalStudentData(false)
         },
     });
+    console.log(studentDetails.uid);
 
 
     const onSubmit = async (data) => {
+        console.log(data);
 
         try {
-            const studentUid = studentDetails.uid;
-            await updateAccount(studentUid, data);
+            await updateAccount(studentDetails.uid, data);
             await usersRefetch();
             setOpenModalStudentData(false);
         }
@@ -379,7 +380,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                                                 {testLabelsMap[testKey]}
                                             </label>
                                             <input
-                                                defaultValue={studentDetails.testKey || ''}
+                                                defaultValue={studentDetails[testKey] || ''}
                                                 id={testKey}
                                                 type="text"
                                                 className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-100 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
