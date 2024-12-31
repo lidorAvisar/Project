@@ -11,19 +11,14 @@ import StudentExam from '../components/student/StudentExam';
 
 
 const Student = () => {
-    const [currentUser, _, loading] = useCurrentUser();
-    const [drivingMinutes, setDrivingMinutes] = useState(0);
-    const [totalRequiredMinutes, setTotalRequiredMinutes] = useState(1280);
-    const [filteredLessons, setFilteredLessons] = useState([]);
-    const [theoryTestPassed, setTheoryTestPassed] = useState(false);
-    const [finalTestPassed, setFinalTestPassed] = useState(false);
+    const [currentUser, loading] = useCurrentUser();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTestListOpen, setIsTestListOpen] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [filteredTests, setFilteredTests] = useState([]);
     const [openTestModal, setOpenTestModal] = useState(false);
     const [testName, setTestName] = useState("");
-
+    const [progress, setProgress] = useState(0);
 
 
     // const { data, isLoading, isError, error, refetch, status } = useQuery({
@@ -31,13 +26,13 @@ const Student = () => {
     //     queryFn: getPracticalDriving,
     // });
 
-    const { data: allUsers } = useQuery({
-        queryKey: ['users'],
-        queryFn: async () => await getAccounts(),
-        onError() {
-            alert("שגיאה בעת משיכת הנתונים העדכניים")
-        }
-    });
+    // const { data: allUsers } = useQuery({
+    //     queryKey: ['users'],
+    //     queryFn: async () => await getAccounts(),
+    //     onError() {
+    //         alert("שגיאה בעת משיכת הנתונים העדכניים")
+    //     }
+    // });
 
     const { data: tests, isLoading: loadingTest } = useQuery('studentsTests', async () => {
         const fetchedTests = await getStudentsTests();
@@ -78,51 +73,52 @@ const Student = () => {
     }, [tests, currentUser.lineTraining]);
 
     useEffect(() => {
-        if (data && currentUser) {
-            // Filter lessons based on currentUser.lessons array
-            const lessonsFiltered = data.filter(lesson => currentUser.lessons.includes(lesson.uid));
-            setFilteredLessons(lessonsFiltered);
+        if (currentUser) {
 
-            // Calculate total driving minutes for the filtered lessons
-            const totalMinutes = lessonsFiltered.reduce((acc, lesson) => acc + (lesson.drivingMinutes || 0), 0);
-            setDrivingMinutes(totalMinutes);
+            let totalRequiredMinutes;
+
+            //sum driving minutes
+            const practicalDriving = Array.isArray(currentUser.practicalDriving)
+                ? currentUser.practicalDriving
+                : [];
+
+            const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+                return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+            }, 0)
+
 
             // Determine the total required minutes based on the student's license status
             if (currentUser.previousLicense) {
-                setTotalRequiredMinutes(800);
+                totalRequiredMinutes = 800;
             } else {
-                setTotalRequiredMinutes(1280);
+                totalRequiredMinutes = 1280;
             }
 
             // Check if theory tests were passed (less than or equal to 4 mistakes)
             const passedTheoryTests = currentUser.detailsTheoryTest?.some(test => test.mistakes <= 4);
-            setTheoryTestPassed(passedTheoryTests);
 
             // Check if final test was passed
             const passedFinalTest = currentUser.tests?.map(test => test === 'Pass');
-            setFinalTestPassed(passedFinalTest);
-        }
-    }, [data, currentUser]);
 
-    // Calculate progress percentage
-    const calculateProgress = () => {
-        let progress = 0;
-        if (drivingMinutes >= totalRequiredMinutes) {
-            progress += 25; // Driving minutes completed
-        } else {
-            progress += (drivingMinutes / totalRequiredMinutes) * 25;
-        }
+            // Calculate progress percentage
+            let progress = 0;
+            if (totalMinutes >= totalRequiredMinutes) {
+                progress += 25; // Driving minutes completed
+            } else {
+                progress += (totalMinutes / totalRequiredMinutes) * 25;
+            }
 
-        if (theoryTestPassed) {
-            progress += 25; // Theory tests passed
-        }
+            if (passedTheoryTests) {
+                progress += 25; // Theory tests passed
+            }
 
-        if (finalTestPassed) {
-            progress += 50; // Final test passed
+            if (passedFinalTest) {
+                progress += 50; // Final test passed
+            }
+            setProgress(progress);
         }
+    }, [currentUser]);
 
-        return progress;
-    };
 
     const handleSignOut = () => {
         if (window.confirm("האם אתה בטוח שברצונך להתנתק?")) {
@@ -141,7 +137,7 @@ const Student = () => {
     };
 
     // Determine the lessons to display
-    const displayedLessons = showAll ? filteredLessons : filteredLessons.slice(0, 4);
+    const displayedLessons = showAll ? currentUser.practicalDriving : currentUser.practicalDriving.slice(0, 4);
 
 
     // useEffect(() => {
@@ -178,25 +174,15 @@ const Student = () => {
         }
     };
 
-    useEffect(() => {
-        // assignPracticalDriving();
-    }, [data, allUsers]);
+    // useEffect(() => {
+    //     // assignPracticalDriving();
+    // }, [data, allUsers]);
 
 
-    if (loading || isLoading || loadingTest) {
+    if (loading || loadingTest) {
         return <Loading />;
     }
 
-    if (isError) {
-        return (
-            <div className='flex flex-col gap-5'>
-                <p>{error.message}</p>
-            </div>
-        );
-    }
-
-    console.log(data);
-    console.log(allUsers);
     console.log(currentUser);
 
     return (
@@ -259,11 +245,12 @@ const Student = () => {
 
                     {/* Navbar for Tablets and Larger Screens */}
                     <div className='hidden sm:flex items-center justify-between p-3 gap-6'>
-                        <div className="flex flex-col justify-center items-center relative">
+                        <div
+                            onMouseEnter={() => setIsTestListOpen(true)}
+                            onMouseLeave={() => setIsTestListOpen(false)}
+                            className="flex flex-col justify-center items-center relative">
                             <p
-                                onClick={() => setIsTestListOpen(!isTestListOpen)}
-                                className="font-bold text-gray-500 cursor-pointer hover:underline text-center"
-                            >
+                                className="font-bold text-gray-500 cursor-pointer hover:underline text-center">
                                 מבחנים
                             </p>
                             {isTestListOpen && (
@@ -312,16 +299,17 @@ const Student = () => {
                 </div>
 
                 <div dir='rtl' className="w-full sm:max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-10 my-4">
+
                     {/* Progress Bar */}
                     <div className="mb-6">
                         <div className='flex flex-col gap-2 sm:flex-row justify-between items-center pt-3'>
                             <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
                         </div>
-                        <div className=" pt-10">
+                        <div className="pt-10">
                             <div className="overflow-hidden h-3.5 mb-4 text-xs flex rounded-xl bg-green-200">
-                                <div style={{ width: `${calculateProgress()}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
+                                <div style={{ width: `${progress}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
                                     <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full">
-                                        {Math.round(calculateProgress())}%
+                                        {Math.round(progress)}%
                                     </span>
                                 </div>
                             </div>
@@ -332,7 +320,6 @@ const Student = () => {
                     <div className="mb-6">
                         <h2 className="text-xl font-bold mb-4 text-center underline">משימות שהושלמו</h2>
                         <div className="space-y-6">
-
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 underline">בוחן</h3>
                                 <ul className="list-inside space-y-2">
@@ -376,7 +363,7 @@ const Student = () => {
                                         </li>
                                     ))}
                                     {/* Button to toggle visibility */}
-                                    {filteredLessons.length > 4 && (
+                                    {currentUser.practicalDriving.length > 4 && (
                                         <button
                                             onClick={toggleShowAll}
                                             className="w-full text-blue-500 hover:text-blue-700 flex justify-center items-center space-x-2"

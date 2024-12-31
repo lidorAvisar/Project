@@ -7,7 +7,7 @@ import UpdatePasswordAdmin from "../other/UpdatePasswordAdmin";
 import { useCurrentUser } from "../../firebase/useCurerntUser";
 
 
-export function EditUserModal({ setOpenEditModal, user, setEditLoading, refetch }) {
+export function EditUserModal({ setOpenEditModal, user}) {
     const [currentUser] = useCurrentUser();
 
     const queryClient = useQueryClient();

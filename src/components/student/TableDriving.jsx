@@ -13,7 +13,7 @@ const SHIFT_LIMITS = {
 };
 
 
-const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, studentShift, usersRefetch, filteredTeachers }) => {
+const TableDriving = ({ studentDetails, setOpenModalStudentData, studentShift, usersRefetch, filteredTeachers }) => {
     const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
     const [currentUser] = useCurrentUser();
     const today = new Date().toISOString().split('T')[0];
@@ -23,14 +23,8 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
     const [isExpanded, setIsExpanded] = useState(false);
     const [completeMinutes, setCompleteMinutes] = useState(null);
     const [isShiftOver, setIsShiftOver] = useState(false);
-    const [refresh, setRefresh] = useState(false)
 
     const queryClient = useQueryClient();
-
-    // const { data: studentData, isLoading: teacherLoading } = useQuery({
-    //     queryKey: ['users'],
-    //     queryFn: getAccounts,
-    // });
 
     const { mutateAsync: updateStudentAccount, isLoading } = useMutation({
         mutationKey: ['users'],
@@ -127,9 +121,9 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         const checkShiftStatus = () => {
             // Get current time in Israel time
             const now = new Date();
-            const israelOffset = 3 * 60; // UTC+3 in minutes during daylight saving time
-            const localTime = new Date(now.getTime() + (now.getTimezoneOffset() + israelOffset) * 60000);
-            const currentHours = localTime.getHours();
+            const options = { timeZone: "Asia/Jerusalem", hour: "numeric", hour12: false };
+            const formatter = new Intl.DateTimeFormat("en-US", options);
+            const currentHours = parseInt(formatter.format(now), 10);
 
             // Shift times in English: morning until 12:00, noon until 18:00, evening until 21:00
             let shiftEndTime;
@@ -143,7 +137,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
             }
 
             // Check if the shift end time has passed
-            if (shiftEndTime && currentHours >= shiftEndTime) {
+            if (currentHours >= shiftEndTime) {
                 setIsShiftOver(true);
             } else {
                 setIsShiftOver(false);
@@ -271,6 +265,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
         </div>
     }
 
+
     return (
         <div className='bg-white w-full p-2 rounded-md shadow-lg'>
             <div className='flex justify-around items-center'>
@@ -324,7 +319,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                     <label className="block text-gray-700 text-sm font-bold mb-1">ד'ק נהיגה</label>
                                     <input
                                         min={0}
-                                        readOnly={currentUser?.user === "מורה נהיגה" && isShiftOver}
+                                        readOnly={isTeacher && isShiftOver}
                                         type="number"
                                         placeholder='הכנס דקות'
                                         value={item.drivingMinutes}
@@ -427,6 +422,7 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                         </td>
                                         <td className={`text-center py-2 whitespace-nowrap border border-gray-200 p-2 overflow-hidden ${item.drivingMinutes ? 'bg-green-500' : 'bg-red-500'}`}>
                                             <input
+                                                readOnly={isTeacher && isShiftOver}
                                                 min={0}
                                                 type="number"
                                                 placeholder='הכנס דקות'
@@ -434,7 +430,6 @@ const TableDriving = ({ studentDetails, studentUid, setOpenModalStudentData, stu
                                                 {...register(`data[${index}].drivingMinutes`, isTeacher && { required: true })}
                                                 onChange={(e) => handleSetData(index, 'drivingMinutes', e.target.value)}
                                                 className={`w-full border p-2 rounded ${errors.data?.[index]?.drivingMinutes ? 'border-red-500' : 'border-gray-300'}`}
-                                                readOnly={currentUser?.user === "מורה נהיגה" && isShiftOver}
                                             /> <br />
                                             {errors.data?.[index]?.drivingMinutes && <span className="text-white text-xs">חובה*</span>}
                                         </td>

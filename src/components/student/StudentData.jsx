@@ -79,12 +79,8 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             setOpenModalStudentData(false)
         },
     });
-    console.log(studentDetails.uid);
-
 
     const onSubmit = async (data) => {
-        console.log(data);
-
         try {
             await updateAccount(studentDetails.uid, data);
             await usersRefetch();

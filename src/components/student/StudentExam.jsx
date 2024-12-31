@@ -159,11 +159,6 @@ const StudentExam = ({ filteredTests, testName, setOpenTestModal, uid }) => {
         }
     };
 
-    console.log(currentTest);
-    console.log(testsA);
-    console.log(testsB);
-
-
     return (
         <div className='z-30 fixed inset-0 h-screen w-full flex items-center justify-center'>
             <div

@@ -425,8 +425,9 @@ export async function changePassword(uid, newPassword) {
     throw new Error("Not all params has been met.");
   }
   try {
-    const response = await changeUserPassword({ uid, newPassword });
-  } catch (error) {
+    await changeUserPassword({ uid, newPassword });
+  }
+  catch (error) {
     alert("שגיאה")
   }
 }

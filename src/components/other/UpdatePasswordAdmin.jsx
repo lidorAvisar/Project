@@ -9,6 +9,8 @@ const ChangePasswordModal = ({ setOpenModalPassword, user }) => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
+    console.log(user);
+    
     const onSubmit = async (data) => {
         setLoading(true);
         try {

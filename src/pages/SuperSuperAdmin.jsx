@@ -95,7 +95,7 @@ const SuperSuperAdmin = () => {
     useEffect(() => {
         if (data) {
             const filteredUsers = data?.filter(users => users.uid === user.uid);
-            const filterCurrentUser = filteredUsers.length > 0 ? filteredUsers[0] : null;
+            const filterCurrentUser = filteredUsers.length >= 0 ? filteredUsers[0] : null;
             setFilteredCurrentUser(filterCurrentUser);
         }
     }, [data, openEditModal]);
