@@ -75,14 +75,14 @@ const Contractor = () => {
             {openEditModal && <EditUserModal user={user} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
             {openModalStudentData && <ConstractorUserData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} refetch={refetch} />}
             {openModalStudentsTable && <StatusTable setOpenModalStudentsTable={setOpenModalStudentsTable} />}
-            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} />}
+            {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} filteredStudents={filteredStudentsForDashboard} />}
             {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudentsForDashboard} filteredTeachers={filteredTeachers} user={user} />}
             <div className="flex justify-around items-center w-full pt-3">
                 <div className='flex items-center gap-3'>
                     <button onClick={() => { setOpenEditModal(true) }} className='bg-blue-500 rounded-lg p-1.5 px-3 sm:p-2 sm:px-4 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
                         <BiEditAlt className='text-2xl' /><span className='hidden sm:flex'>עריכה</span>
                     </button>
-                    <button onClick={() => setOpenModalDashboard(true)} className='rounded-lg w-fit p-1.5 px-3 sm:p-2 sm:px-4 bg-green-500 text-white font-bold flex items-center gap-2'>
+                    <button onClick={() => setOpenModalDashboard(true)} className='rounded-lg w-fit p-2 px-3 sm:p-2 sm:px-4 bg-green-500 text-white font-bold flex items-center gap-2'>
                         <span className='hidden sm:flex'>דאשבורד</span> <RxDashboard className='text-xl' />
                     </button>
                 </div>
@@ -155,22 +155,34 @@ const Contractor = () => {
                     )}
                 </div>
             ))}
-            <div className='w-full flex items-center justify-around gap-3'>
-                <div className='flex gap-3'>
-                    <button onClick={() => setOpenModalStudentsTable(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס תלמידים</button>
-                    <button onClick={() => setOpenModalDailyDrivingStatus(true)} className='bg-slate-300 p-1 px-2 rounded-md font-bold'>סטטוס שיעורי נהיגה</button>
+            <div className='w-full flex flex-col items-center justify-around gap-3'>
+                <p className='text-center font-bold text-xl pt-2'>רשימת תלמידים</p>
+                <div className="w-full flex items-center justify-center gap-3 py-3">
+                    <div className="flex flex-col sm:flex-row gap-5 bg-slate-100 p-3 rounded-lg px-3">
+                        <button
+                            onClick={() => setOpenModalStudentsTable(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium transition-colors"
+                        >
+                            סטטוס תלמידים
+                        </button>
+                        <button
+                            onClick={() => setOpenModalDailyDrivingStatus(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 w-72 sm:w-auto sm:px-4 rounded-lg font-medium transition-colors"
+                        >
+                            סטטוס שיעורי נהיגה
+                        </button>
+                    </div>
                 </div>
-                <p className='text-center font-bold text-xl py-5'>רשימת תלמידים</p>
             </div>
-            <div className='flex items-center justify-around w-full py-2'>
+            <div className='flex flex-col sm:flex-row items-center justify-around w-full py-2 gap-2'>
+                <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
                 <input dir='rtl'
                     onChange={handleSearchChange}
                     value={studentSearch}
-                    className="ps-2 pe-2 block w-[50%] max-w-[320px] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="ps-2 pe-2 block w-[70%] max-w-[320px] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     placeholder='חפש תלמיד . . .'
                     type="search"
                 />
-                <p className='text-lg font-bold'>סה"כ תלמידים: {filteredStudents?.length || 0}</p>
             </div>
             <table dir='rtl' className="table-auto w-[98%] sm:w-[95%] max-w-[1500px] divide-y divide-gray-200 shadow-md mb-20">
                 <thead className="bg-gray-50">

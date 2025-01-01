@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { updateAccount } from '../../firebase/firebase_config';
 
 
@@ -11,19 +11,20 @@ const Tests = ({ studentDetails, usersRefetch, setOpenModalStudentData }) => {
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
     const [nightDriving, setNightDriving] = useState(0);
 
-
+    const queryClient = useQueryClient();
 
     const { control, handleSubmit, setValue } = useForm({
         defaultValues: {
             tests: initialTests,
         }
     });
+    console.log(studentDetails);
 
     const { mutate: studentUpdateTests } = useMutation({
         mutationKey: ['users'],
         mutationFn: async ({ id, data }) => await updateAccount(id, data),
-        onSuccess: () => {
-            usersRefetch();
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false);
         },
         onError: (error) => {

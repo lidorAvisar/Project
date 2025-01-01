@@ -246,12 +246,12 @@ export const createUserExam = async (uid, exam) => {
     if (!userSnapshot.exists()) {
       // Create a new document if it doesn't exist
       await setDoc(userDocRef, { studentExams: [exam] });
-    } else {
+    } 
+    else {
       // Document exists, append the new exam to the `studentExams` array
       const currentData = userSnapshot.data();
       const existingExams = currentData.studentExams || [];
       const updatedExams = [...existingExams, exam]; // Append the new exam
-
       await updateDoc(userDocRef, { studentExams: updatedExams });
     }
   } catch (error) {

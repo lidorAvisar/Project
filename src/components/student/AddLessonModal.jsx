@@ -6,7 +6,7 @@ import { addLesson } from '../../firebase/firebase_config';
 import { useCurrentUser } from '../../firebase/useCurerntUser';
 import { Loading } from '../other/Loading';
 
-const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData, filteredStudents, refetch }) => {
+const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData, filteredStudents }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"]
 
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -22,7 +22,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             return await addLesson(studentDetails.uid, lessonData)
         },
         onSuccess: async () => {
-            await refetch();
+            await queryClient.invalidateQueries(['users']);
             { currentUser.user === "מנהל" || currentUser.user === 'מ"פ' && setOpenModalStudentData(false); }
             setOpenModalAddLesson(false);
         }
@@ -86,7 +86,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
     }
 
     console.log(teacherUid);
-    
+
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>

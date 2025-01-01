@@ -103,17 +103,17 @@ const Student = () => {
             // Calculate progress percentage
             let progress = 0;
             if (totalMinutes >= totalRequiredMinutes) {
-                progress += 25; // Driving minutes completed
+                progress += 33.33; // Driving minutes completed
             } else {
-                progress += (totalMinutes / totalRequiredMinutes) * 25;
+                progress += (totalMinutes / totalRequiredMinutes) * 33.33;
             }
 
             if (passedTheoryTests) {
-                progress += 25; // Theory tests passed
+                progress += 33.33; // Theory tests passed
             }
 
             if (passedFinalTest) {
-                progress += 50; // Final test passed
+                progress += 33.33; // Final test passed
             }
             setProgress(progress);
         }
@@ -302,19 +302,60 @@ const Student = () => {
 
                     {/* Progress Bar */}
                     <div className="mb-6">
-                        <div className='flex flex-col gap-2 sm:flex-row justify-between items-center pt-3'>
+                        <div className="flex flex-col gap-2 sm:flex-row justify-between items-center pt-3">
                             <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
                         </div>
-                        <div className="pt-10">
-                            <div className="overflow-hidden h-3.5 mb-4 text-xs flex rounded-xl bg-green-200">
-                                <div style={{ width: `${progress}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
-                                    <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full">
-                                        {Math.round(progress)}%
-                                    </span>
-                                </div>
+                        <div className="w-full pt-9">
+                            {/* Labels for each section */}
+                            <div className="flex justify-around mb-2 text-sm font-semibold text-gray-700">
+                                <span className='pe-2'>תיאוריה</span>
+                                <span className='pe-2'>שיעורים</span>
+                                <span className='pe-2'>טסט</span>
+                            </div>
+                            {/* Progress Bar */}
+                            <div dir="ltr" className="relative h-4 overflow-hidden rounded-xl bg-gray-200">
+                                {/* Divider Lines */}
+                                <div
+                                    className="absolute top-0 bottom-0 w-0.5 z-10 bg-white"
+                                    style={{ left: "33.33%" }}
+                                ></div>
+                                <div
+                                    className="absolute top-0 bottom-0 w-0.5 z-10 bg-white"
+                                    style={{ left: "66.66%" }}
+                                ></div>
+                                {/* Theory Test Section */}
+                                <div
+                                    style={{
+                                        width: `${Math.min(progress, 33.33)}%`,
+                                    }}
+                                    className="absolute h-full bg-green-500"
+                                ></div>
+                                {/* Practical Lessons Section */}
+                                <div
+                                    style={{
+                                        width: `${Math.min(progress > 33.33 ? progress - 33.33 : 0, 33.33)}%`,
+                                        left: "33.33%",
+                                    }}
+                                    className="absolute h-full bg-green-500"
+                                ></div>
+                                {/* Final Test Section */}
+                                <div
+                                    style={{
+                                        width: `${Math.min(progress > 66.66 ? progress - 66.66 : 0, 33.33)}%`,
+                                        left: "66.66%",
+                                    }}
+                                    className="absolute h-full bg-green-500"
+                                ></div>
+                            </div>
+                            {/* Total Progress Percentage */}
+                            <div className="mt-4 text-center text-sm font-bold text-gray-700">
+                                {Math.round(progress)}% הושלם
                             </div>
                         </div>
+
+
                     </div>
+
 
                     {/* Completed Tasks */}
                     <div className="mb-6">
