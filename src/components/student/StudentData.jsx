@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { TiArrowBack } from 'react-icons/ti';
 import { BsTrash } from 'react-icons/bs';
 import { BiEditAlt } from 'react-icons/bi';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { deleteAccount, storage, updateAccount } from '../../firebase/firebase_config';
 import { deleteObject, listAll, ref } from 'firebase/storage';
 import TableDriving from '../student/TableDriving';
@@ -24,6 +24,8 @@ const driverType = [
 
 const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers, filteredStudents }) => {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
+
+     const queryClient = useQueryClient();
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [nightDriving, setNightDriving] = useState(0);
@@ -74,8 +76,8 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             }
             await deleteAccount(id)
         },
-        onSuccess: () => {
-            usersRefetch()
+        onSuccess: async() => {
+            await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false)
         },
     });
@@ -83,7 +85,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
     const onSubmit = async (data) => {
         try {
             await updateAccount(studentDetails.uid, data);
-            await usersRefetch();
+            await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false);
         }
         catch (error) {

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { createUserExam } from '../../firebase/firebase_config';
 import Cookies from 'js-cookie'; // Import js-cookie
 
 const StudentExam = ({ filteredTests, testName, setOpenTestModal, uid }) => {
     const { register, handleSubmit, reset } = useForm();
 
+    const queryClient = useQueryClient();
     const [currentTest, setCurrentTest] = useState(null);
     const [showNextTest, setShowNextTest] = useState(false);
     const [testsA, setTestsA] = useState([]);
@@ -19,6 +20,9 @@ const StudentExam = ({ filteredTests, testName, setOpenTestModal, uid }) => {
         mutationFn: async (data) => {
             await createUserExam(uid, data);
         },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(['users']);
+        }
     });
 
     useEffect(() => {

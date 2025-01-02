@@ -11,6 +11,7 @@ import StudentExam from '../components/student/StudentExam';
 
 
 const Student = () => {
+    const today = new Date().toISOString().split('T')[0];
     const [currentUser, loading] = useCurrentUser();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTestListOpen, setIsTestListOpen] = useState(false);
@@ -19,6 +20,7 @@ const Student = () => {
     const [openTestModal, setOpenTestModal] = useState(false);
     const [testName, setTestName] = useState("");
     const [progress, setProgress] = useState(0);
+    const [lessonsToday, setLessonsToday] = useState([]);
 
 
     // const { data, isLoading, isError, error, refetch, status } = useQuery({
@@ -102,19 +104,22 @@ const Student = () => {
 
             // Calculate progress percentage
             let progress = 0;
-            if (totalMinutes >= totalRequiredMinutes) {
-                progress += 33.33; // Driving minutes completed
-            } else {
-                progress += (totalMinutes / totalRequiredMinutes) * 33.33;
-            }
 
             if (passedTheoryTests) {
                 progress += 33.33; // Theory tests passed
             }
 
+            if (totalMinutes >= totalRequiredMinutes) {
+                progress += 33.33; // Driving minutes completed
+            }
+            else {
+                progress += (totalMinutes / totalRequiredMinutes) * 33.33;
+            }
+
             if (passedFinalTest) {
                 progress += 33.33; // Final test passed
             }
+
             setProgress(progress);
         }
     }, [currentUser]);
@@ -137,7 +142,8 @@ const Student = () => {
     };
 
     // Determine the lessons to display
-    const displayedLessons = showAll ? currentUser.practicalDriving : currentUser.practicalDriving.slice(0, 4);
+    const sortedLessons = currentUser.practicalDriving.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const displayedLessons = showAll ? sortedLessons : sortedLessons.slice(0, 4);
 
 
     // useEffect(() => {
@@ -178,12 +184,19 @@ const Student = () => {
     //     // assignPracticalDriving();
     // }, [data, allUsers]);
 
+    const dateConversion = (dateBefore) => {
+        const formattedDate = new Intl.DateTimeFormat('he-IL').format(new Date(dateBefore));
+        return formattedDate;
+    }
+
+    useEffect(() => {
+        const filteredLessonsToday = currentUser.practicalDriving.filter(lesson => lesson.date === today);
+        setLessonsToday(filteredLessonsToday);
+    }, [currentUser]);
 
     if (loading || loadingTest) {
         return <Loading />;
     }
-
-    console.log(currentUser);
 
     return (
         <div>
@@ -302,61 +315,80 @@ const Student = () => {
 
                     {/* Progress Bar */}
                     <div className="mb-6">
-                        <div className="flex flex-col gap-2 sm:flex-row justify-between items-center pt-3">
+                        <div className="flex flex-col gap-2 sm:flex-row justify-between items-center pt-1">
                             <h2 className="text-lg sm:text-xl font-semibold text-center">ההתקדמות שלך</h2>
+                            <div className='bg-gray-200 rounded-md p-2 flex flex-col gap-2'>
+                                <p className='text-red-500 animate-pulse text-center font-bold'>שיעורים להיום:</p>
+                                <ul>
+                                    {lessonsToday.length > 0 ? lessonsToday.map(lesson =>
+                                        <li className={`${lesson.drivingMinutes > 0 ? 'line-through' : ''}`} key={lesson.uid}>היום ב{lesson.shift}</li>
+                                    ) : <p>אין שיעורים להיום</p>}
+                                </ul>
+                            </div>
                         </div>
-                        <div className="w-full pt-9">
+                        <div className="w-full">
                             {/* Labels for each section */}
-                            <div className="flex justify-around mb-2 text-sm font-semibold text-gray-700">
-                                <span className='pe-2'>תיאוריה</span>
-                                <span className='pe-2'>שיעורים</span>
-                                <span className='pe-2'>טסט</span>
+                            <div className="flex justify-around mb-2 text-sm font-semibold text-gray-700 py-8">
+                                <div className="flex items-center gap-1">
+                                    <span>תיאוריה</span>
+                                    <span className="bg-yellow-300 h-2.5 w-2.5 mt-0.5 rounded-sm"></span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span>שיעורים</span>
+                                    <span className="bg-orange-400 h-2.5 w-2.5 mt-0.5 rounded-sm"></span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span>טסט</span>
+                                    <span className="bg-green-500 h-2.5 w-2.5 mt-0.5 rounded-sm"></span>
+                                </div>
                             </div>
                             {/* Progress Bar */}
-                            <div dir="ltr" className="relative h-4 overflow-hidden rounded-xl bg-gray-200">
-                                {/* Divider Lines */}
+                            <div className="relative h-4 overflow-hidden rounded-xl bg-gray-200">
+                                {/* Total Progress Percentage */}
                                 <div
-                                    className="absolute top-0 bottom-0 w-0.5 z-10 bg-white"
-                                    style={{ left: "33.33%" }}
-                                ></div>
-                                <div
-                                    className="absolute top-0 bottom-0 w-0.5 z-10 bg-white"
-                                    style={{ left: "66.66%" }}
-                                ></div>
+                                    className={`absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700`}
+                                >
+                                    {Math.round(progress)}% הושלם
+                                </div>
                                 {/* Theory Test Section */}
-                                <div
-                                    style={{
-                                        width: `${Math.min(progress, 33.33)}%`,
-                                    }}
-                                    className="absolute h-full bg-green-500"
-                                ></div>
+                                {progress > 0 && currentUser.detailsTheoryTest?.some(test => test.mistakes <= 4) && (
+                                    <div
+                                        style={{
+                                            width: `${Math.min(progress, 33.33)}%`,
+                                        }}
+                                        className="absolute h-full bg-yellow-300"
+                                    ></div>
+                                )}
                                 {/* Practical Lessons Section */}
-                                <div
-                                    style={{
-                                        width: `${Math.min(progress > 33.33 ? progress - 33.33 : 0, 33.33)}%`,
-                                        left: "33.33%",
-                                    }}
-                                    className="absolute h-full bg-green-500"
-                                ></div>
+                                {progress > 33.33 ? (
+                                    <div
+                                        style={{
+                                            width: `${Math.min(progress - 33.33, 33.33)}%`,
+                                            right: '33.33%',
+                                        }}
+                                        className="absolute h-full bg-orange-400"
+                                    ></div>
+                                ) : (
+                                    <div
+                                        style={{
+                                            width: `${Math.min(progress, 33.33)}%`,
+                                        }}
+                                        className="absolute h-full bg-orange-400"
+                                    ></div>
+                                )}
                                 {/* Final Test Section */}
-                                <div
-                                    style={{
-                                        width: `${Math.min(progress > 66.66 ? progress - 66.66 : 0, 33.33)}%`,
-                                        left: "66.66%",
-                                    }}
-                                    className="absolute h-full bg-green-500"
-                                ></div>
-                            </div>
-                            {/* Total Progress Percentage */}
-                            <div className="mt-4 text-center text-sm font-bold text-gray-700">
-                                {Math.round(progress)}% הושלם
+                                {progress > 66.66 && (
+                                    <div
+                                        style={{
+                                            width: `${Math.min(progress - 66.66, 33.33)}%`,
+                                            right: '66.66%',
+                                        }}
+                                        className="absolute h-full bg-green-500"
+                                    ></div>
+                                )}
                             </div>
                         </div>
-
-
                     </div>
-
-
                     {/* Completed Tasks */}
                     <div className="mb-6">
                         <h2 className="text-xl font-bold mb-4 text-center underline">משימות שהושלמו</h2>
@@ -364,28 +396,53 @@ const Student = () => {
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 underline">בוחן</h3>
                                 <ul className="list-inside space-y-2">
-                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן ב:</span></li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן בקשירת מטענים: </span>
+                                        {currentUser.cargoSecuringScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן בחומ"ס: </span>
+                                        {currentUser.hazardousMaterialsScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן בהאמר: </span>
+                                        {currentUser.hummerCarScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן דוד: </span>
+                                        {currentUser.davidCarScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן ג'יפ: </span>
+                                        {currentUser.jeepCarScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן בהאמר ממוגן: </span>
+                                        {currentUser.hummerProtectedCarScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן סאונה: </span>
+                                        {currentUser.saunaCarScore || ''}
+                                    </li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>בוחן טיגריס: </span>
+                                        {currentUser.tigerCarScore || ''}
+                                    </li>
                                 </ul>
                             </div>
                             {/* Theory Sessions */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 underline">תאוריה</h3>
                                 <ul className="list-inside space-y-2">
-                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר תאוריה: </span>{currentUser?.theorySessionsQuantity}</li>
+                                    <li className="p-3 bg-gray-100 rounded-lg shadow-sm"> <span className='font-bold'>מספר תאוריה: </span>{currentUser?.theorySessionsQuantity || 'טרם'}</li>
                                 </ul>
                             </div>
 
                             {/* Theory Tests */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 underline">מבחני תאוריה</h3>
-                                <ul className="list-disc list-inside space-y-5">
-                                    {currentUser?.detailsTheoryTest?.map((test, index) => (
+                                <ul className="list-inside space-y-5">
+                                    {currentUser?.detailsTheoryTest?.length > 0 ? currentUser?.detailsTheoryTest.map((test, index) => (
                                         test.date ? (
                                             <li key={index} className="p-3 flex flex-col items-center gap-2 sm:flex-row bg-gray-100 rounded-lg shadow-sm">
-                                                <span className='font-bold'>{index + 1}. תאריך מבחן:</span> {test.date}, <span className='font-bold'>מספר טעויות: {test.mistakes}</span>
+                                                <span className='font-bold'>{index + 1}. תאריך מבחן:</span> {test.date}, <span className={`font-bold ${test.mistakes > 4 ? 'text-red-500' : 'text-green-500'}`}>מספר טעויות: {test.mistakes}</span>
                                             </li>
                                         ) : null
-                                    ))}
+                                    )) :
+                                        <li className="p-3 bg-gray-100 rounded-lg shadow-sm">טרם</li>
+                                    }
                                 </ul>
                             </div>
 
@@ -399,7 +456,7 @@ const Student = () => {
                                             className="p-3 bg-gray-100 rounded-lg shadow-sm transition-opacity duration-300"
                                             style={{ opacity: showAll || index < 4 ? 1 : 0.5 }}
                                         >
-                                            <span className="font-bold"> תאריך:</span> {lesson.date},
+                                            <span className="font-bold"> תאריך: </span>{dateConversion(lesson.date)},
                                             <span className="font-bold"> דקות נהיגה:</span> {lesson.drivingMinutes}
                                         </li>
                                     ))}
@@ -427,17 +484,19 @@ const Student = () => {
                             {/* Final Test */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 underline">טסטים</h3>
-                                <ul className="list-inside list-decimal space-y-5">
+                                {currentUser?.tests?.length > 0 ? < ul className="list-inside list-decimal space-y-5">
                                     {currentUser?.tests?.map(test =>
-                                        <li className='p-3 bg-gray-100 rounded-lg shadow-sm font-bold'>תאריך: {test.date} , {test.status === 'Pass' ? <span className='text-green-500'>עבר !</span> : <span className='text-red-500'>נכשל</span>}</li>
+                                        <li className='p-3 bg-gray-100 rounded-lg shadow-sm font-bold'>תאריך: {test.date} , {test.status === 'Pass' ? <span className='text-green-500'>מזל טוב עברת/ה! 🫡</span> : <span className='text-red-500'>נכשל</span>}</li>
                                     )}
-                                </ul>
+                                </ul> :
+                                    <p>טרם</p>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
 
     );
 };

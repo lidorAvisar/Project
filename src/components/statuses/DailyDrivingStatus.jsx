@@ -8,6 +8,8 @@ const shiftMap = {
 
 const DailyDrivingStatus = ({ setOpenModalDailyDrivingStatus, filteredStudents }) => {
     const today = new Date().toISOString().split('T')[0];
+    const formattedDate = new Intl.DateTimeFormat('he-IL').format(new Date(today));
+    
     
     const todayLessons = filteredStudents?.flatMap(student =>
         Array.isArray(student.practicalDriving)
@@ -49,7 +51,7 @@ const DailyDrivingStatus = ({ setOpenModalDailyDrivingStatus, filteredStudents }
                         סגור
                     </button>
                     <h2 className="text-center text-xl sm:text-2xl font-bold">
-                        סטטוס שיעורי נהיגה היום - {today}
+                        סטטוס שיעורי נהיגה היום - {formattedDate}
                     </h2>
                     <h2></h2>
                 </div>
