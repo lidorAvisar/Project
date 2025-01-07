@@ -38,9 +38,11 @@ const ViewTestsContractor = ({ studentDetails }) => {
         }
     }, [studentDetails]);
 
+    console.log(tests);
+    
     return (
         <div className="bg-slate-200 w-full p-6 rounded-md shadow-lg">
-            <p className="text-center font-bold text-2xl py-6 underline">תצוגת טסטים</p>
+            <p className="text-center font-bold text-2xl py-6 underline">טסטים</p>
             {tests.length > 0 && totalDrivingMinutes >= completeMinutes && nightDriving >= 40 ? (
                 <div>
                     <table dir='rtl' className="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
@@ -54,9 +56,9 @@ const ViewTestsContractor = ({ studentDetails }) => {
                         <tbody>
                             {tests.map((test, index) => (
                                 <tr key={index} className={`${test.status === 'Pass' ? 'bg-green-500' : test.status === 'Fail' ? 'bg-red-500' : ''} sm:table-row`}>
-                                    <td className="block sm:table-cell py-2 border-b border-gray-200 text-center font-bold">{index + 1}.</td>
-                                    <td className="block sm:table-cell px-4 py-2 border-b border-gray-200 text-right">{test.date}</td>
-                                    <td className="block sm:table-cell px-4 py-2 border-b border-gray-200 text-right">{test.status === 'Pass' ? 'עבר' : test.status === 'Fail' ? 'נכשל' : ''}</td>
+                                    <td className="text-white block sm:table-cell py-2 border-b border-gray-200 text-center font-bold">{index + 1}.</td>
+                                    <td className="text-white block sm:table-cell px-4 py-2 border-b border-gray-200 text-right">{test.date}</td>
+                                    <td className="text-white block sm:table-cell px-4 py-2 border-b border-gray-200 text-right">{test.status === 'Pass' ? 'עבר' : test.status === 'Fail' ? 'נכשל' : ''}</td>
                                 </tr>
                             ))}
                         </tbody>

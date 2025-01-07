@@ -43,7 +43,7 @@ const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) =
                     />
                     <p dir='rtl' className='text-lg font-bold'>סה"כ תלמידים: {filteredData?.length || 0}</p>
                 </div>
-                <table dir='rtl' className="table-auto w-[98%] sm:w-[100%] max-w-[1500px] divide-y divide-gray-200 shadow-md mb-20">
+                <table dir='rtl' className="table-auto w-[98%] sm:w-[100%] max-w-[1500px] divide-y divide-gray-200 shadow-md mb-10">
                     <thead className="bg-gray-50">
                         <tr>
                             <th className=" text-center py-3 text-[15px] font-medium text-gray-500 uppercase tracking-wider">שם</th>
@@ -71,7 +71,7 @@ const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) =
                 <div className='flex justify-center'>
                     <button
                         onClick={() => setOpenModalArchive(false)}
-                        className='absolute bottom-2 bg-green-500 px-9 text-white rounded-md p-1 font-bold'
+                        className='bg-green-500 px-9 text-white rounded-md p-1 font-bold'
                     >
                         חזור
                     </button>

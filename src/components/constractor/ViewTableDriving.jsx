@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
-
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
     const [completeMinutes, setCompleteMinutes] = useState(null);
-
+    const [sortedLessons, setSortedLessons] = useState([]);
 
     useEffect(() => {
         if (studentDetails) {
@@ -14,7 +13,7 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
 
             const totalMinutes = practicalDriving.reduce((sum, lesson) => {
                 return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
-            }, 0)
+            }, 0);
 
             setTotalDrivingMinutes(totalMinutes);
         }
@@ -23,11 +22,19 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
     useEffect(() => {
         if (studentDetails?.previousLicense && studentDetails.previousLicense !== "no") {
             setCompleteMinutes(800);
-        }
-        else {
+        } else {
             setCompleteMinutes(1280);
         }
     }, [studentDetails]);
+
+    useEffect(() => {
+        if (Array.isArray(drivingLessons)) {
+            const sorted = [...drivingLessons].sort((a, b) => {
+                return new Date(b.date) - new Date(a.date); // Sort by date, newest first
+            });
+            setSortedLessons(sorted);
+        }
+    }, [drivingLessons]);
 
     return (
         <div className='bg-white w-full p-2 rounded-md shadow-lg'>
@@ -58,7 +65,7 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {drivingLessons.map((lesson, index) => (
+                        {sortedLessons.map((lesson, index) => (
                             <tr key={lesson.id} className='border-b'>
                                 <td className='p-2 text-center'>{index + 1}</td>
                                 <td className='p-2 text-center'>{lesson.date}</td>
@@ -74,7 +81,7 @@ const ViewTableDriving = ({ studentDetails, drivingLessons }) => {
 
             {/* Tabs for mobile */}
             <div dir='rtl' className='block sm:hidden'>
-                {drivingLessons.map((lesson, index) => (
+                {sortedLessons.map((lesson, index) => (
                     <div key={lesson.id} className='mb-4 p-4 border rounded-md shadow-md space-y-2'>
                         <p className='font-bold text-center underline'>שיעור {index + 1}</p>
                         <p><span className='font-bold'>תאריך:</span> {lesson.date}</p>

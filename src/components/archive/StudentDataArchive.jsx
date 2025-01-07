@@ -3,6 +3,7 @@ import { TiArrowBack } from 'react-icons/ti'
 import ViewFilesForContractor from '../constractor/ViewFilesForContractor'
 import ViewTheoriesForConstractor from '../constractor/ViewTheoriesForConstractor'
 import ViewTestsContractor from '../constractor/ViewTestsContractor'
+import ViewTableDriving from '../constractor/ViewTableDriving'
 
 const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
     const [nightDriving, setNightDriving] = useState(0);
@@ -31,6 +32,8 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
             setNightDriving(totalNightDrivingMinutes);
         }
     }, [userData]);
+
+    console.log(userData);
 
 
     return (
@@ -166,9 +169,10 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
                     </div>
                 </div>
 
-                <ViewFilesForContractor userData={userData} />
-                <ViewTheoriesForConstractor userData={userData} />
-                <ViewTestsContractor userData={userData} />
+                <ViewFilesForContractor studentDetails={userData} />
+                <ViewTheoriesForConstractor studentDetails={userData} />
+                <ViewTableDriving studentDetails={userData} drivingLessons={userData.practicalDriving || []} />
+                <ViewTestsContractor studentDetails={userData} />
                 <div className='flex justify-center'>
                     <button
                         onClick={() => setOpenModalStudentData(false)}
