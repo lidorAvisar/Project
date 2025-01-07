@@ -153,7 +153,6 @@ export const getUserDoc = async (uid) => {
   }
 }
 
-
 //משיג את כל המשתמשים
 export const getAccounts = async () => {
   const now = Date.now();
@@ -226,16 +225,17 @@ export const deleteAccount = async (id) => {
 
 // עדכון נתוני המשתמש
 export const updateAccount = async (id, data) => {
-
   try {
     const userDocRef = doc(db, "users", id);
-    await updateDoc(userDocRef, { ...data });
+    await updateDoc(userDocRef, {
+      ...data,
+      updatedAt: Date.now()
+    });
     return userDocRef;
+  } catch (error) {
+    alert("שגיאה"); 
   }
-  catch (error) {
-    alert("שגיאה")
-  }
-}
+};
 
 // הוספה ועדכון בוחן לתלמיד
 export const createUserExam = async (uid, exam) => {
@@ -246,7 +246,7 @@ export const createUserExam = async (uid, exam) => {
     if (!userSnapshot.exists()) {
       // Create a new document if it doesn't exist
       await setDoc(userDocRef, { studentExams: [exam] });
-    } 
+    }
     else {
       // Document exists, append the new exam to the `studentExams` array
       const currentData = userSnapshot.data();

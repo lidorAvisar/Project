@@ -119,7 +119,7 @@ const SuperSuperAdmin = () => {
             {openModalDailyDrivingStatus && <DailyDrivingStatus setOpenModalDailyDrivingStatus={setOpenModalDailyDrivingStatus} filteredStudents={filteredStudents} />}
             {openModalAddLesson && <AddLessonModal setOpenModalAddLesson={setOpenModalAddLesson} studentDetails={userData} filteredTeachers={filteredTeachers} refetch={refetch} setOpenModalStudentData={setOpenModalStudentData} filteredStudents={filteredStudents} />}
             {openModalArchiveByCycle && <ArchiveByCycle setOpenModalArchiveByCycle={setOpenModalArchiveByCycle} />}
-            {openModalMoveToArchive && <MoveToArchive setOpenModalMoveToArchive={setOpenModalMoveToArchive} />}
+            {openModalMoveToArchive && <MoveToArchive setOpenModalMoveToArchive={setOpenModalMoveToArchive} allUsers={data} />}
             {openModalStudentsTests && <StudentsTests setOpenModalStudentsTests={setOpenModalStudentsTests} />}
             {openModalDashboard && <Dashboard setOpenModalDashboard={setOpenModalDashboard} filteredStudents={filteredStudents} filteredTeachers={filteredTeachers} user={user} />}
             <div dir='rtl' className="container flex flex-col gap-3 justify-around items-center pt-3">

@@ -173,7 +173,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
                             <button onClick={() => setOpenEditModal(true)} className='bg-blue-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold flex items-center w-fit gap-2 shadow-lg'>
                                 <BiEditAlt className='text-2xl' /><span className='hidden sm:flex'>עריכה</span>
                             </button>
-                            <button onClick={() => window.confirm("האם אתה בטוח?") && deleteMutation(studentDetails.uid)} className='bg-red-500 rounded-lg w-fit p-1 px-2 sm:px-3 text-white font-bold flex items-center gap-2 shadow-lg'>
+                            <button onClick={() => window.confirm("האם אתה בטוח? כל נתוני התלמיד ימחקו לצמיתות!") && deleteMutation(studentDetails.uid)} className='bg-red-500 rounded-lg w-fit p-1 px-2 sm:px-3 text-white font-bold flex items-center gap-2 shadow-lg'>
                                 <BsTrash className='text-xl' /> <span className='hidden sm:flex'>הסר תלמיד</span>
                             </button>
                         </div>

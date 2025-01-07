@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import StudentDataArchive from './StudentDataArchive';
+import { TiArrowBack } from 'react-icons/ti';
 
-const Archives = ({ setOpenModalArchive,filteredDataByCycle,selectedCycle }) => {
+const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) => {
     // State for search input
     const [studentSearch, setStudentSearch] = useState('');
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
@@ -23,7 +24,14 @@ const Archives = ({ setOpenModalArchive,filteredDataByCycle,selectedCycle }) => 
         <div className='z-20 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%] max-w-[1100px] bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
                 {openModalStudentData && <StudentDataArchive setOpenModalStudentData={setOpenModalStudentData} userData={userData} />}
-                <p className='text-2xl font-bold text-center'>ארכיון תלמידים מחזור {selectedCycle}</p>
+                <div className='flex justify-around'>
+                    <div className='flex justify-center'>
+                        <button onClick={() => setOpenModalArchive(false)} className='bg-green-500 rounded-lg p-1 px-2 sm:px-6 text-white font-bold w-fit flex items-center shadow-lg'>
+                            <TiArrowBack className='text-2xl' /><span className='hidden sm:flex'>חזור</span>
+                        </button>
+                    </div>
+                    <p className='text-xl font-bold text-center'>ארכיון תלמידים מחזור {selectedCycle}</p>
+                </div>
                 <div className='flex items-center justify-between w-full py-2'>
                     <input
                         dir='rtl'
@@ -63,9 +71,9 @@ const Archives = ({ setOpenModalArchive,filteredDataByCycle,selectedCycle }) => 
                 <div className='flex justify-center'>
                     <button
                         onClick={() => setOpenModalArchive(false)}
-                        className='absolute bottom-2 bg-red-500 px-9 text-white rounded-md p-1 font-bold'
+                        className='absolute bottom-2 bg-green-500 px-9 text-white rounded-md p-1 font-bold'
                     >
-                        סגור
+                        חזור
                     </button>
                 </div>
             </div>

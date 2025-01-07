@@ -5,7 +5,7 @@ import Archives from '../archive/Archives';
 
 const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
     const [filteredDataByCycle, setFilteredDataByCycle] = useState([]);
-    const [selectedCycle, setSelectedCycle] = useState(null); // To store the selected cycle
+    const [selectedCycle, setSelectedCycle] = useState(null);
     const [studentSearch, setStudentSearch] = useState('');
     const [openModalArchive, setOpenModalArchive] = useState(false);
 
@@ -13,6 +13,9 @@ const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
         queryKey: ['student_archive'],
         queryFn: async () => await getArchiveAccounts(),
     });
+
+    console.log(data);
+    
 
     // Get unique cycles from the students' data
     const cycles = data ? Array.from(new Set(data.map(student => student.cycle))) : [];

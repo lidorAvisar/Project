@@ -18,7 +18,6 @@ const Tests = ({ studentDetails, usersRefetch, setOpenModalStudentData }) => {
             tests: initialTests,
         }
     });
-    console.log(studentDetails);
 
     const { mutate: studentUpdateTests } = useMutation({
         mutationKey: ['users'],
