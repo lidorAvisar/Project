@@ -3,13 +3,15 @@ import { useQuery } from 'react-query';
 import { getAccounts } from '../../firebase/firebase_config';
 import { useCurrentUser } from '../../firebase/useCurerntUser';
 import { Loading } from '../other/Loading';
+import ToggleSwitches from '../other/ToggleSwitches';
 
 const StatusTable = ({ setOpenModalStudentsTable }) => {
     const [currentUser] = useCurrentUser();
     const [selectedDepartment, setSelectedDepartment] = useState(['everything']);
     const [selectedCycle, setSelectedCycle] = useState('everything');
+    const [passedOnly, setPassedOnly] = useState(false);
 
-    const { data, isLoading, isError, error, refetch } = useQuery({
+    const { data, isLoading, isError, error } = useQuery({
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
     });
@@ -40,12 +42,6 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
 
     const uniqueCycles = [...new Set(data.filter(student => student.user === "תלמידים").map(student => student.cycle))].sort(compareHebrew);
 
-    const filteredList = data.filter(student =>
-        student.user === "תלמידים" &&
-        (selectedDepartment.includes('everything') || selectedDepartment.includes(student.departments)) &&
-        (selectedCycle === 'everything' || student.cycle === selectedCycle)
-    );
-
     const calculateTotalDrivingMinutes = (student) => {
         const practicalDriving = Array.isArray(student.practicalDriving)
             ? student.practicalDriving
@@ -53,14 +49,27 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
 
         const totalMinutes = practicalDriving.reduce((sum, lesson) => {
             return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
-        }, 0)
+        }, 0);
+
         return totalMinutes;
     }
 
-    const calculatenightDriving = (student) => {
+    const calculateIfPassedSuccessfully = (student) => {
+        let license = true;
+        let theories = false;
+        let test = false;
+
+        if (student.previousLicense === "no") {
+            license = false;
+        }
+
         const practicalDriving = Array.isArray(student.practicalDriving)
             ? student.practicalDriving
             : [];
+
+        const totalMinutes = practicalDriving.reduce((sum, lesson) => {
+            return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
+        }, 0);
 
         const nightLessons = practicalDriving.filter(
             lesson => lesson.shift === 'משמרת ערב'
@@ -68,8 +77,31 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
         const totalNightDrivingMinutes = nightLessons.reduce((sum, lesson) => {
             return sum + (parseInt(lesson.drivingMinutes, 10) || 0);
         }, 0);
-        return totalNightDrivingMinutes;
-    }
+
+        if (student.detailsTheoryTest &&
+            student.detailsTheoryTest.length > 0 &&
+            student.detailsTheoryTest.slice(-1)[0].mistakes <= 4) {
+            theories = true;
+        }
+
+        if (student.tests && student.tests.length > 0 && student.tests.slice(-1)[0].status === "Pass") {
+            test = true;
+        }
+
+        if (license && totalMinutes >= 800 && totalNightDrivingMinutes >= 40 && theories && test) return true;
+        else if (!license && totalMinutes >= 1280 && totalNightDrivingMinutes >= 40 && theories && test) return true;
+        else return false;
+    };
+
+    const filteredList = data.filter(student =>
+        student.user === "תלמידים" &&
+        (selectedDepartment.includes('everything') || selectedDepartment.includes(student.departments)) &&
+        (selectedCycle === 'everything' || student.cycle === selectedCycle)
+    );
+
+    const filteredStudents = passedOnly
+        ? filteredList.filter(calculateIfPassedSuccessfully)
+        : filteredList;
 
     if (isLoading) {
         return <Loading />
@@ -83,42 +115,49 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                     <h2 className="text-center text-xl sm:text-2xl font-bold"> {filteredList?.length} - סטטוס תלמידים</h2>
                     <h2></h2>
                 </div>
+
                 {currentUser.user !== 'מ"מ' && (
                     <div dir='rtl' className='w-full flex flex-col sm:flex-row items-center justify-between gap-5'>
-                        {/* Department Filter */}
-                        <div className='w-full flex flex-col items-center justify-center'>
-                            <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
-                            <select
-                                id="departmentFilter"
-                                multiple
-                                value={selectedDepartment}
-                                onChange={handleFilterChange}
-                                className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
-                            >
-                                <option value="everything">הכל</option>
-                                {[...Array(12).keys()].map(num => (
-                                    <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
-                                ))}
-                            </select>
-                        </div>
+                            <div className='w-full flex flex-col items-center justify-center'>
+                                <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
+                                <select
+                                    id="departmentFilter"
+                                    multiple
+                                    value={selectedDepartment}
+                                    onChange={handleFilterChange}
+                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
+                                >
+                                    <option value="everything">הכל</option>
+                                    {[...Array(12).keys()].map(num => (
+                                        <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div className='w-full flex flex-col items-center justify-center'>
-                            <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
-                            <select
-                                id="cycleFilter"
-                                value={selectedCycle}
-                                onChange={handleFilterChangeCycle}
-                                className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
-                            >
-                                <option value="everything">הכל</option>
-                                {uniqueCycles.map((cycle, i) => (
-                                    <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
-                                ))}
-                            </select>
-                        </div>
+                            <div className='w-full flex flex-col items-center justify-center'>
+                                <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
+                                <select
+                                    id="cycleFilter"
+                                    value={selectedCycle}
+                                    onChange={handleFilterChangeCycle}
+                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
+                                >
+                                    <option value="everything">הכל</option>
+                                    {uniqueCycles.map((cycle, i) => (
+                                        <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
+                                    ))}
+                                </select>
+                            </div>
                     </div>
                 )}
-                {filteredList.length > 0 ? (
+                <div className='flex justify-center mt-5'>
+                    <div className='w-[85%] max-w-[700px] flex justify-center gap-2 sm:gap-5 bg-slate-300 p-1 pt-2 px-2 rounded-md '>
+                        <p className='font-medium sm:font-bold'>הכל</p>
+                        <ToggleSwitches setPassedOnly={setPassedOnly} passedOnly={passedOnly} />
+                        <p className='font-medium sm:font-bold'>תלמידים שעברו</p>
+                    </div>
+                </div>
+                {filteredStudents.length > 0 ? (
                     <div className="overflow-x-auto py-5 ">
                         <table dir='rtl' className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                             <thead className="sticky top-0 bg-gray-800 z-10">
@@ -137,27 +176,16 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                 </tr>
                             </thead>
                             <tbody className="text-gray-700">
-                                {filteredList.sort((a, b) => compareHebrew(a.displayName, b.displayName))
+                                {filteredStudents.sort((a, b) => compareHebrew(a.displayName, b.displayName))
                                     .map((student, index) => (
-                                        <tr key={index} className="bg-gray-100 text-right border-b">
+
+                                        <tr key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} text-right border-b`}>
                                             <td className="py-3 ps-3 px-4">{index + 1}</td>
                                             <td className="py-3 px-4">{student.displayName}</td>
                                             <td className="py-3 px-4">{student.cycle}</td>
                                             <td className="py-3 px-4">{student.departments}</td>
                                             <td className="py-3 px-4">{student.userId}</td>
-                                            <td className={`py-3 px-4 text-white ${student.detailsTheoryTest &&
-                                                student.detailsTheoryTest.length > 0 &&
-                                                student.detailsTheoryTest.slice(-1)[0].mistakes <= 4 &&
-                                                calculatenightDriving(student) >= 40
-                                                ? student.previousLicense === "no"
-                                                    ? calculateTotalDrivingMinutes(student) >= 1280
-                                                        ? 'bg-green-500'
-                                                        : 'bg-orange-500'
-                                                    : calculateTotalDrivingMinutes(student) >= 800
-                                                        ? 'bg-green-500'
-                                                        : 'bg-orange-500'
-                                                : 'bg-orange-500'
-                                                }`}>
+                                            <td className={`py-3 px-4`}>
                                                 {calculateTotalDrivingMinutes(student)}
                                             </td>
                                             <td className="py-3 px-4">
@@ -187,7 +215,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                     <button onClick={() => setOpenModalStudentsTable(false)} className='w-[50%] max-w-96 bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

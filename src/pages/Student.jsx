@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import { Loading } from '../components/other/Loading';
 import Greeting from '../components/other/Greeting';
 import StudentExam from '../components/student/StudentExam';
+import Hamburger from '../components/other/Hamburger';
 
 
 const Student = () => {
@@ -210,11 +211,10 @@ const Student = () => {
                         </h1>
                         {/* Hamburger Button for Mobile */}
                         <button
-                            className="sm:hidden text-gray-700 text-xl"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        >
-                            {isMenuOpen ? <FaTimes /> : <FaBars />}
+                            className="sm:hidden text-gray-700 text-xl">
+                            <Hamburger setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
                         </button>
+
                     </div>
 
                     {/* Mobile Menu */}
@@ -346,7 +346,7 @@ const Student = () => {
                             <div className="relative h-4 overflow-hidden rounded-xl bg-gray-200">
                                 {/* Total Progress Percentage */}
                                 <div
-                                    className={`absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700`}
+                                    className={`absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 z-40`}
                                 >
                                     {Math.round(progress)}% הושלם
                                 </div>
