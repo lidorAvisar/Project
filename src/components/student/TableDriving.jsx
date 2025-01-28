@@ -319,7 +319,7 @@ const TableDriving = ({ studentDetails, setOpenModalStudentData, studentShift, u
                                     <label className="block text-gray-700 text-sm font-bold mb-1">ד'ק נהיגה</label>
                                     <input
                                         min={0}
-                                        readOnly={isTeacher && isShiftOver}
+                                        readOnly={(isTeacher && isShiftOver) || isAssistant}
                                         type="number"
                                         placeholder='הכנס דקות'
                                         value={item.drivingMinutes}
@@ -422,7 +422,7 @@ const TableDriving = ({ studentDetails, setOpenModalStudentData, studentShift, u
                                         </td>
                                         <td className={`text-center py-2 whitespace-nowrap border border-gray-200 p-2 overflow-hidden ${item.drivingMinutes ? 'bg-green-500' : 'bg-red-500'}`}>
                                             <input
-                                                readOnly={isTeacher && isShiftOver}
+                                                readOnly={(isTeacher && isShiftOver) || isAssistant}
                                                 min={0}
                                                 type="number"
                                                 placeholder='הכנס דקות'
