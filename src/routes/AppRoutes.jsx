@@ -11,6 +11,7 @@ import SuperSuperAdmin from '../pages/SuperSuperAdmin';
 import Contractor from '../pages/Contractor';
 import Error404 from '../components/other/Error404';
 import { Loading } from '../components/other/Loading';
+import ArchiveByCycle from '../components/archive/ArchiveByCycle';
 
 
 const AppRoutes = () => {
@@ -48,7 +49,7 @@ const AppRoutes = () => {
                 navigate('/')
             }
         }
-    }, [currentUser, loading, navigate]);
+    }, [currentUser, loading]);
 
     if (loading) {
         return (
@@ -70,6 +71,7 @@ const AppRoutes = () => {
                     <Route path='/super_admin' element={<SuperAdmin />} />
                     <Route path='/super_super_admin' element={<SuperSuperAdmin />} />
                     <Route path='/contractor' element={<Contractor />} />
+                    {currentUser.user === 'מנהל' && <Route path='/archive' element={<ArchiveByCycle />} />}
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>

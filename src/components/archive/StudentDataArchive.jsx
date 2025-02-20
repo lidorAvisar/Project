@@ -33,19 +33,14 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
         }
     }, [userData]);
 
-    console.log(userData);
-
-
     return (
         <div className='z-30 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 space-y-3 mb-5 rounded-lg h-[90%] overflow-y-auto'>
-                <div dir='rtl' className='flex items-center justify-between  px-5 sm:px-10 space-y-3'>
-                    <p className='font-bold  text-xl'>{userData.displayName}</p>
-                    <div className='flex gap-3'>
-                        <button onClick={() => setOpenModalStudentData(false)} className='bg-green-500 rounded-lg p-1 px-2 sm:px-3 text-white font-bold w-fit flex items-center shadow-lg'>
-                            <TiArrowBack className='text-2xl' /><span className='hidden sm:flex'>חזור</span>
-                        </button>
-                    </div>
+                <div dir='rtl' className='flex items-center justify-between  px-2 sm:px-10 space-y-3'>
+                    <p className='font-bold pt-2 text-lg'>{userData.displayName}</p>
+                    <button onClick={() => setOpenModalStudentData(false)} className='bg-green-500 rounded-lg p-1 px-3 sm:px-4 text-white font-bold  flex items-center shadow-lg'>
+                        <TiArrowBack className='text-2xl' /><span>חזור</span>
+                    </button>
                 </div>
                 <div dir='rtl' className="mb-6">
                     <h3 className="text-xl font-bold mb-2 text-center py-5 underline">פרטים אישיים</h3>

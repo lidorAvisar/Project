@@ -8,6 +8,7 @@ import AveragesChart from './AveragesChart';
 import '../../../public/יוסי.jpg'
 import '../../../public/מתן.jpg'
 import '../../../public/user.png'
+import { TiArrowBack } from 'react-icons/ti';
 
 const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, user }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"];
@@ -76,7 +77,6 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
             ...test,
             value: testCounts[index],
         })));
-
     };
 
     // Function to filter students by cycle and update theories data
@@ -186,27 +186,29 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center'>
-            <div className='w-[100%] bg-[#e0ebf3] p-10 py-5 mb-3 rounded-lg h-full overflow-y-auto'>
-                <div className='flex items-center justify-between w-full py-3'>
-                    <button onClick={() => setOpenModalDashboard(false)} className='bg-red-500 text-white p-1 px-10 rounded-md font-bold'>סגור</button>
-                    <p className='text-center underline font-bold text-2xl '>סטטוס הדרכה בית ספר לנהיגה</p>
-                    <p className='flex text-lg font-bold '>{user?.displayName} ,<Greeting /> </p>
+            <div className='w-[100%] bg-[#e0ebf3] p-1 sm:p-4 md:p-10 py-5 mb-3 rounded-lg h-full overflow-y-auto'>
+                <div className='flex flex-col sm:flex-row items-center justify-between w-full py-3'>
+                    <div className='flex justify-between w-full'>
+                        <button onClick={() => setOpenModalDashboard(false)} className='bg-red-500 text-white p-2 sm:p-1 px-5 sm:px-10 rounded-md font-bold'> <span className='hidden sm:flex'>סגור</span> <span className=' sm:hidden'><TiArrowBack size={15} /> </span> </button>
+                        <p className='flex sm:text-lg font-bold '>{user?.displayName} ,<Greeting /> </p>
+                    </div>
                 </div>
+                <p className='text-center underline font-bold text-lg sm:text-xl md:text-2xl py-4'>סטטוס הדרכה בית ספר לנהיגה</p>
                 <div className="w-full grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in ">
                     {/* Profile Card */}
                     <div className='flex flex-col items-center  gap-10  bg-[#b9e6fe] rounded-lg shadow-lg'>
-                        <div className="w-full col-span-1 lg:col-span-1 bg-gradient-to-tr from-indigo-500 via-sky-500 to-emerald-500 border border-white p-4 rounded-lg flex gap-4 items-center text-white shadow-lg transition-transform duration-300 hover:scale-105">
+                        <div className="w-full  bg-gradient-to-tr from-indigo-500 via-sky-500 to-emerald-500 border border-white p-4 rounded-lg flex justify-between gap-4 items-center text-white shadow-lg transition-transform duration-300 hover:scale-105">
                             <img className="h-20 w-20 rounded-2xl mb-2" src={user?.displayName === "מנהל מקצועי" ? 'יוסי.jpg' : user?.displayName === "ממ״ג נהיגה" ? 'מתן.jpg' : 'user.png'} alt="Profile" />
-                            <div className="text-center font-bold text-lg">{user?.displayName}</div>
+                            <div className="text-right sm:text-center font-bold text-lg">{user?.displayName}</div>
                         </div>
                         {/* Highlights Section */}
-                        <div className="col-span-1 sm:col-span-2 lg:col-span-1 p-1 rounded-lg shadow-lg flex flex-col justify-center items-center from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
+                        <div className="w-full col-span-1 sm:col-span-2 lg:col-span-1 p-1 rounded-lg shadow-lg flex flex-col justify-center items-center from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
                             <Highlights teacherMinutesReport={teacherMinutesReport} bestCycle={bestCycle} />
                         </div>
                     </div>
 
                     {/* Theory and Test Selectors with Pie Charts */}
-                    <div className="col-span-1 lg:col-span-1 flex flex-col items-center  p-4 rounded-lg shadow-xl bg-[#b9e6fe]">
+                    <div className="col-span-1 lg:col-span-1 flex flex-col items-center  p-1 rounded-lg shadow-xl bg-[#b9e6fe]">
                         <p className="font-bold text-lg text-gray-800 mb-2">תאוריות</p>
                         <select
                             value={theoriesByCycle}
@@ -220,7 +222,7 @@ const Dashboard = ({ setOpenModalDashboard, filteredStudents, filteredTeachers, 
                         </select>
                         <PieChartComponent data={theoriesData} />
                     </div>
-                    <div className="col-span-1 lg:col-span-1 flex flex-col items-center p-4 rounded-lg shadow-xl bg-[#b9e6fe]">
+                    <div className="col-span-1 lg:col-span-1 flex flex-col items-center p-1 rounded-lg shadow-xl bg-[#b9e6fe]">
                         <p className="font-bold text-lg text-gray-800 mb-2">טסטים</p>
                         <select
                             value={testByCycle}

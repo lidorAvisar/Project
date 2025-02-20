@@ -42,6 +42,8 @@ export function EditUserModal({ setOpenEditModal, user}) {
         reset();
     };
 
+    console.log(user);
+    
 
     return <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
         {openModalPassword && <UpdatePasswordAdmin setOpenModalPassword={setOpenModalPassword} user={user} />}

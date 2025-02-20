@@ -23,6 +23,7 @@ import ArchiveByCycle from '../components/archive/ArchiveByCycle';
 import MoveToArchive from '../components/archive/MoveToArchive';
 import StudentsTests from '../components/student/StudentsTests';
 import Dashboard from '../components/dashboard/Dashboard';
+import { Link } from 'react-router-dom';
 
 
 
@@ -51,8 +52,9 @@ const SuperSuperAdmin = () => {
         queryFn: async () => await getAccounts(),
         onError() {
             alert("שגיאה בעת משיכת הנתונים העדכניים")
-        }
+        },
     });
+
 
     const { mutate: deleteAdmin, isLoading: deleteUserLoading } = useMutation({
         mutationKey: ['users'],
@@ -147,9 +149,11 @@ const SuperSuperAdmin = () => {
                             <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 rounded-md w-fit p-1 px-4 sm:px-2.5 text-white  font-bold flex items-center gap-2'>
                                 <span className='hidden sm:block'>דאשבורד</span> <RxDashboard className='text-xl' />
                             </button>
-                            <button onClick={() => setOpenModalArchiveByCycle(true)} className='bg-gray-500 rounded-md w-fit p-1 px-4 text-white font-bold flex items-center gap-2'>
-                                <span className='hidden sm:block'>ארכיון</span> <GiArchiveRegister className='text-xl' />
-                            </button>
+                            <Link to={'/archive'}>
+                                <button className='bg-gray-500 rounded-md w-fit p-1 px-4 text-white font-bold flex items-center gap-2'>
+                                    <span className='hidden sm:block'>ארכיון</span> <GiArchiveRegister className='text-xl' />
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

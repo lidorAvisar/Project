@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { getArchiveAccounts } from '../../firebase/firebase_config';
 import Archives from '../archive/Archives';
+import { useNavigate } from 'react-router-dom';
 
-const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
+const ArchiveByCycle = () => {
     const [filteredDataByCycle, setFilteredDataByCycle] = useState([]);
     const [selectedCycle, setSelectedCycle] = useState(null);
     const [studentSearch, setStudentSearch] = useState('');
@@ -14,8 +15,7 @@ const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
         queryFn: async () => await getArchiveAccounts(),
     });
 
-    console.log(data);
-    
+    const navigate = useNavigate();
 
     // Get unique cycles from the students' data
     const cycles = data ? Array.from(new Set(data.map(student => student.cycle))) : [];
@@ -39,12 +39,12 @@ const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
     );
 
     if (isLoading) {
-        return <div className="text-center text-2xl ">טוען נתונים...</div>;
+        return <div className="text-center text-2xl ">...טוען נתונים</div>;
     }
 
     return (
-        <div className='z-10 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='relative w-[98%] max-w-[1100px] bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
+        <div className='flex justify-center pt-5'>
+            <div className='w-[98%] max-w-[1600px] bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
                 {(selectedCycle && openModalArchive) && (
                     <Archives
                         selectedCycle={selectedCycle}
@@ -86,10 +86,10 @@ const ArchiveByCycle = ({ setOpenModalArchiveByCycle }) => {
                     )}
                 </div>
 
-                <div className='flex justify-center'>
+                <div className='flex justify-center pt-7'>
                     <button
-                        onClick={() => setOpenModalArchiveByCycle(false)}
-                        className='absolute bottom-2 bg-red-500 px-9 text-white rounded-md p-1 font-bold'
+                        onClick={() => navigate(-1)}
+                        className=' bg-red-500 px-9 text-white rounded-md p-1 font-bold'
                     >
                         סגור
                     </button>

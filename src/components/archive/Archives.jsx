@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import StudentDataArchive from './StudentDataArchive';
 import { TiArrowBack } from 'react-icons/ti';
+import { RxDashboard } from 'react-icons/rx';
+import AverageDashboard from './AverageDashboard';
 
 const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) => {
     // State for search input
     const [studentSearch, setStudentSearch] = useState('');
     const [openModalStudentData, setOpenModalStudentData] = useState(false);
+    const [openModalDashboard, setOpenModalDashboard] = useState(false);
     const [userData, setUserData] = useState(false);
 
 
@@ -22,15 +25,22 @@ const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) =
 
     return (
         <div className='z-20 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
-            <div className='relative w-[98%] max-w-[1100px] bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
+            <div className='relative w-[98%] max-w-[1400px] bg-slate-100 p-2 sm:p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
                 {openModalStudentData && <StudentDataArchive setOpenModalStudentData={setOpenModalStudentData} userData={userData} />}
-                <div className='flex justify-around'>
-                    <div className='flex justify-center'>
-                        <button onClick={() => setOpenModalArchive(false)} className='bg-green-500 rounded-lg p-1 px-2 sm:px-6 text-white font-bold w-fit flex items-center shadow-lg'>
-                            <TiArrowBack className='text-2xl' /><span className='hidden sm:flex'>חזור</span>
-                        </button>
+                {openModalDashboard && <AverageDashboard setOpenModalDashboard={setOpenModalDashboard} studentsData={filteredDataByCycle} cycle={selectedCycle} />}
+                <div className='flex flex-col justify-center'>
+                    <p className='text-lg sm:text-xl font-bold text-center py-3'>ארכיון תלמידים מחזור {selectedCycle}</p>
+                    <div className='w-full flex justify-center'>
+                        <div className='w-full max-w-[500px] flex justify-center gap-3 sm:gap-10 bg-slate-200 rounded-md p-5'>
+                            <button onClick={() => setOpenModalArchive(false)} className='bg-blue-500 rounded-lg p-1 px-3 sm:px-6 text-white font-bold w-fit flex items-center shadow-lg'>
+                                <TiArrowBack className='text-2xl' /><span>חזור</span>
+                            </button>
+                            <button onClick={() => setOpenModalDashboard(true)} className='bg-green-500 rounded-md w-fit p-1 px-4 sm:px-2.5 text-white  font-bold flex items-center gap-2'>
+                                <span>דאשבורד</span> <RxDashboard className='text-xl' />
+                            </button>
+                        </div>
                     </div>
-                    <p className='text-xl font-bold text-center'>ארכיון תלמידים מחזור {selectedCycle}</p>
+
                 </div>
                 <div className='flex items-center justify-between w-full py-2'>
                     <input
@@ -41,7 +51,7 @@ const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) =
                         placeholder='חפש תלמיד . . .'
                         type="search"
                     />
-                    <p dir='rtl' className='text-lg font-bold'>סה"כ תלמידים: {filteredData?.length || 0}</p>
+                    <p dir='rtl' className='sm:text-lg font-bold'>סה"כ תלמידים: {filteredData?.length || 0}</p>
                 </div>
                 <table dir='rtl' className="table-auto w-[98%] sm:w-[100%] max-w-[1500px] divide-y divide-gray-200 shadow-md mb-10">
                     <thead className="bg-gray-50">
@@ -71,7 +81,7 @@ const Archives = ({ setOpenModalArchive, filteredDataByCycle, selectedCycle }) =
                 <div className='flex justify-center'>
                     <button
                         onClick={() => setOpenModalArchive(false)}
-                        className='bg-green-500 px-9 text-white rounded-md p-1 font-bold'
+                        className='bg-blue-500 px-9 text-white rounded-md p-1 font-bold'
                     >
                         חזור
                     </button>
