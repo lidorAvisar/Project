@@ -4,10 +4,27 @@ import ViewFilesForContractor from '../constractor/ViewFilesForContractor'
 import ViewTheoriesForConstractor from '../constractor/ViewTheoriesForConstractor'
 import ViewTestsContractor from '../constractor/ViewTestsContractor'
 import ViewTableDriving from '../constractor/ViewTableDriving'
+import { useForm } from 'react-hook-form'
+import { useMutation } from 'react-query'
+import { updateAccountArchive } from '../../firebase/firebase_config'
 
 const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
+
     const [nightDriving, setNightDriving] = useState(0);
     const [totalDrivingMinutes, setTotalDrivingMinutes] = useState(0);
+    const [openButtonCycle, setOpenButtonCycle] = useState(false);
+
+    const { mutate: cycleUpdate, isLoading } = useMutation({
+        mutationKey: ['student_archive'],
+        mutationFn: async (data) => {
+            await updateAccountArchive(userData.uid, data)
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(['student_archive']);
+            setOpenModalStudentData(false)
+        },
+    });
 
 
     useEffect(() => {
@@ -33,6 +50,15 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
         }
     }, [userData]);
 
+    const onSubmit = (data) => {
+        try {
+            cycleUpdate(data);
+        }
+        catch (error) {
+            alert("שגיאה");
+        }
+    };
+
     return (
         <div className='z-30 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 space-y-3 mb-5 rounded-lg h-[90%] overflow-y-auto'>
@@ -57,14 +83,27 @@ const StudentDataArchive = ({ setOpenModalStudentData, userData }) => {
                             {userData?.userId || "לא זמין"}
                         </p>
                     </div>
-
-                    <div className="mb-4">
-                        <p className="block  text-lg font-bold text-gray-700 ">מחזור:</p>
-                        <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">
-                            {userData?.cycle || "לא זמין"}
-                        </p>
-                    </div>
-
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="mb-4">
+                            <label htmlFor="cycle" className="block text-right text-sm font-medium text-gray-700">מחזור:</label>
+                            <input
+                                onClick={() => setOpenButtonCycle(true)}
+                                onInput={() => setOpenButtonCycle(true)}
+                                type="text"
+                                id="cycle"
+                                defaultValue={userData?.cycle || ""}
+                                {...register('cycle', { required: "זהו שדה חובה" })}
+                                className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 focus:outline-none focus:ring-0 focus:border-indigo-500 border-black rounded-md"
+                                placeholder="הכנס מחזור"
+                            />
+                            {errors.cycle && <span className="text-red-500 text-sm">{errors.cycle.message}</span>}
+                        </div>
+                        {openButtonCycle && <div className="flex">
+                            <button type="submit" className="bg-green-500 text-white font-bold py-0.5 w-24 rounded-lg">
+                                {isLoading ? <span className='animate-fade-in'>. . .</span> : <p>עדכן מחזור</p>}
+                            </button>
+                        </div>}
+                    </form>
                     <div className="mb-4">
                         <p className="block text-lg font-bold text-gray-700 ">שפה:</p>
                         <p className="mt-1 block w-full px-2 py-1.5 text-gray-900 bg-gray-200 border-black rounded-md">

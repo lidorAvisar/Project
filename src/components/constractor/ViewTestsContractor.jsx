@@ -38,7 +38,6 @@ const ViewTestsContractor = ({ studentDetails }) => {
         }
     }, [studentDetails]);
 
-    console.log(tests);
     
     return (
         <div className="bg-slate-200 w-full p-6 rounded-md shadow-lg">

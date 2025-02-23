@@ -209,7 +209,6 @@ export const getArchiveAccounts = async () => {
   }
 }
 
-
 //מחיקת משתמש
 export const deleteAccount = async (id) => {
   try {
@@ -233,7 +232,21 @@ export const updateAccount = async (id, data) => {
     });
     return userDocRef;
   } catch (error) {
-    alert("שגיאה"); 
+    alert("שגיאה");
+  }
+};
+
+// עדכון נתון המשתמש בארכיון
+export const updateAccountArchive = async (id, data) => {
+  try {
+    const userDocRef = doc(db, "student_archive", id);
+    await updateDoc(userDocRef, { cycle: data.cycle });
+    return true;
+  }
+  catch (error) {
+    console.error("Error updating cycle:", error);
+    alert("שגיאה בעדכון המחזור");
+    return false;
   }
 };
 
