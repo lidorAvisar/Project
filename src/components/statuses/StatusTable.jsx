@@ -118,36 +118,36 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
 
                 {currentUser.user !== 'מ"מ' && (
                     <div dir='rtl' className='w-full flex flex-col sm:flex-row items-center justify-between gap-5'>
-                            <div className='w-full flex flex-col items-center justify-center'>
-                                <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
-                                <select
-                                    id="departmentFilter"
-                                    multiple
-                                    value={selectedDepartment}
-                                    onChange={handleFilterChange}
-                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
-                                >
-                                    <option value="everything">הכל</option>
-                                    {[...Array(12).keys()].map(num => (
-                                        <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
-                                    ))}
-                                </select>
-                            </div>
+                        <div className='w-full flex flex-col items-center justify-center'>
+                            <label htmlFor="departmentFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחלקה:</label>
+                            <select
+                                id="departmentFilter"
+                                multiple
+                                value={selectedDepartment}
+                                onChange={handleFilterChange}
+                                className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
+                            >
+                                <option value="everything">הכל</option>
+                                {[...Array(12).keys()].map(num => (
+                                    <option key={num + 1} value={num + 1}>{`מחלקה ${num + 1}`}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                            <div className='w-full flex flex-col items-center justify-center'>
-                                <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
-                                <select
-                                    id="cycleFilter"
-                                    value={selectedCycle}
-                                    onChange={handleFilterChangeCycle}
-                                    className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
-                                >
-                                    <option value="everything">הכל</option>
-                                    {uniqueCycles.map((cycle, i) => (
-                                        <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
-                                    ))}
-                                </select>
-                            </div>
+                        <div className='w-full flex flex-col items-center justify-center'>
+                            <label htmlFor="cycleFilter" className="font-bold text-sm mb-1 sm:mb-2 text-gray-700">סנן לפי מחזור:</label>
+                            <select
+                                id="cycleFilter"
+                                value={selectedCycle}
+                                onChange={handleFilterChangeCycle}
+                                className="rounded-lg bg-white border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-[75%] sm:w-64"
+                            >
+                                <option value="everything">הכל</option>
+                                {uniqueCycles.map((cycle, i) => (
+                                    <option key={i} value={cycle}>{`מחזור ${cycle}`}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 )}
                 <div className='flex justify-center mt-5'>
@@ -179,7 +179,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                                 {filteredStudents.sort((a, b) => compareHebrew(a.displayName, b.displayName))
                                     .map((student, index) => (
 
-                                        <tr key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} text-right border-b`}>
+                                        <tr key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} ${student.newStatus && student.newStatus === "expelled" ? 'bg-red-400 text-white' : ''} text-right border-b`}>
                                             <td className="py-3 ps-3 px-4">{index + 1}</td>
                                             <td className="py-3 px-4">{student.displayName}</td>
                                             <td className="py-3 px-4">{student.cycle}</td>

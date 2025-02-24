@@ -25,7 +25,7 @@ const driverType = [
 const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, filteredTeachers, filteredStudents }) => {
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
 
-     const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [nightDriving, setNightDriving] = useState(0);
@@ -76,7 +76,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             }
             await deleteAccount(id)
         },
-        onSuccess: async() => {
+        onSuccess: async () => {
             await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false)
         },
