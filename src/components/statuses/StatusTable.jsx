@@ -103,6 +103,8 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
         ? filteredList.filter(calculateIfPassedSuccessfully)
         : filteredList;
 
+    const studentAmount = data.filter(student => student.user === "תלמידים");
+
     if (isLoading) {
         return <Loading />
     }
@@ -112,7 +114,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
             <div className='w-[100%] max-w-[1200px] bg-slate-100 p-4 mb-5 rounded-lg h-[92%] py-10 overflow-y-auto'>
                 <div className='flex items-center justify-between py-3'>
                     <button onClick={() => setOpenModalStudentsTable(false)} className='bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
-                    <h2 className="text-center text-xl sm:text-2xl font-bold"> {filteredList?.length} - סטטוס תלמידים</h2>
+                    <h2 className="text-center text-xl sm:text-2xl font-bold"> {filteredList?.length} {filteredList?.length != studentAmount?.length && <span>/{studentAmount?.length}</span>}  - סטטוס תלמידים</h2>
                     <h2></h2>
                 </div>
 
