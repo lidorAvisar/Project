@@ -24,7 +24,6 @@ import MoveToArchive from '../components/archive/MoveToArchive';
 import StudentsTests from '../components/student/StudentsTests';
 import Dashboard from '../components/dashboard/Dashboard';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
 
 
 const SuperSuperAdmin = () => {
@@ -114,9 +113,6 @@ const SuperSuperAdmin = () => {
 
     return (
         <div className="overflow-x-auto flex flex-col items-center md:px-16">
-            {/* <button onClick={() => toast.success('הודעה מוצלחת!')}>
-                הצג הודעה
-            </button> */}
             {openRegisterModal && <RegisterModal setOpenRegisterModal={setOpenRegisterModal} />}
             {openEditModal && <EditUserModal user={currentEditUser} setOpenEditModal={setOpenEditModal} refetch={refetch} />}
             {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} filteredTeachers={filteredTeachers} filteredStudents={filteredStudents} />}

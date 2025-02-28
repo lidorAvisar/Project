@@ -5,6 +5,7 @@ import { IoArrowDown } from 'react-icons/io5';
 import { addLesson } from '../../firebase/firebase_config';
 import { useCurrentUser } from '../../firebase/useCurerntUser';
 import { Loading } from '../other/Loading';
+import toast from 'react-hot-toast';
 
 const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeachers, setOpenModalStudentData, filteredStudents }) => {
     const schools = ["שרייבר", "יובלי", "צבאי"]
@@ -22,6 +23,7 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             return await addLesson(studentDetails.uid, lessonData)
         },
         onSuccess: async () => {
+            toast.success("!השיעור נוסף בהצלחה", { duration: 5000 })
             await queryClient.invalidateQueries(['users']);
             { currentUser.user === "מנהל" || currentUser.user === 'מ"פ' && setOpenModalStudentData(false); }
             setOpenModalAddLesson(false);
@@ -56,13 +58,11 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             return;
         }
 
-        console.log(data);
-
         try {
             addLessonMutation(data);
 
         } catch (error) {
-            alert("לא נוסף השיעור");
+            toast.error("!לא נוסף השיעור", { duration: 6000 });
         }
     };
 
@@ -84,9 +84,6 @@ const AddLessonModal = ({ setOpenModalAddLesson, studentDetails, filteredTeacher
             <Loading />
         </div>
     }
-
-    console.log(teacherUid);
-
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>

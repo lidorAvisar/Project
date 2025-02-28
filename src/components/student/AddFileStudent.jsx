@@ -20,7 +20,8 @@ const AddFileStudent = ({ studentDetails }) => {
             const res = await listAll(listRef);
             const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
             setUploadedFiles(urls);
-        } catch (error) {
+        }
+        catch (error) {
             alert("שגיאה")
         }
     };
@@ -63,7 +64,8 @@ const AddFileStudent = ({ studentDetails }) => {
             const urls = await Promise.all(promises);
             setUploadedFiles([...uploadedFiles, ...urls]);
             setFiles([]);
-        } catch (error) {
+        } 
+        catch (error) {
             alert("שגיאה")
         }
         setLoading(false);

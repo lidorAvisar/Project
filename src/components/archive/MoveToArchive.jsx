@@ -2,16 +2,12 @@ import React, { useState } from 'react'
 import { GiArchiveRegister } from 'react-icons/gi'
 import { useMutation, useQueryClient } from 'react-query';
 import { archiveStudent, deleteAccount } from '../../firebase/firebase_config';
+import toast from 'react-hot-toast';
 
 const MoveToArchive = ({ setOpenModalMoveToArchive, allUsers }) => {
     const queryClient = useQueryClient();
     const [selectedCycle, setSelectedCycle] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-
-    // const { data, isLoading: isUsersLoading, refetch: usersRefetch } = useQuery({
-    //     queryKey: ['users'],
-    //     queryFn: async () => await getAccounts(),
-    // });
 
     const uniqueCycles = [...new Set(allUsers?.filter(student => student.user === "תלמידים").map(student => student.cycle))]
 
@@ -27,11 +23,11 @@ const MoveToArchive = ({ setOpenModalMoveToArchive, allUsers }) => {
             }
             catch (error) {
                 console.log(error);
-                alert("העברת התלמידים לארכיון נכשלה.");
+                toast.error("העברת התלמידים לארכיון נכשלה.", { duration: 6000 });
             }
         },
         onSuccess: async () => {
-            alert("התלמידים הועברו לארכיון בהצלחה!");
+            toast.success("התלמידים הועברו לארכיון בהצלחה!", { duration: 5000 });
             await queryClient.invalidateQueries(['users']);
         },
         onSettled: () => {
@@ -74,8 +70,6 @@ const MoveToArchive = ({ setOpenModalMoveToArchive, allUsers }) => {
             </div>
         );
     }
-    console.log(selectedCycle);
-
 
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md py-10'>

@@ -4,6 +4,7 @@ import { LuEye } from "react-icons/lu";
 import useCreateUser from '../../firebase/useCreateUser';
 import { useCurrentUser } from '../../firebase/useCurerntUser';
 import { Loading } from '../other/Loading';
+import toast from 'react-hot-toast';
 
 export const departments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -22,7 +23,6 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const { createUser, createAdmin } = useCreateUser()
 
-
     const onSubmit = (data) => {
         setLoading(true);
 
@@ -37,10 +37,11 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
                 setOpenRegisterModal(false);
             }, 3000);
             reset();
+            toast.success("המשתמש נוסף בהצלחה!", { duration: 5000 })
         }
         catch (err) {
             setLoading(false);
-            alert("שגיאה המשתמש לא נוצר")
+            toast.error("שגיאה המשתמש לא נוצר", { duration: 6000 })
         }
     };
 

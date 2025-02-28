@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { deleteLesson, updateLesson } from '../../firebase/firebase_config';
 import { Loading } from '../other/Loading';
 import { useCurrentUser } from '../../firebase/useCurerntUser';
+import toast from 'react-hot-toast';
 
 const SHIFT_LIMITS = {
     'משמרת בוקר': 240,
@@ -229,14 +230,14 @@ const TableDriving = ({ studentDetails, setOpenModalStudentData, studentShift, u
         }
         try {
             await updateStudentAccount(formData.data);
-
+            toast.success("!עודכן בהצלחה", { duration: 5000 })
             const updatedData = await usersRefetch();
             if (updatedData.data) {
                 setOpenModalStudentData(false);
             }
-        } catch (error) {
-            console.error("An error occurred while updating lessons:", error);
-            alert(error)
+        }
+        catch (error) {
+            toast.error("שגיאה", { duration: 6000 })
         }
     };
 

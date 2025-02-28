@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
 import { updateAccount } from '../../firebase/firebase_config';
+import toast from 'react-hot-toast';
 
 
 const Tests = ({ studentDetails, usersRefetch, setOpenModalStudentData }) => {
@@ -23,11 +24,12 @@ const Tests = ({ studentDetails, usersRefetch, setOpenModalStudentData }) => {
         mutationKey: ['users'],
         mutationFn: async ({ id, data }) => await updateAccount(id, data),
         onSuccess: async () => {
+            toast.success("!עודכן בהצלחה", { duration: 5000 })
             await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false);
         },
         onError: (error) => {
-            console.error('Error updating student tests:', error);
+            toast.error("שגיאה", { duration: 6000 })
         }
     });
 

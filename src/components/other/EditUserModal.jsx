@@ -5,9 +5,10 @@ import { updateAccount } from "../../firebase/firebase_config";
 import { departments } from "../registration/RegisterModal";
 import UpdatePasswordAdmin from "../other/UpdatePasswordAdmin";
 import { useCurrentUser } from "../../firebase/useCurerntUser";
+import toast from "react-hot-toast";
 
 
-export function EditUserModal({ setOpenEditModal, user}) {
+export function EditUserModal({ setOpenEditModal, user }) {
     const [currentUser] = useCurrentUser();
 
     const queryClient = useQueryClient();
@@ -24,6 +25,7 @@ export function EditUserModal({ setOpenEditModal, user}) {
         mutationKey: ["users"],
         mutationFn: async (data) => await updateAccount(data.uid, data),
         onSuccess: () => {
+            toast.success("!מעודכן", { duration: 5000 })
             queryClient.invalidateQueries(["users"]);
             setTimeout(() => {
                 setOpenEditModal(false);
@@ -41,9 +43,6 @@ export function EditUserModal({ setOpenEditModal, user}) {
         }
         reset();
     };
-
-    console.log(user);
-    
 
     return <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
         {openModalPassword && <UpdatePasswordAdmin setOpenModalPassword={setOpenModalPassword} user={user} />}

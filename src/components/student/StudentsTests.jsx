@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { useMutation, useQuery } from 'react-query';
 import { addStudentsTests, getStudentsTests } from '../../firebase/firebase_config';
 import StudentsTestsList from '../student/StudentsTestsList';
+import toast from 'react-hot-toast';
 
 const StudentsTests = ({ setOpenModalStudentsTests }) => {
 
@@ -35,10 +36,13 @@ const StudentsTests = ({ setOpenModalStudentsTests }) => {
         mutationKey: ["students_tests"],
         mutationFn: async (data) => await addStudentsTests(data),
         onSuccess: () => {
-            alert("Test added successfully!");
+            toast("!המבחן נוסף בהצלחה", { duration: 5000 });
             setOpenModalStudentsTests(false);
             reset();
         },
+        onError: () => {
+            toast.error("שגיאה בהוספת המבחן", { duration: 6000 })
+        }
     })
 
     const onSubmit = (data) => {

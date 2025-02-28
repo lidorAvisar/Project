@@ -13,6 +13,7 @@ import { EditUserModal } from '../other/EditUserModal';
 import AddFileStudent from '../student/AddFileStudent';
 import { Loading } from '../other/Loading';
 import StatusBar from '../statuses/StatusBar';
+import toast from 'react-hot-toast';
 
 
 const driverType = [
@@ -77,6 +78,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
             await deleteAccount(id)
         },
         onSuccess: async () => {
+            toast.success("!התלמיד נמחק בהצלחה",{ duration: 5000 })
             await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false)
         },
@@ -85,6 +87,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
     const onSubmit = async (data) => {
         try {
             await updateAccount(studentDetails.uid, data);
+            toast.success("!התלמיד עודכן בהצלחה", { duration: 5000 })
             await queryClient.invalidateQueries(['users']);
             setOpenModalStudentData(false);
         }

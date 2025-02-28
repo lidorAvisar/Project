@@ -231,7 +231,8 @@ export const updateAccount = async (id, data) => {
       updatedAt: Date.now()
     });
     return userDocRef;
-  } catch (error) {
+  } 
+  catch (error) {
     alert("שגיאה");
   }
 };
