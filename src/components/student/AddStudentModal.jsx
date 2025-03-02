@@ -5,6 +5,7 @@ import { LuEye } from "react-icons/lu";
 import { useCurrentUser } from '../../firebase/useCurerntUser';
 import { Loading } from '../other/Loading';
 import { useMutation } from 'react-query';
+import toast from 'react-hot-toast';
 
 
 const AddStudentModal = ({ setOpenModalAddStudent }) => {
@@ -21,16 +22,26 @@ const AddStudentModal = ({ setOpenModalAddStudent }) => {
         mutationKey: ["users"],
         mutationFn: (data) => createUser(data),
         onSuccess: () => {
+            toast.success("!המשתמש נוסף בהצלחה", { duration: 5000 })
             setOpenModalAddStudent(false);
         }
     });
 
+    const cleanUserData = (data) => {
+        return Object.fromEntries(
+            Object.entries(data).map(([key, value]) => [
+                key,
+                typeof value === "string" ? value.trim().replace(/\s+/g, " ") : value
+            ])
+        );
+    };
+
     const onSubmit = (data) => {
         try {
-            addUser(data);
-        }
-        catch (err) {
-            throw err;
+            const cleanedData = cleanUserData(data);
+            addUser(cleanedData);
+        } catch (err) {
+            toast.error("שגיאה המשתמש לא נוצר", { duration: 6000 });
         }
         reset();
     };

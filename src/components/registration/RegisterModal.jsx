@@ -23,21 +23,31 @@ const RegisterModal = ({ setOpenRegisterModal }) => {
 
     const { createUser, createAdmin } = useCreateUser()
 
+
+    const cleanUserData = (data) => {
+        return Object.fromEntries(
+            Object.entries(data).map(([key, value]) => [
+                key,
+                typeof value === "string" ? value.trim().replace(/\s+/g, " ") : value
+            ])
+        );
+    };
+
     const onSubmit = (data) => {
         setLoading(true);
-
         try {
+            const cleanedData = cleanUserData(data);
             if (departmentsToogle) {
-                createAdmin(data);
+                createAdmin(cleanedData);
             } else {
-                createUser(data);
+                createUser(cleanedData);
             }
             setTimeout(() => {
                 setLoading(false);
                 setOpenRegisterModal(false);
             }, 3000);
             reset();
-            toast.success("המשתמש נוסף בהצלחה!", { duration: 5000 })
+            toast.success("!המשתמש נוסף בהצלחה", { duration: 5000 })
         }
         catch (err) {
             setLoading(false);

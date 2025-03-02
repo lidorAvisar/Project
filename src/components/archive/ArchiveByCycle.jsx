@@ -44,7 +44,7 @@ const ArchiveByCycle = () => {
 
     return (
         <div className='flex justify-center pt-5'>
-            <div className='w-[98%] max-w-[1600px] bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
+            <div className='w-[98%] max-w-[1400px] bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
                 {(selectedCycle && openModalArchive) && (
                     <Archives
                         selectedCycle={selectedCycle}
