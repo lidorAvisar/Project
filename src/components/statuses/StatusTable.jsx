@@ -109,10 +109,6 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
         return <Loading />
     }
 
-    console.log(studentAmount.length);
-    console.log(filteredStudents.length);
-
-
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='w-[100%] max-w-[1200px] bg-slate-100 p-4 mb-5 rounded-lg h-[92%] py-10 overflow-y-auto'>
