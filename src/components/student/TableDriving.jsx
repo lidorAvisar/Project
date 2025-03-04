@@ -120,35 +120,33 @@ const TableDriving = ({ studentDetails, setOpenModalStudentData, studentShift, u
 
     useEffect(() => {
         const checkShiftStatus = () => {
-            // Get current time in Israel time
             const now = new Date();
             const options = { timeZone: "Asia/Jerusalem", hour: "numeric", hour12: false };
             const formatter = new Intl.DateTimeFormat("en-US", options);
             const currentHours = parseInt(formatter.format(now), 10);
 
-            // Shift times in English: morning until 12:00, noon until 18:00, evening until 21:00
-            let shiftEndTime;
+            // Define shift start and end times
+            const shifts = {
+                morning: { start: 6, end: 12 },  // Morning: 06:00 - 12:00
+                noon: { start: 12, end: 18 },    // Noon: 12:00 - 18:00
+                evening: { start: 18, end: 21 }, // Evening: 18:00 - 21:00
+            };
 
-            if (studentShift === "morning") {
-                shiftEndTime = 12; // Morning shift ends at 12:00 PM
-            } else if (studentShift === "noon") {
-                shiftEndTime = 18; // Noon shift ends at 6:00 PM
-            } else if (studentShift === "evening") {
-                shiftEndTime = 21; // Evening shift ends at 9:00 PM
-            }
+            // Get current shift time range
+            const currentShift = shifts[studentShift];
 
-            // Check if the shift end time has passed
-            if (currentHours >= shiftEndTime) {
-                setIsShiftOver(true);
+            if (!currentShift) return;
+
+            // Check if current time is outside the allowed range
+            if (currentHours < currentShift.start || currentHours >= currentShift.end) {
+                setIsShiftOver(true);  // Disable input
             } else {
-                setIsShiftOver(false);
+                setIsShiftOver(false); // Enable input
             }
         };
 
-        // Check every second
         const intervalId = setInterval(checkShiftStatus, 1000);
 
-        // Cleanup interval on unmount
         return () => clearInterval(intervalId);
     }, [studentShift]);
 
