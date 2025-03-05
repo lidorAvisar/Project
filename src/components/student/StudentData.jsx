@@ -163,7 +163,7 @@ const StudentData = ({ setOpenModalStudentData, studentDetails, usersRefetch, fi
     }
 
     return (
-        <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
+        <div className='z-50 fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='relative w-[98%]  max-w-[1100px]  bg-slate-100 p-4 py-5 mb-10 rounded-lg h-[90%] overflow-y-auto'>
                 {openEditModal && <EditUserModal user={studentDetails} usersRefetch={usersRefetch} setOpenEditModal={setOpenEditModal} />}
                 <div className='flex flex-col gap-2'>

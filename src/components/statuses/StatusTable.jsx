@@ -4,14 +4,17 @@ import { getAccounts } from '../../firebase/firebase_config';
 import { useCurrentUser } from '../../firebase/useCurerntUser';
 import { Loading } from '../other/Loading';
 import ToggleSwitches from '../other/ToggleSwitches';
+import StudentData from '../student/StudentData';
 
 const StatusTable = ({ setOpenModalStudentsTable }) => {
     const [currentUser] = useCurrentUser();
     const [selectedDepartment, setSelectedDepartment] = useState(['everything']);
     const [selectedCycle, setSelectedCycle] = useState('everything');
     const [passedOnly, setPassedOnly] = useState(false);
+    const [openModalStudentData, setOpenModalStudentData] = useState(false);
+    const [userData, setUserData] = useState();
 
-    const { data, isLoading, isError, error } = useQuery({
+    const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => await getAccounts(),
     });
@@ -99,6 +102,10 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
         (selectedCycle === 'everything' || student.cycle === selectedCycle)
     );
 
+    const filteredTeachers = data?.filter(account => account.user === "מורה נהיגה")
+        .sort((a, b) => a.displayName.localeCompare(b.displayName, 'he'));
+
+
     const filteredStudents = passedOnly
         ? filteredList.filter(calculateIfPassedSuccessfully)
         : filteredList;
@@ -112,6 +119,8 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
     return (
         <div className='fixed inset-0 h-screen w-full flex items-center justify-center backdrop-blur-md'>
             <div className='w-[100%] max-w-[1200px] bg-slate-100 p-4 mb-5 rounded-lg h-[92%] py-10 overflow-y-auto'>
+                {openModalStudentData && <StudentData setOpenModalStudentData={setOpenModalStudentData} studentDetails={userData} usersRefetch={refetch} filteredTeachers={filteredTeachers} />}
+
                 <div className='flex items-center justify-between py-3'>
                     <button onClick={() => setOpenModalStudentsTable(false)} className='bg-red-500 text-white p-0.5 sm:p-1 rounded-md px-5 sm:px-8 font-bold'>סגור</button>
                     <h2 className="text-center text-xl sm:text-2xl font-bold"> {filteredStudents?.length} {filteredStudents?.length != studentAmount?.length && <span>/{studentAmount?.length}</span>}  - סטטוס תלמידים</h2>
@@ -180,8 +189,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                             <tbody className="text-gray-700">
                                 {filteredStudents.sort((a, b) => compareHebrew(a.displayName, b.displayName))
                                     .map((student, index) => (
-
-                                        <tr key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} ${student.newStatus && student.newStatus === "expelled" ? 'bg-red-400 text-white' : ''} text-right border-b`}>
+                                        <tr onClick={() => { setUserData(student), setOpenModalStudentData(true) }} key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} ${student.newStatus && student.newStatus === "expelled" ? 'bg-red-400 text-white' : ''} text-right border-b cursor-pointer`}>
                                             <td className="py-3 ps-3 px-4">{index + 1}</td>
                                             <td className="py-3 px-4">{student.displayName}</td>
                                             <td className="py-3 px-4">{student.cycle}</td>
