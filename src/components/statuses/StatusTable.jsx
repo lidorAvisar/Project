@@ -112,6 +112,13 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
 
     const studentAmount = data.filter(student => student.user === "תלמידים");
 
+    const openModalfunc = (student) => {
+        if (currentUser.user === 'מנהל') {
+            setUserData(student)
+            setOpenModalStudentData(true)
+        }
+    };
+
     if (isLoading) {
         return <Loading />
     }
@@ -189,7 +196,7 @@ const StatusTable = ({ setOpenModalStudentsTable }) => {
                             <tbody className="text-gray-700">
                                 {filteredStudents.sort((a, b) => compareHebrew(a.displayName, b.displayName))
                                     .map((student, index) => (
-                                        <tr onClick={() => { setUserData(student), setOpenModalStudentData(true) }} key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} ${student.newStatus && student.newStatus === "expelled" ? 'bg-red-400 text-white' : ''} text-right border-b cursor-pointer`}>
+                                        <tr onClick={() => openModalfunc(student)} key={index} className={`${calculateIfPassedSuccessfully(student) ? 'bg-green-500 text-white' : 'bg-gray-100'} ${student.newStatus && student.newStatus === "expelled" ? 'bg-red-400 text-white' : ''} text-right border-b cursor-pointer`}>
                                             <td className="py-3 ps-3 px-4">{index + 1}</td>
                                             <td className="py-3 px-4">{student.displayName}</td>
                                             <td className="py-3 px-4">{student.cycle}</td>
